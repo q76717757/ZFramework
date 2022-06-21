@@ -1,0 +1,10 @@
+.vs/
+/Client/Unity/Library/
+Temp/
+obj/
+Logs/
+bin/
+Client/Unity/Unity.Editor.csproj
+Client/Unity/Assembly-CSharp-Editor.csproj
+Client/Unity/Assembly-CSharp.csproj
+.DS_Store
