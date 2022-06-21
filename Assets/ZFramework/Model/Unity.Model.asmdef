@@ -1,0 +1,16 @@
+{
+    "name": "Unity.Model",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.Mono"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
