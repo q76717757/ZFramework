@@ -9,13 +9,13 @@ namespace CatJson.Editor
     public static class JsonCodeGenConfig
     {
         public static string ParseJsonCodeDirPath = Application.dataPath + "/Scripts/GenParseJsonCode";
-        public static string ParseClassCodeTemplateFilePath = Application.dataPath + "/CatJson/Editor/ParseClassCodeTemplate.txt";
-        public static string ParseStructCodeTemplateFilePath = Application.dataPath + "/CatJson/Editor/ParseStructCodeTemplate.txt";
+        public static string ParseClassCodeTemplateFilePath = Application.dataPath + "_Scripts/Editor/CatJson.Editor/ParseClassCodeTemplate.txt";
+        public static string ParseStructCodeTemplateFilePath = Application.dataPath + "_Scripts/Editor/CatJson.Editor/ParseStructCodeTemplate.txt";
 
         public static string ToJsonCodeDirPath = Application.dataPath + "/Scripts/GenToJsonCode";
-        public static string ToJsonCodeTemplateFilePaht = Application.dataPath + "/CatJson/Editor/ToJsonCodeTemplate.txt";
+        public static string ToJsonCodeTemplateFilePaht = Application.dataPath + "_Scripts/Editor/CatJson.Editor/ToJsonCodeTemplate.txt";
 
-        public static string StaticInitTemplateFilePath = Application.dataPath + "/CatJson/Editor/StaticInitTemplate.txt";
+        public static string StaticInitTemplateFilePath = Application.dataPath + "_Scripts/Editor/CatJson/Editor/StaticInitTemplate.txt";
 
         /// <summary>
         /// 需要生成解析/转换代码的json数据类的程序集名字

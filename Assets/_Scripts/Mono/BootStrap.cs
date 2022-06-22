@@ -37,8 +37,6 @@ namespace ZFramework
             //ZLogVisualization.Visua = true;
 
             Application.wantsToQuit += OnApplicationWantsToQuit;
-
-            Screen.SetResolution(1920, 1080, true);
         }
 
         public void Start()
@@ -53,7 +51,6 @@ namespace ZFramework
                 Log.Error("entry is null!!!");
                 Destroy(this);
             }
-
         }
 
         private void Update() => entry.Update();
@@ -76,7 +73,5 @@ namespace ZFramework
         public int sex;
         public string phone;
         public string email;
-
-
     }
 }
