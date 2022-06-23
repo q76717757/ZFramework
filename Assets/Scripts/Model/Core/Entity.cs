@@ -4,13 +4,13 @@ using System;
 
 namespace ZFramework
 {
-    public sealed class Entity : Object
+    public sealed class Entity : Object//类比unity的gameobject
     {
         private Entity() { }
 
         private Entity parent;
-        private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();
-        private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();
+        private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();//当前entity上的组将 唯一
+        private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//当前entity下挂的子entity
         public Entity Parent
         {
             get => parent;
@@ -30,6 +30,12 @@ namespace ZFramework
             PlayLoop.Instance.Awake(component);
             return component;
         }
+        public T AddComponentToChildren<T>()
+        {
+
+            return default;
+        }
+
         public T GetComponent<T>() where T : Component
         {
             if (components.TryGetValue(typeof(T), out Component component))

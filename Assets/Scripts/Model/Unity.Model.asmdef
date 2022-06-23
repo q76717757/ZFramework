@@ -2,7 +2,8 @@
     "name": "Unity.Model",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Mono"
+        "Unity.Mono",
+        "Unity.ThirdParty"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

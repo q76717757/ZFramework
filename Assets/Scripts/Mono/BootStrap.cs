@@ -37,6 +37,7 @@ namespace ZFramework
             //ZLogVisualization.Visua = true;
 
             Application.wantsToQuit += OnApplicationWantsToQuit;
+
         }
 
         public void Start()

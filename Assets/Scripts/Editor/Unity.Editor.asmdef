@@ -1,10 +1,17 @@
 {
-    "name": "Unity.Mono",
+    "name": "Unity.Editor",
     "rootNamespace": "ZFramework",
-    "references": [],
-    "includePlatforms": [],
+    "references": [
+        "Unity.Hotfix",
+        "Unity.Model",
+        "Unity.Mono",
+        "Unity.ThirdParty"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
