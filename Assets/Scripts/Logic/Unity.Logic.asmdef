@@ -1,5 +1,5 @@
 {
-    "name": "Unity.Hotfix",
+    "name": "Unity.Logic",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.Model",

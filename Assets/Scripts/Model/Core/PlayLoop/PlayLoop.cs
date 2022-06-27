@@ -12,12 +12,15 @@ namespace ZFramework
         //生命周期辅助对象映射表 //componentType - loopType - loopSystemObject
         private readonly Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>> maps = new Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>>();
 
-        private Queue<long> updates = new Queue<long>();
+        private Queue<long> updates = new Queue<long>();//用这个是为了不hold对象 防止删除失败跳出循环
         private Queue<long> updates2 = new Queue<long>();
         private Queue<long> lateUpdates = new Queue<long>();
         private Queue<long> lateUpdates2 = new Queue<long>();
         private Queue<long> destory = new Queue<long>();
 
+        private Queue<long> waitDeatory = new Queue<long>();
+        private Queue<long> waitDeatory2 = new Queue<long>();
+         
         void BuildPlayerLoopMaps()
         {
             maps.Clear();
@@ -53,10 +56,16 @@ namespace ZFramework
 
         void IEntry.Update()
         {
+            //这里加上延迟销毁, 上一帧执行了延迟销毁命令 但还没销毁的对象 在本帧开始之前即 上一帧末尾 进行销毁
+
+            while (waitDeatory.Count > 0)
+            {
+
+            }
+
             while (updates.Count > 0)
             {
                 long instanceId = updates.Dequeue();
-
                 if (!allComponts.TryGetValue(instanceId, out Component component))
                 {
                     continue;
@@ -87,6 +96,7 @@ namespace ZFramework
                 }
             }
             (updates, updates2) = (updates2, updates);
+            (waitDeatory, waitDeatory2) = (waitDeatory2, waitDeatory);
         }
         void IEntry.LateUpdate()
         {
@@ -126,14 +136,6 @@ namespace ZFramework
             (lateUpdates, lateUpdates2) = (lateUpdates2, lateUpdates);
 
             ExecuteDestory();//延迟销毁
-        }
-        void IEntry.Focus(bool focus)
-        {
-
-        }
-        bool IEntry.WantClose()
-        {
-            return true;
         }
         void IEntry.Close()
         {

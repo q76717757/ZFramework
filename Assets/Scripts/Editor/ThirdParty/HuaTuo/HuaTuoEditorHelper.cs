@@ -43,7 +43,7 @@ namespace HuaTuo
             foreach (var ass in scriptCompilationResult.assemblies)
             {
                 Debug.LogFormat("compile assemblies:{0}", ass);
-            }
+            }   
         }
 
         public static string DllBuildOutputDir => Path.GetFullPath($"{Application.dataPath}/../Temp/HuaTuo/build");

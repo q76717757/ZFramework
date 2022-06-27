@@ -27,7 +27,7 @@ namespace ZFramework
             var component =  Component.CreateComponent<T>();
             components.Add(component.GetType(), component);
             component.Entity = this;
-            PlayLoop.Instance.Awake(component);
+            PlayLoop.Instance.Awake(component); 
             return component;
         }
         public T AddComponentToChildren<T>()

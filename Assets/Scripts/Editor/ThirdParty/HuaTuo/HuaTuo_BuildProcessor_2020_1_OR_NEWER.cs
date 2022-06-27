@@ -55,7 +55,7 @@ namespace HuaTuo
         /// </summary>
         static List<string> s_monoHotUpdateDllNames = new List<string>()
         {
-            "HotFix.dll",
+            //"HotFix.dll",
         };
 
         /// <summary>
@@ -64,7 +64,11 @@ namespace HuaTuo
         public static List<string> s_allHotUpdateDllNames = s_monoHotUpdateDllNames.Concat(new List<string>
         {
             // 这里放除了s_monoHotUpdateDllNames以外的脚本不需要挂到资源上的dll列表
-            "HotFix2.dll",
+            //"HotFix2.dll",
+            "Unity.Logic",
+            "Unity.Model",
+            "Unity.ViewLogic",
+            "Unity.ViewModel",
         }).ToList();
 
         ///// <summary>

@@ -7,8 +7,6 @@
 
         void Update();
         void LateUpdate();
-        void Focus(bool focus);
-        bool WantClose();
         void Close();
     }
 

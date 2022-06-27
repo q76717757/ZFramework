@@ -24,7 +24,7 @@ namespace ZFramework
             //Game.Root.AddComponent<EventComponent>();
             //Game.Root.AddComponent<TimerComponent>();
             //Game.Root.AddComponent<AudioComponent>();
-            {
+            {  //客户端热更新需要重启 不重启可能会引入bug?  关于对象残留
                 //打开热更新UI //目标实现不重启更新
                 //var configCOM = Game.Root.AddComponent<ConfigComponent>();
                 //configCOM.LoadFromStreamingAssets();
