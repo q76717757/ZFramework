@@ -2,10 +2,10 @@
     "name": "Unity.Editor",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Hotfix",
+        "Unity.Boot",
+        "Unity.ThirdParty",
         "Unity.Model",
-        "Unity.Mono",
-        "Unity.ThirdParty"
+        "Unity.Logic"
     ],
     "includePlatforms": [
         "Editor"

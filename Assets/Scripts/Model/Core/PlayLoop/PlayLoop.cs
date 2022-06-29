@@ -44,6 +44,8 @@ namespace ZFramework
 
         void IEntry.Start()
         {
+            Log.ILog = new UnityLogger();
+            
             Instance = this;
             BuildPlayerLoopMaps();
             AssemblyLoader.RunLauncher();

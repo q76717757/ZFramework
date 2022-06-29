@@ -2,9 +2,9 @@
     "name": "Unity.Logic",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Model",
-        "Unity.Mono",
-        "Unity.ThirdParty"
+        "Unity.Boot",
+        "Unity.ThirdParty",
+        "Unity.Model"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

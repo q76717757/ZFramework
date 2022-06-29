@@ -1,7 +1,13 @@
 {
     "name": "Unity.ViewLogic",
     "rootNamespace": "ZFramework",
-    "references": [],
+    "references": [
+        "GUID:5b1c0252f55c10c46abb32809e05aca7",
+        "GUID:6390d2fdd8e197746a414ea261f60681",
+        "GUID:55cc489fe7a24a3479636377421b2399",
+        "GUID:debb6f1b6c1ad3a44828705fed2076f2",
+        "GUID:07ca1336ee7ac2942be5006f5ccd57a9"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
