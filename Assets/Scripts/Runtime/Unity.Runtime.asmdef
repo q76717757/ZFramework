@@ -1,11 +1,7 @@
 {
-    "name": "Unity.Logic",
+    "name": "Unity.Runtime",
     "rootNamespace": "ZFramework",
-    "references": [
-        "Unity.Boot",
-        "Unity.ThirdParty",
-        "Unity.Model"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

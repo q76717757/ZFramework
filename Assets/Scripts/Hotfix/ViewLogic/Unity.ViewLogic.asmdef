@@ -1,7 +1,12 @@
 {
-    "name": "Unity.Boot",
+    "name": "Unity.ViewLogic",
     "rootNamespace": "ZFramework",
-    "references": [],
+    "references": [
+        "Unity.Runtime",
+        "Unity.Model",
+        "Unity.Logic",
+        "Unity.ViewModel"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

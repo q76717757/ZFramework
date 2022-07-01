@@ -1,9 +1,9 @@
 {
-    "name": "Unity.Model",
+    "name": "Unity.ViewModel",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Boot",
-        "Unity.ThirdParty"
+        "Unity.Runtime",
+        "Unity.Model"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

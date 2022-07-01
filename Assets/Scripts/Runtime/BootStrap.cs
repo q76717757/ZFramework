@@ -18,6 +18,7 @@ namespace ZFramework
 
     //Editor  编辑器拓展层  编辑器拓展脚本和插件的编辑器脚本都放在这个程序集内
 
+    //热更脚本放在外面 为了不给热更脚本挂在物体上  不要unity自动编译  写一个文件夹监视器 监视codes文件夹
     public enum RunMode
     {
         HotReload_EditorRuntime, //热重载模式
