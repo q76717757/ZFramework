@@ -39,6 +39,9 @@ namespace ZFramework
             {
                 Debug.Log(e.ExceptionObject.ToString());
             };
+
+
+            Debug.Log("Branch 2");
         }
 
         public void Start()
