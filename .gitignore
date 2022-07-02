@@ -6,5 +6,5 @@ bin/
 .DS_Store
 Library/
 *.csproj
+*.sln
 HuatuoData/
-AmplifyShaderEditor/
