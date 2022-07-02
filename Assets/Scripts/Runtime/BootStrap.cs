@@ -23,6 +23,8 @@ namespace ZFramework
             {
                 Debug.Log(e.ExceptionObject.ToString());
             };
+
+            Debug.Log("Awake");
         }
 
         public void Start()
