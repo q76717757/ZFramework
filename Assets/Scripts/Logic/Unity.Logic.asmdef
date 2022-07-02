@@ -1,7 +1,8 @@
 {
-    "name": "Unity.ViewModel",
+    "name": "Unity.Logic",
     "rootNamespace": "ZFramework",
     "references": [
+        "Unity.ThirdParty",
         "Unity.Runtime",
         "Unity.Model"
     ],

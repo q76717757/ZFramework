@@ -48,15 +48,21 @@ namespace ZFramework
             return attributeMap[AttributeType].ToArray();
         }
 
-
         public static IEntry GetEntry(RunMode mode)
         {
             switch (mode)
             {
                 case RunMode.HotReload_EditorRuntime://热重载模式 editor runtime
                     {
-                        var a = File.ReadAllBytes(Path.Combine(Define.UnityTempDllDirectory, "Model.dll"));
-                        var b = File.ReadAllBytes(Path.Combine(Define.UnityTempDllDirectory, "Model.pdb"));
+                        var pathA = Path.Combine(Define.UnityTempDllDirectory, "Model.dll");
+                        var pathB = Path.Combine(Define.UnityTempDllDirectory, "Model.pdb");
+                        if (!File.Exists(pathA) || !File.Exists(pathB))
+                        {
+                            Debug.Log("DLL未编译");
+                            return null;    
+                        }
+                        var a = File.ReadAllBytes(pathA);
+                        var b = File.ReadAllBytes(pathB);
                         modelAssembly = Assembly.Load(a, b);
                         hotfixAssembly = ReloadHotfixAssembly();
 

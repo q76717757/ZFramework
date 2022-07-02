@@ -2,6 +2,7 @@
     "name": "Unity.ViewLogic",
     "rootNamespace": "ZFramework",
     "references": [
+        "Unity.ThirdParty",
         "Unity.Runtime",
         "Unity.Model",
         "Unity.Logic",

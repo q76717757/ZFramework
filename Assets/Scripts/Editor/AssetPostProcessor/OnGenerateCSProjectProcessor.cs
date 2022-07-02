@@ -15,7 +15,7 @@ namespace ZFramework
         //增删cs文件的时候触发   修改不会触发
         public static string OnGeneratedCSProject(string path, string content)
         {
-            Debug.Log(content);
+            //Debug.Log(content);
             return content;
 
             if (path.EndsWith("Unity.Hotfix.csproj"))
