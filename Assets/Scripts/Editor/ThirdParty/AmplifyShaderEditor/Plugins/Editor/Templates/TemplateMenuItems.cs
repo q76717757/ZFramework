@@ -71,10 +71,5 @@ namespace AmplifyShaderEditor
 		{
 			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "cf964e524c8e69742b1d21fbe2ebcc4a" );
 		}
-		[MenuItem( "Assets/Create/Amplify Shader/Universal/Decals", false, 85 )]
-		public static void ApplyTemplateUniversalDecals()
-		{
-			AmplifyShaderEditorWindow.CreateConfirmationTemplateShader( "c2a467ab6d5391a4ea692226d82ffefd" );
-		}
 	}
 }
