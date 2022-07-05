@@ -1,5 +1,5 @@
 {
-    "name": "Unity.Runtime",
+    "name": "Unity.BuildIn",
     "rootNamespace": "ZFramework",
     "references": [],
     "includePlatforms": [],

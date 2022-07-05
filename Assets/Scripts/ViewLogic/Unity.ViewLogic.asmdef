@@ -3,7 +3,7 @@
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.ThirdParty",
-        "Unity.Runtime",
+        "Unity.BuildIn",
         "Unity.Model",
         "Unity.Logic",
         "Unity.ViewModel"
