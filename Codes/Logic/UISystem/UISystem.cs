@@ -33,7 +33,7 @@ namespace ZFramework
         {
             //UI类型映射表
             component.types = new Dictionary<string, Type>();
-            var uitypes = AssemblyLoader.GetTypesByAttribute(typeof(UITypeAttribute));
+            var uitypes = PlayLoop.GetTypesByAttribute(typeof(UITypeAttribute));
             foreach (var uitype in uitypes)
             {
                 if (uitype.IsAbstract)
@@ -52,7 +52,7 @@ namespace ZFramework
         {
             //UI生命周期映射表
             component.maps = new Dictionary<Type, Dictionary<Type, IUILiveSystem>>();
-            foreach (Type uiLiveTypes in AssemblyLoader.GetTypesByAttribute(typeof(UILiveAttribute)))
+            foreach (Type uiLiveTypes in PlayLoop.GetTypesByAttribute(typeof(UILiveAttribute)))
             {
                 object uiLiveSystemObj = Activator.CreateInstance(uiLiveTypes);
                 if (uiLiveSystemObj is IUILiveSystem iSystem)

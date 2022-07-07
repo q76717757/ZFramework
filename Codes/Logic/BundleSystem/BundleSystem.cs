@@ -14,11 +14,13 @@ namespace ZFramework
         {
             switch (Define.RunMode) //建立依赖清单
             {
-                case RunMode.HotReload_EditorRuntime:
+                case CompileMode.Development:
                     //var bundlenames = AssetBundleLoader.GetAllAssetBundleNames();//编辑器下不用加载依赖  全部都在工程中
                     break;
-                case RunMode.Mono_RealMachine:
+                case CompileMode.Release:
                     {
+                        var bundlename = AssetBundle.LoadFromFile("Assets/Bundle/*.*");//直接load本地的bundle也可以把资源读出来
+
                         //var ab_abm = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "Bundle/_Bundles"));//发布模式需要构建依赖映射
                         //var abm = ab_abm.LoadAsset<AssetBundleManifest>("assetbundlemanifest");//清单
                         //var abs = abm.GetAllAssetBundles();

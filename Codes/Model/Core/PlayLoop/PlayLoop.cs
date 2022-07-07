@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ZFramework
 {
@@ -7,10 +8,13 @@ namespace ZFramework
     {
         public static PlayLoop Instance { get; private set; }
 
-        //所有组件集合
-        private readonly Dictionary<long, Component> allComponts = new Dictionary<long, Component>();
         //生命周期辅助对象映射表 //componentType - loopType - loopSystemObject
         private readonly Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>> maps = new Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>>();
+        //特性-类型映射表
+        private readonly static Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();
+
+        //所有组件集合
+        private readonly Dictionary<long, Component> allComponts = new Dictionary<long, Component>();
 
         private Queue<long> updates = new Queue<long>();//用这个是为了不hold对象 防止删除失败跳出循环
         private Queue<long> updates2 = new Queue<long>();
@@ -20,11 +24,50 @@ namespace ZFramework
 
         private Queue<long> waitDeatory = new Queue<long>();
         private Queue<long> waitDeatory2 = new Queue<long>();
-         
+
+        Assembly modelAssembly;
+        Assembly logicAssembly;
+        Assembly codeAssembly;
+        Type[] allTypes;
+
+        void BuildAttributeMap(Type[] allTypes)
+        {
+            attributeMap.Clear();
+            foreach (Type classType in allTypes)
+            {
+                if (classType.IsAbstract)
+                {
+                    continue;
+                }
+                object[] attributesObj = classType.GetCustomAttributes(typeof(BaseAttribute), true);
+                if (attributesObj.Length == 0)
+                {
+                    continue;
+                }
+
+                foreach (BaseAttribute baseAttribute in attributesObj)
+                {
+                    Type AttributeType = baseAttribute.AttributeType;
+                    if (!attributeMap.ContainsKey(AttributeType))
+                    {
+                        attributeMap.Add(AttributeType, new List<Type>());
+                    }
+                    attributeMap[AttributeType].Add(classType);
+                }
+            }
+        }
+        public static Type[] GetTypesByAttribute(Type AttributeType)
+        {
+            if (!attributeMap.ContainsKey(AttributeType))
+            {
+                attributeMap.Add(AttributeType, new List<Type>());
+            }
+            return attributeMap[AttributeType].ToArray();
+        }
         void BuildPlayerLoopMaps()
         {
             maps.Clear();
-            foreach (Type useLifeTypes in AssemblyLoader.GetTypesByAttribute(typeof(LiveAttribute)))
+            foreach (Type useLifeTypes in GetTypesByAttribute(typeof(LiveAttribute)))
             {
                 object componentLiveSystemObj = Activator.CreateInstance(useLifeTypes);
                 if (componentLiveSystemObj is IPlayLoopSystem iSystem)
@@ -42,19 +85,50 @@ namespace ZFramework
             }
         }
 
-        void IEntry.Start()
+
+        void IEntry.Start(Assembly model, Assembly logic)
         {
             Log.ILog = new UnityLogger();
-            
             Instance = this;
+
+            modelAssembly = model;
+            logicAssembly = logic;
+            var types = new List<Type>();
+            types.AddRange(modelAssembly.GetTypes());
+            types.AddRange(logicAssembly.GetTypes());
+            allTypes = types.ToArray();
+
+            BuildAttributeMap(allTypes);
             BuildPlayerLoopMaps();
-            AssemblyLoader.RunLauncher();
+
+            var met = logicAssembly.GetType("ZFramework.Launcher").GetMethod("Start");
+            met.Invoke(null, new object[met.GetParameters().Length]);
         }
-        void IEntry.Reload()
+        void IEntry.Start(Assembly code)
+        {
+            Log.ILog = new UnityLogger();
+            Instance = this;
+
+            codeAssembly = code;
+            allTypes = codeAssembly.GetTypes();
+
+            BuildAttributeMap(allTypes);
+            BuildPlayerLoopMaps();
+
+            var met = codeAssembly.GetType("ZFramework.Launcher").GetMethod("Start");
+            met.Invoke(null, new object[met.GetParameters().Length]);
+        }
+        void IEntry.Reload(Assembly logic)
         {
             BuildPlayerLoopMaps();
             AssemblyLoad();
         }
+
+        void Run()
+        { 
+
+        }
+
 
         void IEntry.Update()
         {
@@ -144,6 +218,8 @@ namespace ZFramework
 
         }
 
+
+
         public bool AddComponentToPlayloop(Component component)
         {
             if (component == null || allComponts.ContainsKey(component.InstanceID))
@@ -163,6 +239,8 @@ namespace ZFramework
             allComponts.Remove(component.InstanceID);
             return true;
         }
+
+
 
         void AssemblyLoad()
         {

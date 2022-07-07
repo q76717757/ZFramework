@@ -53,7 +53,7 @@ namespace ZFramework
         public static void Reset(this EventComponent component) {
             var allEvents = component.allEvents;
             allEvents.Clear();
-            foreach (Type useLifeTypes in AssemblyLoader.GetTypesByAttribute(typeof(EventAttribute)))
+            foreach (Type useLifeTypes in PlayLoop.GetTypesByAttribute(typeof(EventAttribute)))
             {
                 IEvent obj = Activator.CreateInstance(useLifeTypes) as IEvent;
                 if (obj != null)
