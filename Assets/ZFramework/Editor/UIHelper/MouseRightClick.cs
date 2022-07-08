@@ -24,7 +24,11 @@ namespace ZFramework
         static void Bulid(GameObject hierarchyGO)
         {
             if (hierarchyGO == null) return;
-            if (hierarchyGO.GetComponent<Canvas>() == null) return;
+            if (hierarchyGO.GetComponent<Canvas>() == null)
+            {
+                Debug.LogError("生成UI范例以Canvas为单位");
+                return;
+            }
 
             switch (PrefabUtility.GetPrefabInstanceStatus(hierarchyGO))
             {

@@ -12,7 +12,6 @@ namespace ZFramework
         private readonly Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>> maps = new Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>>();
         //特性-类型映射表
         private readonly static Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();
-
         //所有组件集合
         private readonly Dictionary<long, Component> allComponts = new Dictionary<long, Component>();
 
@@ -26,7 +25,6 @@ namespace ZFramework
         //private Queue<long> waitDeatory2 = new Queue<long>();
 
         Assembly modelAssembly;
-        //Assembly logicAssembly;
         Assembly codeAssembly;
         Type[] allTypes;
 
@@ -73,8 +71,6 @@ namespace ZFramework
 
                 if (componentLiveSystemObj is IPlayLoopSystem iSystem)
                 {
-                    Log.Info(iSystem.PlayLoopType);
-
                     if (!maps.ContainsKey(iSystem.ComponentType))
                     {
                         maps.Add(iSystem.ComponentType, new Dictionary<Type, List<IPlayLoopSystem>>());
@@ -346,6 +342,7 @@ namespace ZFramework
             allComponts.Remove(component.InstanceID);
             return true;
         }
+
     }
 
 }
