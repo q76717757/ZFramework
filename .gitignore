@@ -7,4 +7,5 @@ bin/
 Library/
 *.csproj
 *.sln
-HuatuoData/
+Assets/Bundles/Code/Code.dll.bytes
+Assets/Bundles/Code/Code.pdb.bytes
