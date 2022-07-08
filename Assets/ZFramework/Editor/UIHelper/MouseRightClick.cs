@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -10,13 +10,13 @@ namespace ZFramework
 {
     public static class MouseRightClick
     {
-        [MenuItem("GameObject/Éú³ÉUI·¶Àı", true)]
+        [MenuItem("GameObject/ç”ŸæˆUIèŒƒä¾‹", true)]
         public static bool Init2()
         {
             return Selection.objects.Length == 1;
         }
-        [MenuItem("GameObject/Éú³ÉUI·¶Àı",false,50)]
-        public static void Init()//Ã¿¸ögo»áµ÷Ò»´Î ÔõÃ´¸ÄÅúÁ¿??
+        [MenuItem("GameObject/ç”ŸæˆUIèŒƒä¾‹",false,50)]
+        public static void Init()//æ¯ä¸ªgoä¼šè°ƒä¸€æ¬¡ æ€ä¹ˆæ”¹æ‰¹é‡??
         {
             Bulid(Selection.objects[0] as GameObject);
         }
@@ -28,7 +28,7 @@ namespace ZFramework
 
             switch (PrefabUtility.GetPrefabInstanceStatus(hierarchyGO))
             {
-                case PrefabInstanceStatus.Connected://ÒÑ¾­ÊÇÔ¤ÖÆÌå
+                case PrefabInstanceStatus.Connected://å·²ç»æ˜¯é¢„åˆ¶ä½“
                     var preInstance = PrefabUtility.GetOutermostPrefabInstanceRoot(hierarchyGO);
                     SetBundleName(preInstance);
                     break;
@@ -63,10 +63,10 @@ namespace ZFramework
             var im = AssetImporter.GetAtPath(savePath);
             if (im != null)
             {
-                Debug.LogError("ÒÑ¾­´æÔÚÖØÃûµÄÔ¤ÖÆÌå:" + savePath);
+                Debug.LogError("å·²ç»å­˜åœ¨é‡åçš„é¢„åˆ¶ä½“:" + savePath);
                 return;
             }
-            //savePath = AssetDatabase.GenerateUniqueAssetPath(savePath);//È·±£Ãû³Æ²»ÖØ¸´
+            //savePath = AssetDatabase.GenerateUniqueAssetPath(savePath);//ç¡®ä¿åç§°ä¸é‡å¤
             if (PrefabUtility.GetPrefabInstanceStatus(hierarchyGO) == PrefabInstanceStatus.MissingAsset)
                 PrefabUtility.UnpackPrefabInstance(hierarchyGO, PrefabUnpackMode.OutermostRoot, InteractionMode.AutomatedAction);
 
@@ -83,7 +83,7 @@ namespace ZFramework
 
                 if (fileText.IndexOf(scriptName) > 0)
                 {
-                    Debug.Log("ÒÑ´æÔÚÍ¬ÃûUIType");
+                    Debug.Log("å·²å­˜åœ¨åŒåUIType");
                     return;
                 }
                 var index = fileText.LastIndexOf(";");
@@ -110,7 +110,7 @@ namespace ZFramework
             }
             else
             {
-                Debug.LogError($"ÒÑÓĞ{scriptFileName}");
+                Debug.LogError($"å·²æœ‰{scriptFileName}");
             }
             
         }
@@ -134,7 +134,7 @@ namespace ZFramework
             }
             else
             {
-                Debug.LogError($"ÒÑÓĞ{scriptFileName}");
+                Debug.LogError($"å·²æœ‰{scriptFileName}");
             }
         }
 
@@ -186,7 +186,7 @@ using UnityEngine;
 
 namespace ZFramework
 {
-    //ÉúÃüÖÜÆÚ
+    //ç”Ÿå‘½å‘¨æœŸ
     public class #ScriptName#Awake : AwakeSystem<#ScriptName#_Component>
     {
         public override void Awake(#ScriptName#_Component component)
@@ -215,7 +215,7 @@ namespace ZFramework
         }
     }
 
-    //Âß¼­
+    //é€»è¾‘
     public static class #ScriptName#_System
     {
 

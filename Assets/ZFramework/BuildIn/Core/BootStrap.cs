@@ -24,7 +24,7 @@ namespace ZFramework
     }
 
     [DisallowMultipleComponent]
-    public class BootStrap : MonoBehaviour //连接unity的生命周期
+    public class BootStrap : MonoBehaviour
     {
         public IEntry entry;
         public CompileMode mode;
@@ -39,7 +39,6 @@ namespace ZFramework
             entry = AssemblyLoader.GetEntry(mode);
             if (entry == null)
             {
-                Debug.LogError("Get Entry Fail");
                 Destroy(this);
             }
         }

@@ -17,27 +17,27 @@ namespace ZFramework
         public static async void CompileAssembly_Development()
         {
             await BuildAssembly("Model", new[]
-           {
+            {
                 "Codes/Model/",
                 "Codes/ViewModel/"
             }, Array.Empty<string>());
-
             await CompileAssembly_Logic();
         }
-        public static async Task CompileAssembly_Logic()//only UnityEditor
+        public static async Task<string> CompileAssembly_Logic()//only UnityEditor
         {
             string[] logicFiles = Directory.GetFiles(UnityTempDllPath, "Logic_*");
             foreach (string file in logicFiles)
             {
                 File.Delete(file);
             }
-            string logicFile = $"Logic_{DateTime.Now.Ticks / 10000:X2}";//编辑器运行时加载同名的assemble不会返回结果,会返回之前的缓存,导致重载无效
-
+            string logicFile = $"Logic_{DateTime.Now.Ticks / 10000:X2}";//编辑器运行时加载同名的assemble不会返回结果,会返回之前的缓存,不会加载新程序集
             await BuildAssembly(logicFile, new[]
             {
                 "Codes/Logic/",
                 "Codes/ViewLogic/"
             }, new[] {Path.Combine(UnityTempDllPath, "Model.dll") });//hotfix引用model
+
+            return logicFile;
         }
 
         public static async void CompileAssembly_Debug()

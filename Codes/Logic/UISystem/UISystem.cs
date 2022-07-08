@@ -72,8 +72,31 @@ namespace ZFramework
                 }
             }
         }
-
     }
+
+#if A
+    public class UISystemUpdate : UpdateSystem<UIComponent>
+    {
+        public override void Update(UIComponent component)
+        {
+            Log.Info(3323);
+            //Log1();
+        }
+
+        //void Log1()
+        //{
+        //    var c = new AAT() { a = "XXX" };
+
+        //    Log.Info(c.a);
+        //}
+    }
+
+    //public class AAT
+    //{
+    //    public string a = "123";
+    //}
+#endif
+
 
     public static class UISystem
     {

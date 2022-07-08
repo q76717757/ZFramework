@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -8,25 +8,25 @@ namespace ZFramework
     {
         public static PlayLoop Instance { get; private set; }
 
-        //…˙√¸÷‹∆⁄∏®÷˙∂‘œÛ”≥…‰±Ì //componentType - loopType - loopSystemObject
+        //ÁîüÂëΩÂë®ÊúüËæÖÂä©ÂØπË±°Êò†Â∞ÑË°® //componentType - loopType - loopSystemObject
         private readonly Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>> maps = new Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>>();
-        //Ãÿ–‘-¿‡–Õ”≥…‰±Ì
+        //ÁâπÊÄß-Á±ªÂûãÊò†Â∞ÑË°®
         private readonly static Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();
 
-        //À˘”–◊Èº˛ºØ∫œ
+        //ÊâÄÊúâÁªÑ‰ª∂ÈõÜÂêà
         private readonly Dictionary<long, Component> allComponts = new Dictionary<long, Component>();
 
-        private Queue<long> updates = new Queue<long>();//”√’‚∏ˆ «Œ™¡À≤ªhold∂‘œÛ ∑¿÷π…æ≥˝ ß∞‹Ã¯≥ˆ—≠ª∑
+        private Queue<long> updates = new Queue<long>();//Áî®Ëøô‰∏™ÊòØ‰∏∫‰∫Ü‰∏çholdÂØπË±° Èò≤Ê≠¢Âà†Èô§Â§±Ë¥•Ë∑≥Âá∫Âæ™ÁéØ
         private Queue<long> updates2 = new Queue<long>();
         private Queue<long> lateUpdates = new Queue<long>();
         private Queue<long> lateUpdates2 = new Queue<long>();
         private Queue<long> destory = new Queue<long>();
 
-        private Queue<long> waitDeatory = new Queue<long>();
-        private Queue<long> waitDeatory2 = new Queue<long>();
+        //private Queue<long> waitDeatory = new Queue<long>();
+        //private Queue<long> waitDeatory2 = new Queue<long>();
 
         Assembly modelAssembly;
-        Assembly logicAssembly;
+        //Assembly logicAssembly;
         Assembly codeAssembly;
         Type[] allTypes;
 
@@ -70,8 +70,11 @@ namespace ZFramework
             foreach (Type useLifeTypes in GetTypesByAttribute(typeof(LiveAttribute)))
             {
                 object componentLiveSystemObj = Activator.CreateInstance(useLifeTypes);
+
                 if (componentLiveSystemObj is IPlayLoopSystem iSystem)
                 {
+                    Log.Info(iSystem.PlayLoopType);
+
                     if (!maps.ContainsKey(iSystem.ComponentType))
                     {
                         maps.Add(iSystem.ComponentType, new Dictionary<Type, List<IPlayLoopSystem>>());
@@ -85,14 +88,12 @@ namespace ZFramework
             }
         }
 
-
-        void IEntry.Start(Assembly model, Assembly logic)
+        void IEntry.Start(Assembly model, Assembly logicAssembly)
         {
             Log.ILog = new UnityLogger();
             Instance = this;
 
             modelAssembly = model;
-            logicAssembly = logic;
             var types = new List<Type>();
             types.AddRange(modelAssembly.GetTypes());
             types.AddRange(logicAssembly.GetTypes());
@@ -118,132 +119,45 @@ namespace ZFramework
             var met = codeAssembly.GetType("ZFramework.Launcher").GetMethod("Start");
             met.Invoke(null, new object[met.GetParameters().Length]);
         }
-        void IEntry.Reload(Assembly logic)
+        void IEntry.Reload(Assembly logicAssembly)
         {
+            var types = new List<Type>();
+            types.AddRange(modelAssembly.GetTypes());
+            types.AddRange(logicAssembly.GetTypes());
+            allTypes = types.ToArray();
+
+            BuildAttributeMap(allTypes);
             BuildPlayerLoopMaps();
-            AssemblyLoad();
+
+            Reload();
         }
 
-        void Run()
-        { 
-
-        }
-
-
-        void IEntry.Update()
+        void Reload()
         {
-            //’‚¿Ôº”…œ—”≥Ÿœ˙ªŸ, …œ“ª÷°÷¥––¡À—”≥Ÿœ˙ªŸ√¸¡Ó µ´ªπ√ªœ˙ªŸµƒ∂‘œÛ ‘⁄±æ÷°ø™ º÷Æ«∞º¥ …œ“ª÷°ƒ©Œ≤ Ω¯––œ˙ªŸ
+            //ÈáçÂª∫UpdateQueue ‰ªÖÁÉ≠ÈáçËΩΩÈúÄË¶Å Êó†‰∏≠ÁîüÊúâUpdateÁ≠âÂª∂ËøüÁîüÂëΩÂë®ÊúüÊó∂ ‰ªñ‰ª¨ÁöÑidÂú®AwakeÁöÑÊó∂ÂÄôÊ≤°ÊúâÂÖ•Âàó ‰ºöÂØºËá¥UpdateÈÅçÂéÜ‰∏çÂà∞
+            updates.Clear();
+            updates2.Clear();
+            lateUpdates.Clear();
+            lateUpdates2.Clear();
+            destory.Clear();
 
-            while (waitDeatory.Count > 0)
+            foreach (var item in allComponts)
             {
-
+                if (maps[item.Value.GetType()].ContainsKey(typeof(IUpdate)))
+                {
+                    updates.Enqueue(item.Key);
+                }
+                if (maps[item.Value.GetType()].ContainsKey(typeof(ILateUpdate)))
+                {
+                    lateUpdates.Enqueue(item.Key);
+                }
+                if (maps[item.Value.GetType()].ContainsKey(typeof(IDestory)))
+                {
+                    destory.Enqueue(item.Key);
+                }
             }
 
-            while (updates.Count > 0)
-            {
-                long instanceId = updates.Dequeue();
-                if (!allComponts.TryGetValue(instanceId, out Component component))
-                {
-                    continue;
-                }
-                if (component.IsDisposed)
-                {
-                    continue;
-                }
-
-                if (maps.TryGetValue(component.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
-                {
-                    if (life.TryGetValue(typeof(IUpdate), out List<IPlayLoopSystem> systemlist))
-                    {
-                        updates2.Enqueue(instanceId);
-                        foreach (IUpdate system in systemlist)
-                        {
-                            try
-                            {
-                                system.Update(component);
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error(e);
-                                throw;
-                            }
-                        }
-                    }
-                }
-            }
-            (updates, updates2) = (updates2, updates);
-            (waitDeatory, waitDeatory2) = (waitDeatory2, waitDeatory);
-        }
-        void IEntry.LateUpdate()
-        {
-            while (lateUpdates.Count > 0)
-            {
-                long instanceId = lateUpdates.Dequeue();
-
-                if (!allComponts.TryGetValue(instanceId, out Component component))
-                {
-                    continue;
-                }
-                if (component.IsDisposed)
-                {
-                    continue;
-                }
-                if (maps.TryGetValue(component.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
-                {
-                    if (life.TryGetValue(typeof(IUpdate), out List<IPlayLoopSystem> systemlist))
-                    {
-                        lateUpdates2.Enqueue(instanceId);
-
-                        foreach (ILateUpdate system in systemlist)
-                        {
-                            try
-                            {
-                                system.LateUpdate(component);
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error(e);
-                                throw;
-                            }
-                        }
-                    }
-                }
-            }
-            (lateUpdates, lateUpdates2) = (lateUpdates2, lateUpdates);
-
-            ExecuteDestory();//—”≥Ÿœ˙ªŸ
-        }
-        void IEntry.Close()
-        {
-
-        }
-
-
-
-        public bool AddComponentToPlayloop(Component component)
-        {
-            if (component == null || allComponts.ContainsKey(component.InstanceID))
-            {
-                return false;
-            }
-            allComponts.Add(component.InstanceID, component);
-            updates.Enqueue(component.InstanceID);
-            return true;
-        }
-        public bool RemoveComponentFromPlayloop(Component component)
-        {
-            if (component == null || !allComponts.ContainsKey(component.InstanceID))
-            {
-                return false;
-            }
-            allComponts.Remove(component.InstanceID);
-            return true;
-        }
-
-
-
-        void AssemblyLoad()
-        {
+            //reloadÁîüÂëΩÂë®ÊúüÂõûË∞É
             foreach (var item in allComponts)
             {
                 if (!allComponts.TryGetValue(item.Key, out Component component))
@@ -256,18 +170,17 @@ namespace ZFramework
                 }
                 if (maps.TryGetValue(component.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(IAssemblyLoad), out List<IPlayLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(IReLoad), out List<IPlayLoopSystem> systemlist))
                     {
-                        foreach (IAssemblyLoad system in systemlist)
+                        foreach (IReLoad system in systemlist)
                         {
                             try
                             {
-                                system.AssemblyLoad(component);
+                                system.Reload(component);
                             }
                             catch (Exception e)
                             {
                                 Log.Error(e);
-                                throw;
                             }
                         }
                     }
@@ -322,13 +235,116 @@ namespace ZFramework
                 }
             }
         }
-        private void ExecuteDestory()
+        void IEntry.Update()
         {
-            while (destory.Count > 0)
+            while (updates.Count > 0)
             {
-                var id = destory.Dequeue();
+                long instanceId = updates.Dequeue();
+                if (!allComponts.TryGetValue(instanceId, out Component component))
+                {
+                    continue;
+                }
+                if (component.IsDisposed)
+                {
+                    continue;
+                }
 
+                if (maps.TryGetValue(component.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
+                {
+                    if (life.TryGetValue(typeof(IUpdate), out List<IPlayLoopSystem> systemlist))
+                    {
+                        updates2.Enqueue(instanceId);
+                        foreach (IUpdate system in systemlist)
+                        {
+                            try
+                            {
+                                system.Update(component);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error(e);
+                            }
+                        }
+                    }
+                }
             }
+            (updates, updates2) = (updates2, updates);
+
+            //Âª∂ËøüÈîÄÊØÅ, Â∏ßÊú´ÂÜçËøõË°åÈîÄÊØÅÊìç‰Ωú
+            //while (waitDeatory.Count > 0)
+            //{
+
+            //}
+            //(waitDeatory, waitDeatory2) = (waitDeatory2, waitDeatory);
+
+        }
+        void IEntry.LateUpdate()
+        {
+            while (lateUpdates.Count > 0)
+            {
+                long instanceId = lateUpdates.Dequeue();
+
+                if (!allComponts.TryGetValue(instanceId, out Component component))
+                {
+                    continue;
+                }
+                if (component.IsDisposed)
+                {
+                    continue;
+                }
+                if (maps.TryGetValue(component.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
+                {
+                    if (life.TryGetValue(typeof(IUpdate), out List<IPlayLoopSystem> systemlist))
+                    {
+                        lateUpdates2.Enqueue(instanceId);
+
+                        foreach (ILateUpdate system in systemlist)
+                        {
+                            try
+                            {
+                                system.LateUpdate(component);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error(e);
+                            }
+                        }
+                    }
+                }
+            }
+            (lateUpdates, lateUpdates2) = (lateUpdates2, lateUpdates);
+        }
+        void IEntry.Close()
+        {
+
+        }
+
+
+
+        //ÁªÑ‰ª∂Ê≥®ÂÜåÊ≥®ÈîÄ
+        public bool AddComponentToPlayloop(Component component)
+        {
+            if (component == null || allComponts.ContainsKey(component.InstanceID))
+            {
+                return false;
+            }
+            allComponts.Add(component.InstanceID, component);
+
+
+            if (maps[component.GetType()].ContainsKey(typeof(IUpdate)))
+            {
+                updates.Enqueue(component.InstanceID);//ÈÅçÂéÜÂÖ®ÈÉ®component???? ËøòÊòØÂà§Êñ≠‰∏Ä‰∏ã‰∏ç‰∏ÄÂÆöË¶ÅÂÖ®ÈÉ®ÂÖ•Âàó
+            }
+            return true;
+        }
+        public bool RemoveComponentFromPlayloop(Component component)
+        {
+            if (component == null || !allComponts.ContainsKey(component.InstanceID))
+            {
+                return false;
+            }
+            allComponts.Remove(component.InstanceID);
+            return true;
         }
     }
 

@@ -38,10 +38,6 @@ namespace ZFramework
             }
             return null;
         }
-        public static void RunLauncher()
-        {
-           
-        }
 
         public static Assembly LoadModel()
         {
@@ -71,7 +67,9 @@ namespace ZFramework
             var pdb = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Bundles/Code/Code.pdb.bytes");
             return Assembly.Load(dll.bytes, pdb.bytes);
 #endif
-
+            //判断本地目录有没有缓存
+            //没有就去默认目录直接下载最新dll
+             
             //var code = AssetBundle.LoadFromFile(Path.Combine(Application.streamingAssetsPath, "Bundle/code.unity3d"));
             //var a = code.LoadAsset<TextAsset>("Model.dll").bytes;
             //var b = code.LoadAsset<TextAsset>("Model.pdb").bytes;

@@ -7,17 +7,36 @@ namespace ZFramework
         Type ComponentType { get; }
         Type PlayLoopType { get; }
     }
-
-    [Live]
-    public abstract class AssemblyloadSystem<T> : IPlayLoopSystem, IAssemblyLoad where T : Component
+    public interface IReLoad : IPlayLoopSystem
     {
-        public Type ComponentType => typeof(T);
-        public Type PlayLoopType => typeof(IAssemblyLoad);
-        void IAssemblyLoad.AssemblyLoad(Component component) => AssemblyLoad((T)component);
-        public abstract void AssemblyLoad(T component);
+        void Reload(Component component);
+    }
+    public interface IAwake : IPlayLoopSystem
+    {
+        void Awake(Component component);
+    }
+    public interface IUpdate : IPlayLoopSystem
+    {
+        void Update(Component component);
+    }
+    public interface ILateUpdate : IPlayLoopSystem
+    {
+        void LateUpdate(Component component);
+    }
+    public interface IDestory : IPlayLoopSystem
+    {
+        void Destory(Component component);
     }
     [Live]
-    public abstract class AwakeSystem<T> : IPlayLoopSystem , IAwake where T : Component
+    public abstract class AssemblyloadSystem<T> : IReLoad where T : Component
+    {
+        public Type ComponentType => typeof(T);
+        public Type PlayLoopType => typeof(IReLoad);
+        void IReLoad.Reload(Component component) => Reload((T)component);
+        public abstract void Reload(T component);
+    }
+    [Live]
+    public abstract class AwakeSystem<T> :  IAwake where T : Component
     {
         public Type ComponentType => typeof(T);
         public Type PlayLoopType => typeof(IAwake);
@@ -25,7 +44,7 @@ namespace ZFramework
         public abstract void Awake(T component);
     }
     [Live]
-    public abstract class UpdateSystem<T> : IPlayLoopSystem,IUpdate where T : Component
+    public abstract class UpdateSystem<T> : IUpdate where T : Component
     {
         public Type ComponentType => typeof(T); 
         public Type PlayLoopType => typeof(IUpdate);
@@ -33,7 +52,7 @@ namespace ZFramework
         public abstract void Update(T component);
     }
     [Live]
-    public abstract class LateUpdateSystem<T> : IPlayLoopSystem,ILateUpdate where T : Component
+    public abstract class LateUpdateSystem<T> : ILateUpdate where T : Component
     {
         public Type ComponentType => typeof(T); 
         public Type PlayLoopType => typeof(ILateUpdate);
@@ -41,7 +60,7 @@ namespace ZFramework
         public abstract void LateUpdate(T component);
     }
     [Live]
-    public abstract class DestorySystem<T> : IPlayLoopSystem,IDestory where T : Component
+    public abstract class DestorySystem<T> : IDestory where T : Component
     {
         public Type ComponentType => typeof(T);
         public Type PlayLoopType => typeof(IDestory);

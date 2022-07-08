@@ -8,7 +8,13 @@ namespace ZFramework
     {
         public static string OnGeneratedCSProject(string path, string content)
         {
-            foreach (var name in Define.csprojNames)
+            //热更程序集的名称
+            string[] csprojNames = new string[]
+            {
+                "Model","Logic","ViewModel","ViewLogic",
+            };
+
+            foreach (var name in csprojNames)
             {
                 if (path.EndsWith($"Unity.{name}.csproj"))
                 {

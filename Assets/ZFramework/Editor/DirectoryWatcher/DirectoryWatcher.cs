@@ -11,13 +11,13 @@ namespace ZFramework
     {
         public static FileSystemWatcher watcher;
 
-        //[InitializeOnLoadMethod]   ÄÚ´æĞ¹Â¶??
+        //[InitializeOnLoadMethod]   å†…å­˜æ³„éœ²??
         public static void Start()
         {
-            DirectoryInfo dd = new DirectoryInfo("Codes");//hotfix½Å±¾¶¼·ÅÔÚÕâ¸öÎÄ¼ş¼ĞÏÂÃæ ¼àÌıÕâ¸öÎÄ¼ş¼Ğ ¿ÉÑ¡×Ô¶¯/ÊÖ¶¯±àÒë
+            DirectoryInfo dd = new DirectoryInfo("Codes");//hotfixè„šæœ¬éƒ½æ”¾åœ¨è¿™ä¸ªæ–‡ä»¶å¤¹ä¸‹é¢ ç›‘å¬è¿™ä¸ªæ–‡ä»¶å¤¹ å¯é€‰è‡ªåŠ¨/æ‰‹åŠ¨ç¼–è¯‘
             if (dd == null || !dd.Exists)
             {
-                Log.Error("ÈÈ¸üÎÄ¼ş¼ĞCodes²»´æÔÚ,¼àÌıÊ§°Ü");
+                Log.Error("çƒ­æ›´æ–‡ä»¶å¤¹Codesä¸å­˜åœ¨,ç›‘å¬å¤±è´¥");
                 return;
             }
 

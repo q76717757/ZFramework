@@ -12,7 +12,7 @@ namespace ZFramework
     {
         public override void Awake(BundleComponent component)
         {
-            switch (Define.RunMode) //建立依赖清单
+            switch (Define.RunMode)
             {
                 case CompileMode.Development:
                     //var bundlenames = AssetBundleLoader.GetAllAssetBundleNames();//编辑器下不用加载依赖  全部都在工程中

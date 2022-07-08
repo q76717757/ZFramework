@@ -1,27 +1,27 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System;
 
 namespace ZFramework
 {
-    public sealed class Entity : Object//Àà±ÈunityµÄgameobject
+    public sealed class Entity : Object//ç±»æ¯”unityçš„gameobject
     {
         private Entity() { }
 
         private Entity parent;
-        private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();//µ±Ç°entityÉÏµÄ×é½« Î¨Ò»
-        private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//µ±Ç°entityÏÂ¹ÒµÄ×Óentity
+        private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();//å½“å‰entityä¸Šçš„ç»„å°† å”¯ä¸€
+        private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//å½“å‰entityä¸‹æŒ‚çš„å­entity
         public Entity Parent
         {
             get => parent;
             set => parent = value;
         }
 
-        public T AddComponent<T>() where T : Component//Á¢¼´´´½¨
+        public T AddComponent<T>() where T : Component//ç«‹å³åˆ›å»º
         {
             if (components.ContainsKey(typeof(T)))
             {
-                Log.Error("Ò»¸öentityÏÂ Ã¿ÖÖcomponentÖ»ÄÜ¹ÒÒ»¸ö");
+                Log.Error("ä¸€ä¸ªentityä¸‹ æ¯ç§componentåªèƒ½æŒ‚ä¸€ä¸ª");
                 return null;
             }
             var component =  Component.CreateComponent<T>();
@@ -112,7 +112,7 @@ namespace ZFramework
         }
 
 
-        public void RemoveComponent(Component component)//ÑÓ³ÙÏú»Ù
+        public void RemoveComponent(Component component)//å»¶è¿Ÿé”€æ¯
         {
             if (components.TryGetValue(component.GetType(), out Component target))
             {

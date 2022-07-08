@@ -11,16 +11,16 @@ namespace ZFramework
     {
         public static async void Start()
         {
-            Log.Info("Launcher Start!");
+            Log.Info("<color=green>Launcher Start!</color>");
 
-            Game.Root.AddComponent<HttpComponent>();
-            Game.Root.AddComponent<BundleComponent>();
+            //Game.Root.AddComponent<HttpComponent>();
+            //Game.Root.AddComponent<BundleComponent>();
 
             var UI = Game.Root.AddComponent<UIComponent>();
             //UI.Show(UIType.View_Video);
 
 
-            Log.Info("Launcher Start Finish!");
+            //Log.Info("Launcher Start Finish!");
             //Game.Root.AddComponent<EventComponent>();
             //Game.Root.AddComponent<TimerComponent>();
             //Game.Root.AddComponent<AudioComponent>();
@@ -35,6 +35,5 @@ namespace ZFramework
                 //重新反射程序集
             }
         }
-
     }
 }

@@ -10,7 +10,7 @@ namespace ZFramework
 {
     public class EventReload : AssemblyloadSystem<EventComponent>
     {
-        public override void AssemblyLoad(EventComponent component)
+        public override void Reload(EventComponent component)
         {
             component.Reset();
         }

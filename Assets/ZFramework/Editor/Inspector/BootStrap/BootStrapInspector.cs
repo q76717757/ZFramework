@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System.Reflection;
 
 namespace ZFramework
 {
@@ -29,12 +30,19 @@ namespace ZFramework
 
                     GUILayout.Label("Logic");
                     EditorGUI.BeginDisabledGroup(true);
-                    string[] logicFiles = Directory.GetFiles(BuildAssemblieEditor.UnityTempDllPath, "Logic_*.dll");
-                    if (logicFiles.Length > 0)
+                    if (Directory.Exists(BuildAssemblieEditor.UnityTempDllPath))
                     {
-                        foreach (string file in logicFiles)
+                        string[] logicFiles = Directory.GetFiles(BuildAssemblieEditor.UnityTempDllPath, "Logic_*.dll");
+                        if (logicFiles.Length > 0)
                         {
-                            GUILayout.TextField(file);
+                            foreach (string file in logicFiles)
+                            {
+                                GUILayout.TextField(file);
+                            }
+                        }
+                        else
+                        {
+                            GUILayout.TextField("Logic.Dll Not Exists");
                         }
                     }
                     else
@@ -53,7 +61,7 @@ namespace ZFramework
                     }
                     else
                     {
-                        if (GUILayout.Button("热重载"))
+                        if (GUILayout.Button("逻辑热重载"))
                         {
                             HotReload();
                         }
@@ -96,8 +104,11 @@ namespace ZFramework
 
         async void HotReload()
         {
-            await BuildAssemblieEditor.CompileAssembly_Logic();
-            //(target as BootStrap).entry.Reload();
+            var assemblyName = await BuildAssemblieEditor.CompileAssembly_Logic();
+            var dll = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.dll");
+            var pdb = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.pdb");
+            Assembly logic = Assembly.Load(dll,pdb);
+            (target as BootStrap).entry.Reload(logic);
         }
 
     }
