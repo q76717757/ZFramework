@@ -9,3 +9,5 @@ Library/
 *.sln
 Assets/Bundles/Code/Code.dll.bytes
 Assets/Bundles/Code/Code.pdb.bytes
+Assets/Bundles/Code/Code.dll.bytes.meta
+Assets/Bundles/Code/Code.pdb.bytes.meta
