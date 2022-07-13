@@ -23,11 +23,21 @@ namespace ZFramework
         Release,//发布模式
     }
 
+    public enum AssetsMode
+    {
+        Resources,
+        Stream,
+        Bundle,
+        Web,
+    }
+
+
     [DisallowMultipleComponent]
     public class BootStrap : MonoBehaviour
     {
         public IEntry entry;
         public CompileMode mode;
+        public AssetsMode assetMode;
 
         void Awake()
         {

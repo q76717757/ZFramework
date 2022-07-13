@@ -51,7 +51,6 @@ namespace ZFramework
             CopyDllToAssset("Codes");
         }
 
-
         private static async Task BuildAssembly(string assemblyName, string[] codeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization = CodeOptimization.Debug)
         {
             //查找外部CS文件
@@ -59,11 +58,13 @@ namespace ZFramework
             for (int i = 0; i < codeDirectorys.Length; i++)
             {
                 DirectoryInfo dti = new DirectoryInfo(codeDirectorys[i]);
-
-                FileInfo[] fileInfos = dti.GetFiles("*.cs", System.IO.SearchOption.AllDirectories);
-                for (int j = 0; j < fileInfos.Length; j++)
+                if (dti.Exists)
                 {
-                    scripts.Add(fileInfos[j].FullName);
+                    FileInfo[] fileInfos = dti.GetFiles("*.cs", System.IO.SearchOption.AllDirectories);
+                    for (int j = 0; j < fileInfos.Length; j++)
+                    {
+                        scripts.Add(fileInfos[j].FullName);
+                    }
                 }
             }
 

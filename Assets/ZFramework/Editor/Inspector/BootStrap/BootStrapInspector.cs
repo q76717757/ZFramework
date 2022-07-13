@@ -100,6 +100,20 @@ namespace ZFramework
                 default:
                     break;
             }
+
+
+            (target as BootStrap).assetMode = (AssetsMode)EditorGUILayout.EnumPopup("资源加载方式", (target as BootStrap).assetMode);
+            switch ((target as BootStrap).assetMode)
+            {
+                case AssetsMode.Resources:
+                    break;
+                case AssetsMode.Stream:
+                    break;
+                case AssetsMode.Bundle:
+                    break;
+                case AssetsMode.Web:
+                    break;
+            }
         }
 
         async void HotReload()
