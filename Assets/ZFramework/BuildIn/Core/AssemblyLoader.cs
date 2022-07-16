@@ -10,6 +10,9 @@ namespace ZFramework
     {
         public static IEntry GetEntry(CompileMode mode)
         {
+#if !UNITY_EDITOR
+            mode = CompileMode.Release;
+#endif
             try
             {
                 switch (mode)

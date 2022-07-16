@@ -1,8 +1,7 @@
 {
-    "name": "Unity.Model",
+    "name": "Unity.ServerModel",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.ThirdParty",
         "Unity.BuildIn"
     ],
     "includePlatforms": [],

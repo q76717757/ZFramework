@@ -1,10 +1,10 @@
 {
-    "name": "Unity.Logic",
+    "name": "Unity.ClientModel",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.ThirdParty",
         "Unity.BuildIn",
-        "Unity.Model"
+        "Unity.ServerModel"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

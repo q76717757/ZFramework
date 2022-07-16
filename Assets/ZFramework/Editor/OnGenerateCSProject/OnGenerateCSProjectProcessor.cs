@@ -11,7 +11,7 @@ namespace ZFramework
             //热更程序集的名称
             string[] csprojNames = new string[]
             {
-                "Model","Logic","ViewModel","ViewLogic",
+                "ServerModel","ServerLogic","ClientModel","ClientLogic",
             };
 
             foreach (var name in csprojNames)

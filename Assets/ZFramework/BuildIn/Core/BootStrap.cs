@@ -14,16 +14,17 @@ namespace ZFramework
         void LateUpdate();
         void Close();
     }
-
-    public enum CompileMode
+    public enum CompileMode//编辑器下选择开发模式  使用热重载模式  发布后是无效枚举
     {
-        //可以热重载  本地有缓存目录
-        Development,//开发模式(仅编辑器)
-        //ab包构建工具可以选择debug还是release模式编译dll  编译完成自动移到asset目录下并且设置好ab包名?? 目前是在bootStrap上编译
+        Development,//开发模式
         Release,//发布模式
     }
-
-    public enum AssetsMode
+    public enum DllLoadMode//个别不支持load.dll的平台或者放弃热更 如uwp?  在构建时把dll直接包含进工程内
+    {
+        BuildIn,
+        InFile,
+    }
+    public enum AssetsMode//针对不同应用场景  ab包的位置从不同的位置读取  有的是本地有的是远程  有的读不了AB包
     {
         Resources,
         StreamingAssets,
@@ -31,11 +32,13 @@ namespace ZFramework
         Remote,
     }
 
-    public enum Platform
+    public enum Platform//发布平台
     { 
         Windows,
         Android,
         IOS,
+        //UWP  //HoloLens
+        //WebGL
     }
 
     [DisallowMultipleComponent]
@@ -49,7 +52,6 @@ namespace ZFramework
         void Awake()
         {
             DontDestroyOnLoad(gameObject);
-
         }
 
         void Start()
@@ -61,10 +63,9 @@ namespace ZFramework
             }
         }
 
-        void Update() => entry.Update();
+        void Update() => entry.Update(/*Time.deltaTime,Time.unscaledDeltaTime*/);
         void LateUpdate() => entry.LateUpdate();
         void OnApplicationQuit() => entry.Close();
-
     }
 
 }

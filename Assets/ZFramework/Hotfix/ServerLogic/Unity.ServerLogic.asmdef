@@ -1,12 +1,9 @@
 {
-    "name": "Unity.ViewLogic",
+    "name": "Unity.ServerLogic",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.ThirdParty",
         "Unity.BuildIn",
-        "Unity.Model",
-        "Unity.Logic",
-        "Unity.ViewModel"
+        "Unity.ServerModel"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
