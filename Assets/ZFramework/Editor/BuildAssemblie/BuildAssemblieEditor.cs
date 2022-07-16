@@ -79,7 +79,6 @@ namespace ZFramework
             {
                 File.Delete(pdbPath);
             }
-            Directory.CreateDirectory(UnityTempDllPath);
 
             //开始编译
             AssemblyBuilder assemblyBuilder = new AssemblyBuilder(dllPath, scripts.ToArray());

@@ -87,12 +87,19 @@ namespace ZFramework
                         }
                         else
                         {
+                            
                             EditorGUI.BeginDisabledGroup(true);
                             EditorGUILayout.ObjectField(dll, typeof(TextAsset), false);
                             EditorGUILayout.ObjectField(pdb, typeof(TextAsset), false);
                             EditorGUI.EndDisabledGroup();
                         }
                         EditorGUILayout.EndHorizontal();
+
+                        FileInfo fileInfo = new FileInfo(BuildAssemblieEditor.AssetsSaveDllPath + "Code.dll.bytes");
+                        if (fileInfo.Exists)
+                        {
+                            GUILayout.Label("最后编译时间: " + fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                        }
 
                         bool disable = EditorApplication.isPlaying || EditorApplication.isCompiling;
                         EditorGUI.BeginDisabledGroup(disable);
