@@ -23,15 +23,33 @@ namespace ZFramework
         Release,//发布模式
     }
 
+    public enum AssetsMode
+    {
+        Resources,
+        StreamingAssets,
+        Bundle,
+        Remote,
+    }
+
+    public enum Platform
+    { 
+        Windows,
+        Android,
+        IOS,
+    }
+
     [DisallowMultipleComponent]
     public class BootStrap : MonoBehaviour
     {
         public IEntry entry;
         public CompileMode mode;
+        public AssetsMode assetMode;
+        public Platform platform;
 
         void Awake()
         {
             DontDestroyOnLoad(gameObject);
+
         }
 
         void Start()

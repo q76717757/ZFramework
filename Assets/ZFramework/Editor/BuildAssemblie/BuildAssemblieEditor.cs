@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -43,14 +42,13 @@ namespace ZFramework
         public static async void CompileAssembly_Debug()
         {
             await BuildAssembly("Code", new string[] { "Codes/" }, Array.Empty<string>(), CodeOptimization.Debug);
-            CopyDllToAssset("Code");
+            CopyDllToAsssetFromTemp("Code");
         }
         public static async void CompileAssembly_Release()
         {
             await BuildAssembly("Codes", new string[] { "Codes/" }, Array.Empty<string>(), CodeOptimization.Release);
-            CopyDllToAssset("Codes");
+            CopyDllToAsssetFromTemp("Codes");
         }
-
 
         private static async Task BuildAssembly(string assemblyName, string[] codeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization = CodeOptimization.Debug)
         {
@@ -59,13 +57,16 @@ namespace ZFramework
             for (int i = 0; i < codeDirectorys.Length; i++)
             {
                 DirectoryInfo dti = new DirectoryInfo(codeDirectorys[i]);
-
-                FileInfo[] fileInfos = dti.GetFiles("*.cs", System.IO.SearchOption.AllDirectories);
-                for (int j = 0; j < fileInfos.Length; j++)
+                if (dti.Exists)
                 {
-                    scripts.Add(fileInfos[j].FullName);
+                    FileInfo[] fileInfos = dti.GetFiles("*.cs", System.IO.SearchOption.AllDirectories);
+                    for (int j = 0; j < fileInfos.Length; j++)
+                    {
+                        scripts.Add(fileInfos[j].FullName);
+                    }
                 }
             }
+            Directory.CreateDirectory(UnityTempDllPath);
 
             //删除旧的
             string dllPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.dll");
@@ -119,12 +120,9 @@ namespace ZFramework
                 Debug.Log("Compile Success!");
             }
         }
-        private static void CopyDllToAssset(string assemblyName)//从temp复制到assets下
+        private static void CopyDllToAsssetFromTemp(string assemblyName)
         {
-            if (!Directory.Exists(AssetsSaveDllPath))
-            {
-                Directory.CreateDirectory(AssetsSaveDllPath);
-            }
+            Directory.CreateDirectory(AssetsSaveDllPath);
 
             File.Copy($"{UnityTempDllPath}{assemblyName}.dll", $"{AssetsSaveDllPath}{assemblyName}.dll.bytes", true);
             File.Copy($"{UnityTempDllPath}{assemblyName}.pdb", $"{AssetsSaveDllPath}{assemblyName}.pdb.bytes", true);
