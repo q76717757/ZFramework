@@ -15,10 +15,10 @@ class UnityIconView : EditorWindow
     [MenuItem("ZFramework/内置图标")]
     public static void ShowWindow()
     {
-        EditorWindow.GetWindow(typeof(UnityIconView));
         var textAsset = Resources.Load<TextAsset>("InnerIconList");
-        text = textAsset.text.Replace("\r\n", "\n").Split('\n');
+        text = (textAsset as TextAsset).text.Replace("\r\n", "\n").Split('\n');
         Resources.UnloadAsset(textAsset);
+        EditorWindow.GetWindow(typeof(UnityIconView));
     }
 
     public Vector2 scrollPosition;
@@ -34,7 +34,6 @@ class UnityIconView : EditorWindow
             GUILayout.Space(10);
         }
 
-
         //内置图标
         for (int i = 0; i < text.Length; i += 8)
         {
@@ -46,9 +45,13 @@ class UnityIconView : EditorWindow
                 {
                     try
                     {
-                        if (GUILayout.Button(EditorGUIUtility.IconContent(text[index]), GUILayout.Width(50), GUILayout.Height(30)))
+                        var con = EditorGUIUtility.IconContent(text[index]);
+                        if (con != null)
                         {
-                            Log.Info(text[index]);
+                            if (GUILayout.Button(EditorGUIUtility.IconContent(text[index]), GUILayout.Width(50), GUILayout.Height(30)))
+                            {
+                                Log.Info(text[index]);
+                            }
                         }
                     }
                     catch (Exception)

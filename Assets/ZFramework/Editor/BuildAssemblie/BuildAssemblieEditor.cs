@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -43,12 +42,12 @@ namespace ZFramework
         public static async void CompileAssembly_Debug()
         {
             await BuildAssembly("Code", new string[] { "Codes/" }, Array.Empty<string>(), CodeOptimization.Debug);
-            CopyDllToAssset("Code");
+            CopyDllToAsssetFromTemp("Code");
         }
         public static async void CompileAssembly_Release()
         {
             await BuildAssembly("Codes", new string[] { "Codes/" }, Array.Empty<string>(), CodeOptimization.Release);
-            CopyDllToAssset("Codes");
+            CopyDllToAsssetFromTemp("Codes");
         }
 
         private static async Task BuildAssembly(string assemblyName, string[] codeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization = CodeOptimization.Debug)
@@ -67,13 +66,13 @@ namespace ZFramework
                     }
                 }
             }
+            Directory.CreateDirectory(UnityTempDllPath);
 
             //删除旧的
             string dllPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.dll");
             string pdbPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.pdb");
             File.Delete(dllPath);
             File.Delete(pdbPath);
-            Directory.CreateDirectory(UnityTempDllPath);
 
             //开始编译
             AssemblyBuilder assemblyBuilder = new AssemblyBuilder(dllPath, scripts.ToArray());
@@ -114,12 +113,9 @@ namespace ZFramework
                 Debug.Log("Compile Success!");
             }
         }
-        private static void CopyDllToAssset(string assemblyName)//从temp复制到assets下
+        private static void CopyDllToAsssetFromTemp(string assemblyName)
         {
-            if (!Directory.Exists(AssetsSaveDllPath))
-            {
-                Directory.CreateDirectory(AssetsSaveDllPath);
-            }
+            Directory.CreateDirectory(AssetsSaveDllPath);
 
             File.Copy($"{UnityTempDllPath}{assemblyName}.dll", $"{AssetsSaveDllPath}{assemblyName}.dll.bytes", true);
             File.Copy($"{UnityTempDllPath}{assemblyName}.pdb", $"{AssetsSaveDllPath}{assemblyName}.pdb.bytes", true);
