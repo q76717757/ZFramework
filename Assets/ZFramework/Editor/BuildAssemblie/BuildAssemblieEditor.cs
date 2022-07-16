@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -71,8 +71,15 @@ namespace ZFramework
             //删除旧的
             string dllPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.dll");
             string pdbPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.pdb");
-            File.Delete(dllPath);
-            File.Delete(pdbPath);
+            if (File.Exists(dllPath))
+            {
+                File.Delete(dllPath);
+            }
+            if (File.Exists(pdbPath))
+            {
+                File.Delete(pdbPath);
+            }
+            Directory.CreateDirectory(UnityTempDllPath);
 
             //开始编译
             AssemblyBuilder assemblyBuilder = new AssemblyBuilder(dllPath, scripts.ToArray());
