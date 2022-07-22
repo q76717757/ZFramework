@@ -10,13 +10,13 @@ namespace ZFramework
 {
     public static class MouseRightClick
     {
-        [MenuItem("GameObject/生成UI范例", true)]
-        public static bool Init2()
-        {
-            return Selection.objects.Length == 1;
-        }
-        [MenuItem("GameObject/生成UI范例",false,50)]
-        public static void Init()//每个go会调一次 怎么改批量??
+        //[MenuItem("GameObject/生成UI范例", true)]
+        //public static bool Init2()
+        //{
+        //    return Selection.objects.Length == 1;
+        //}
+        [MenuItem("GameObject/UI/UIFANLI",false)]//右键两层不显示  要夹一层才显示出来
+        public static void Init()//每个go会调一次 怎么改批量??  //2020.3.16版本  右键菜单没有显示 ??  顶菜单是有的
         {
             Bulid(Selection.objects[0] as GameObject);
         }
@@ -80,7 +80,7 @@ namespace ZFramework
 
         static void CreateUIType(string scriptName)
         {
-            string UITypeFilePath = Path.Combine(Application.dataPath, "../../Unity.Model/_Components/UIComponent/UIType.cs");
+            string UITypeFilePath = Path.Combine(Application.dataPath, "../Codes/ClientModel/UIComponent/UIType.cs");
             if (File.Exists(UITypeFilePath))
             {
                 string fileText = File.ReadAllText(UITypeFilePath);
@@ -97,7 +97,7 @@ namespace ZFramework
         }
         static void CreateComponentCS(string scriptName)
         {
-            string componentPath = Path.Combine(Application.dataPath, "../../Unity.Model/_Components/UICanvasComponent", scriptName);
+            string componentPath = Path.Combine(Application.dataPath, "../Codes/Unity.Model/_Components/UICanvasComponent", scriptName);
             DirectoryInfo componentDirInfo = new DirectoryInfo(componentPath);
             if (!componentDirInfo.Exists)
             {
@@ -121,7 +121,7 @@ namespace ZFramework
 
         static void CreateSystemCS(string scriptName)
         {
-            string systemPath = Path.Combine(Application.dataPath, "../../Unity.Hotfix/_Systems/UICanvasSystem", scriptName);
+            string systemPath = Path.Combine(Application.dataPath, "../Codes/ClientLogic/_Systems/UICanvasSystem", scriptName);
             DirectoryInfo systemDirInfo = new DirectoryInfo(systemPath);
             if (!systemDirInfo.Exists)
             { 

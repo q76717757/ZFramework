@@ -1,0 +1,17 @@
+{
+    "name": "Unity.ServerLogic",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.BuildIn",
+        "Unity.ServerModel"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

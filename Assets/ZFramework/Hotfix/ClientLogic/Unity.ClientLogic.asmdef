@@ -1,0 +1,20 @@
+{
+    "name": "Unity.ClientLogic",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.ThirdParty",
+        "Unity.BuildIn",
+        "Unity.ServerModel",
+        "Unity.ServerLogic",
+        "Unity.ClientModel"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
