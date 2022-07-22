@@ -1,6 +1,7 @@
 using UnityEngine;
-using System;
 using System.Reflection;
+using System;
+using System.Collections;
 
 namespace ZFramework
 {
@@ -19,53 +20,42 @@ namespace ZFramework
         Development,//开发模式
         Release,//发布模式
     }
-    public enum DllLoadMode//个别不支持load.dll的平台或者放弃热更 如uwp?  在构建时把dll直接包含进工程内
-    {
-        BuildIn,
-        InFile,
-    }
-    public enum AssetsMode//针对不同应用场景  ab包的位置从不同的位置读取  有的是本地有的是远程  有的读不了AB包
-    {
-        Resources,
-        StreamingAssets,
-        Bundle,
-        Remote,
-    }
 
-    public enum Platform//发布平台
+    public enum Lang
+    {
+        CN,
+        EN,
+    }
+    public enum Mod
     { 
-        Windows,
-        Android,
-        IOS,
-        //UWP  //HoloLens
-        //WebGL
+        自动,手动,详情
     }
 
     [DisallowMultipleComponent]
     public class BootStrap : MonoBehaviour
     {
+        public static BootStrap instance;
+
         public IEntry entry;
         public CompileMode mode;
-        public AssetsMode assetMode;
-        public Platform platform;
 
         void Awake()
         {
+            instance = this;
+            Application.targetFrameRate = 60;
+
+            //ZLogVisualization.Visua = true;
+
             DontDestroyOnLoad(gameObject);
+
+            Screen.SetResolution(1080, 1920, true);
         }
 
-        void Start()
-        {
-            entry = AssemblyLoader.GetEntry(mode);
-            if (entry == null)
-            {
-                Destroy(this);
-            }
-        }
-
-        void Update() => entry.Update(/*Time.deltaTime,Time.unscaledDeltaTime*/);
+        void Start() => entry = AssemblyLoader.GetEntry(mode);
+        void Update() => entry.Update();
         void LateUpdate() => entry.LateUpdate();
         void OnApplicationQuit() => entry.Close();
+
     }
 
 }

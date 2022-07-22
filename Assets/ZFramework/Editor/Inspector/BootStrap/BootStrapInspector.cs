@@ -17,12 +17,6 @@ namespace ZFramework
             (target as BootStrap).mode = (CompileMode)EditorGUILayout.EnumPopup("编译模式",(target as BootStrap).mode);
             EditorGUI.EndDisabledGroup();
 
-            if (GUILayout.Button("更多设置"))
-            {
-                Debug.Log("更多设置");
-                //EditorGUIUtility.Load()可以load editor下的resources
-            }
-
             EditorGUILayout.Space(20);
 
             switch ((target as BootStrap).mode)
@@ -114,20 +108,6 @@ namespace ZFramework
                     break;
             }
 
-            EditorGUILayout.Space(20);
-
-            (target as BootStrap).assetMode = (AssetsMode)EditorGUILayout.EnumPopup("资源加载方式", (target as BootStrap).assetMode);
-            switch ((target as BootStrap).assetMode)
-            {
-                case AssetsMode.Resources:
-                    break;
-                case AssetsMode.StreamingAssets:
-                    break;
-                case AssetsMode.Bundle:
-                    break;
-                case AssetsMode.Remote:
-                    break;
-            }
         }
 
 

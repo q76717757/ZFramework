@@ -17,8 +17,8 @@ namespace ZFramework
         {
             await BuildAssembly("Model", new[]
             {
-                "Codes/Model/",
-                "Codes/ViewModel/"
+                "Codes/ServerModel/",
+                "Codes/ClientModel/"
             }, Array.Empty<string>());
             await CompileAssembly_Logic();
         }
@@ -29,11 +29,11 @@ namespace ZFramework
             {
                 File.Delete(file);
             }
-            string logicFile = $"Logic_{DateTime.Now.Ticks / 10000:X2}";//编辑器运行时加载同名的assemble不会返回结果,会返回之前的缓存,不会加载新程序集
+            string logicFile = $"Logic_{DateTime.Now.Ticks / 10000:X2}";//不改名重载不了
             await BuildAssembly(logicFile, new[]
             {
-                "Codes/Logic/",
-                "Codes/ViewLogic/"
+                "Codes/ServerLogic/",
+                "Codes/ClientLogic/"
             }, new[] {Path.Combine(UnityTempDllPath, "Model.dll") });//hotfix引用model
 
             return logicFile;
@@ -44,11 +44,7 @@ namespace ZFramework
             await BuildAssembly("Code", new string[] { "Codes/" }, Array.Empty<string>(), CodeOptimization.Debug);
             CopyDllToAsssetFromTemp("Code");
         }
-        public static async void CompileAssembly_Release()
-        {
-            await BuildAssembly("Codes", new string[] { "Codes/" }, Array.Empty<string>(), CodeOptimization.Release);
-            CopyDllToAsssetFromTemp("Codes");
-        }
+
 
         private static async Task BuildAssembly(string assemblyName, string[] codeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization = CodeOptimization.Debug)
         {
@@ -116,7 +112,7 @@ namespace ZFramework
                 {
                     await Task.Delay(100);
                 }
-                Debug.Log("Compile Success!");
+                Debug.Log($"Compile Success!  <color=green>[{assemblyName}]</color>");
             }
         }
         private static void CopyDllToAsssetFromTemp(string assemblyName)
