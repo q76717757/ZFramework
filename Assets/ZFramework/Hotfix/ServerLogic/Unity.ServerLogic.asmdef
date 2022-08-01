@@ -3,7 +3,8 @@
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.BuildIn",
-        "Unity.ServerModel"
+        "Unity.ServerModel",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

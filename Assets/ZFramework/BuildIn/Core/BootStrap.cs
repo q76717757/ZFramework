@@ -21,16 +21,6 @@ namespace ZFramework
         Release,//发布模式
     }
 
-    public enum Lang
-    {
-        CN,
-        EN,
-    }
-    public enum Mod
-    { 
-        自动,手动,详情
-    }
-
     [DisallowMultipleComponent]
     public class BootStrap : MonoBehaviour
     {

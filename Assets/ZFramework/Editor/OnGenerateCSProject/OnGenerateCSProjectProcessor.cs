@@ -20,7 +20,9 @@ namespace ZFramework
                 {
                     content = content.Replace($"<Compile Include=\"Assets\\ZFramework\\Hotfix\\{name}\\Empty.cs\" />", string.Empty);
                     content = content.Replace($"<None Include=\"Assets\\ZFramework\\Hotfix\\{name}\\Unity.{name}.asmdef\" />", string.Empty);
-                    return IncludeCustom(content, $"Codes\\{name}\\**\\*.cs");
+                    //return IncludeCustom(content, $"Codes\\{name}\\**\\*.cs");
+
+                    return IncludeCustom(content, $"Assets\\ZFramework\\.Hotfix\\{name}\\**\\*.cs");
                 }
             }
             return content;

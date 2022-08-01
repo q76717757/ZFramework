@@ -6,7 +6,8 @@
         "Unity.BuildIn",
         "Unity.ServerModel",
         "Unity.ServerLogic",
-        "Unity.ClientModel"
+        "Unity.ClientModel",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
