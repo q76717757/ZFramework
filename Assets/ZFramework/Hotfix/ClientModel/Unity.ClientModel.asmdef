@@ -2,7 +2,6 @@
     "name": "Unity.ClientModel",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.ThirdParty",
         "Unity.BuildIn",
         "Unity.CommonModel"
     ],

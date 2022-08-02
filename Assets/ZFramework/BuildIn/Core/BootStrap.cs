@@ -28,6 +28,8 @@ namespace ZFramework
         public IEntry entry;
         public CompileMode mode;
 
+        public string gameName;
+
         void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -43,6 +45,14 @@ namespace ZFramework
         void LateUpdate() => entry.LateUpdate();
         void OnApplicationQuit() => entry.Close();
 
+        public void StartGame(string gameKey)
+        { 
+
+        }
+        public void CloseGame()
+        { 
+
+        }
     }
 
 }
