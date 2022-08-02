@@ -11,7 +11,7 @@ namespace ZFramework
             //热更程序集的名称
             string[] csprojNames = new string[]
             {
-                "ServerModel","ServerLogic","ClientModel","ClientLogic",
+                "CommonModel","CommonLogic","ClientModel","ClientLogic",
             };
 
             foreach (var name in csprojNames)
@@ -20,7 +20,8 @@ namespace ZFramework
                 {
                     content = content.Replace($"<Compile Include=\"Assets\\ZFramework\\Hotfix\\{name}\\Empty.cs\" />", string.Empty);
                     content = content.Replace($"<None Include=\"Assets\\ZFramework\\Hotfix\\{name}\\Unity.{name}.asmdef\" />", string.Empty);
-                    return IncludeCustom(content, $"Codes\\{name}\\**\\*.cs");
+
+                    return IncludeCustom(content, $"Assets\\ZFramework\\.Hotfix\\{name}\\**\\*.cs");
                 }
             }
             return content;

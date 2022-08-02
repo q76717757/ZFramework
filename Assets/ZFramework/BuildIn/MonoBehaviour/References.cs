@@ -11,6 +11,7 @@ namespace ZFramework
 		public UnityEngine.Object value;
 	}
 
+	[AddComponentMenu("ZFramework/References")]
 	[DisallowMultipleComponent]
 	public class References : MonoBehaviour, ISerializationCallbackReceiver
 	{

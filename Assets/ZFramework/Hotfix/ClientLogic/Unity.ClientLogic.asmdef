@@ -4,9 +4,10 @@
     "references": [
         "Unity.ThirdParty",
         "Unity.BuildIn",
-        "Unity.ServerModel",
-        "Unity.ServerLogic",
-        "Unity.ClientModel"
+        "Unity.CommonModel",
+        "Unity.CommonLogic",
+        "Unity.ClientModel",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -6,71 +6,72 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Text;
 using System.Threading.Tasks;
-//using TMPro; 
+using System.Runtime.CompilerServices;
+using ZFramework;
 
 public class PortControl : MonoBehaviour
 {
+    public const string EV = "端口信息";
+
     public static PortControl instance;
-
-    public string portName = "COM3";//串口名
-
-    [NonSerialized]
-    public int baudRate = 9600;//波特率
-    [NonSerialized]
-    public int dataBits = 8;//数据位
-    [NonSerialized]
-    public Parity parity = Parity.None;//效验位
-    [NonSerialized]
-    public StopBits stopBits = StopBits.One;//停止位
 
     SerialPort sp = null;
     Thread dataReceiveThread;
 
-    static object lockObj = new object();
-
-    private void Awake()
+    void Awake()
     {
         instance = this;
-    }
-    void Start()
-    {
         //var c = Convert.ToString(200000, 16);
         //var d = Convert.ToInt32("FFFCF2C0", 16);
         //Debug.Log(c);
         //Debug.Log(d);
-
         //OpenPort();
     }
     void OnApplicationQuit()=> ClosePort();
 
-    public void OpenPort()
+    Queue<byte> callbackQueue = new Queue<byte>();//收到的数据  待处理队列
+    byte[] sendBuff = new byte[1024];//即将发送的数据  进行CRC校验 至少有1位
+    int sendBuffIndex = 0;//缓冲区游标  指向第一个空位(如  02 01  index = 2 )
+
+    public bool OpenPort(string portName)
     {
         try
         {
             if (sp == null)
             {
+                int baudRate = 9600;//波特率
+                int dataBits = 8;//数据位
+                Parity parity = Parity.None;//效验位
+                StopBits stopBits = StopBits.One;//停止位
                 sp = new SerialPort(portName, baudRate, parity, dataBits, stopBits);
                 sp.Open();
 
                 dataReceiveThread = new Thread(new ThreadStart(DataReceiveFunction));
                 dataReceiveThread.Start();
+
+                return true;
             }
             else
             {
-                Debug.Log("sp != null");
+                Debug.Log($"端口{portName}已打开");
+                return false;
             }
         }
         catch (Exception ex)
         {
             Debug.Log(ex.Message);
+            return false;
         }
     }
     void ClosePort()
     {
         try
         {
-            sp.Close();
-            dataReceiveThread.Abort();
+            if (sp != null)
+            {
+                sp.Close();
+                dataReceiveThread.Abort();
+            }
         }
         catch (Exception ex)
         {
@@ -81,7 +82,6 @@ public class PortControl : MonoBehaviour
     #region 接收数据
     void DataReceiveFunction()
     {
-        #region 按字节数组发送处理信息，信息缺失
         byte[] buffer = new byte[1024];
         int bytes = 0;
         while (true)
@@ -90,26 +90,59 @@ public class PortControl : MonoBehaviour
             {
                 try
                 {
-                    bytes = sp.Read(buffer, 0, buffer.Length);//接收字节
+                    bytes = sp.Read(buffer, 0, buffer.Length);//接收字节   用事件没反应
                     if (bytes == 0)
                     {
                         continue;
                     }
                     else
                     {
+
+                        //全量接受数据 进待处理消息队列
                         for (int i = 0; i < bytes; i++)
                         {
-                            var s = Convert.ToString(buffer[i], 16);
-                            if (s.Length == 1)
-                            {
-                                s = $"0{s}";
-                            }
+                            callbackQueue.Enqueue(buffer[i]);
+                        }
 
-                            lock (lockObj)
+                        //收完就进行处理 对数据进行逐位CRC验证
+                        while (callbackQueue.Count > 0)
+                        {
+                            var b = callbackQueue.Dequeue();
+                            sendBuff[sendBuffIndex] = b;
+                            sendBuffIndex++;
+
+                            //电机协议最少的回调是8bit 游标超过把再进行CRC验证
+                            if (sendBuffIndex >= 8)
                             {
-                                cc += s;
+                                var crc = GetCRC(sendBuff, 0, sendBuffIndex - 2);
+                                if (sendBuff[sendBuffIndex - 2] == crc[0] && sendBuff[sendBuffIndex - 1] == crc[1])//crc验证通过
+                                {
+                                    var sendByte = new byte[sendBuffIndex];
+                                    for (int i = 0; i < sendBuffIndex; i++)
+                                    {
+                                        sendByte[i] = sendBuff[i];
+                                    }
+
+                                    //-------
+                                    StringBuilder sb = new StringBuilder();
+                                    for (int i = 0; i < sendByte.Length; i++)
+                                    {
+                                        var s = Convert.ToString(sendByte[i], 16);
+                                        if (s.Length == 1)
+                                        {
+                                            sb.Append("0");
+                                        }
+                                        sb.Append(s);
+                                    }
+                                    SendMSG($"收到来自串口的消息<-{sb.ToString()}");
+                                    //-----------------
+
+                                    sendBuffIndex = 0;
+                                    CallbackAction?.Invoke(sendByte);
+                                    break;
+                                }
                             }
-                            Call(cc);
+                            
                         }
                     }
                 }
@@ -120,82 +153,67 @@ public class PortControl : MonoBehaviour
                         Debug.Log(ex.Message);
                     }
                 }
+                
             }
-            Thread.Sleep(100);
+            Thread.Sleep(50);
         }
-        #endregion
     }
     #endregion
 
     #region 发送数据
-    public static void Write(string dataStr, bool useCRC) => instance.WriteData(dataStr, useCRC);
-    void WriteData(string dataStr,bool useCRC)
+    public static void Write(string dataStr, bool useCRC = false) => instance.WriteData(dataStr, useCRC);
+    void WriteData(string dataStr,bool useCRC = false)
     {
-        if (!string.IsNullOrEmpty(cc))
-        {
-            Debug.LogError("CC has value");//有接受到的消息还没有处理
-            return;
-        }
-        
+        if (sp == null || !sp.IsOpen) return;
+
         dataStr = dataStr.Replace(" ", "");
-        var len = dataStr.Length;
+        var code = new string[dataStr.Length / 2];// 57 DE 01 06 60 40 00 ...
 
-        var a = new string[len/2];
-
-        for (int i = 0; i < a.Length; i++)
+        for (int i = 0; i < code.Length; i++)
         {
-            a[i] = dataStr.Substring(i * 2, 2);
+            code[i] = dataStr.Substring(i * 2, 2);
         }
 
-        if (sp.IsOpen)
+        byte[] bytes = new byte[code.Length + (useCRC ? 2 : 0)];
+        for (int i = 0; i < code.Length; i++)
         {
-            byte[] aa = new byte[a.Length + (useCRC ? 2 : 0)];
-
-            for (int i = 0; i < a.Length; i++)
-            {
-                aa[i] = Convert.ToByte(a[i], 16);
-            }
-            if (useCRC)
-            {
-                var crc = Crc(aa, 0,a.Length);
-                aa[a.Length + 0] = crc[0];
-                aa[a.Length + 1] = crc[1];
-            }
-            sp.Write(aa, 0, aa.Length);
-
-
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < aa.Length; i++)
-            {
-                sb.Append(Convert.ToString(aa[i], 16));
-                sb.Append(" ");
-            }
-
-
-            Debug.Log("Write-->" + sb.ToString());
+            bytes[i] = Convert.ToByte(code[i], 16);
         }
+
+        if (useCRC)
+        {
+            var crc = GetCRC(bytes, 0, bytes.Length);
+            bytes[code.Length + 0] = crc[0];
+            bytes[code.Length + 1] = crc[1];
+        }
+
+        sp.Write(bytes, 0, bytes.Length);
+
+#if UNITY_EDITOR
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            sb.Append(Convert.ToString(bytes[i], 16));
+            sb.Append(" ");
+        }
+        Debug.Log("Write-->" + sb.ToString());
+#endif
     }
-    static string GetCRC(string input)
+    public static string GetCRC(string input)
     {
         input = input.Replace(" ", "");
-        var len = input.Length;
+        var byteCount = input.Length / 2;
 
-        var a = new string[len / 2];
-
-        for (int i = 0; i < a.Length; i++)
+        byte[] bytes = new byte[byteCount];
+        for (int i = 0; i < byteCount; i++)
         {
-            a[i] = input.Substring(i * 2, 2);
+            bytes[i] = Convert.ToByte(input.Substring(i * 2, 2), 16);
         }
-
-        byte[] aa = new byte[a.Length];
-        for (int i = 0; i < a.Length; i++)
-        {
-            aa[i] = Convert.ToByte(a[i], 16);
-        }
-
-        var crc = Crc(aa, 0, a.Length);
-
+        return GetCRC(bytes);
+    }
+    public static string GetCRC(byte[] bytes)
+    {
+        var crc = GetCRC(bytes, 0, bytes.Length);
         var c0 = Convert.ToString(crc[0], 16);
         var c1 = Convert.ToString(crc[1], 16);
         if (c0.Length == 1)
@@ -208,127 +226,9 @@ public class PortControl : MonoBehaviour
         }
         return $"{c0}{c1}";
     }
-
-    #endregion
-
-
-    string aa = "9600";
-    string bb = "";
-    string cc;
-    void OnGUI()
-    {
-        if (sp == null || !sp.IsOpen)
-        {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("端口");
-            portName = GUILayout.TextField(portName);
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("波特率");
-            aa = GUILayout.TextField(aa);
-            if (int.TryParse(aa, out int i))
-            {
-                baudRate = i;
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("波特率");
-            foreach (Parity item in System.Enum.GetValues(typeof(Parity)))
-            {
-                if (GUILayout.Toggle(parity == item, item.ToString()))
-                {
-                    parity = item;
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("停止位");
-            foreach (StopBits item in System.Enum.GetValues(typeof(StopBits)))
-            {
-                if (GUILayout.Toggle(stopBits == item, item.ToString()))
-                {
-                    stopBits = item;
-                }
-            }
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("打开"))
-            {
-                OpenPort();
-            }
-            GUILayout.EndHorizontal();
-        }
-        else
-        {
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("发送");
-            bb = GUILayout.TextField(bb,GUILayout.Width(500));
-            if (GUILayout.Button("Send Input"))
-            {
-                WriteData(bb, usecrc);
-            }
-            usecrc = GUILayout.Toggle(usecrc,"CRC");
-
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("收到");
-            //cc = GUILayout.TextField(cc,GUILayout.Width(500));
-            GUILayout.EndHorizontal();
-
-            if (GUILayout.Button("关闭"))
-            {
-                ClosePort();
-            }
-
-            if (GUILayout.Button("左移"))
-            {
-                MoveLeft();
-            }
-            if (GUILayout.Button("右移"))
-            {
-                MoveRight();
-            }
-            if (GUILayout.Button("刹车"))
-            {
-                StopMove();
-            }
-            if (GUILayout.Button("查询"))
-            {
-                GetValue();
-            }
-
-            moveTargetStr = GUILayout.TextField(moveTargetStr);
-            if (!string.IsNullOrEmpty(moveTargetStr) && int.TryParse(moveTargetStr,out int value))
-            {
-                if (GUILayout.Button("移动"))
-                {
-                    移动到(value);
-                }
-            }
-
-            if (GUILayout.Button("归零"))
-            {
-                PortControl.设置回零();
-            }
-            
-        }
-    }
-    string moveTargetStr;
-
-
-    bool usecrc;
-    
-    
-    
-    static byte[] Crc(byte[] arr, int seat, int len)
+    public static byte[] GetCRC(byte[] arr, int seat, int len)
     {
         UInt16 j, uwCrcReg = 0xFFFF;
-
         for (int i = seat; i < len; i++)
         {
             uwCrcReg ^= arr[i];
@@ -350,99 +250,165 @@ public class PortControl : MonoBehaviour
         return CRC;
     }
 
-    public static void MoveLeft()//左移
-    {
-        instance.WriteData("01 10 60 40 00 06 0C 00 0F 00 03 00 00 00 28 03 32 03 E8", true);
-    }
-    public static void MoveRight()//右移
-    {
-        instance.WriteData("01 10 60 40 00 06 0C 00 0F 00 03 FF FF FF D8 03 32 03 E8", true);
-    }
-    public static void StopMove()//刹车
-    {
-        instance.WriteData("01 06 60 40 00 03", true);
-    }
-    public static void GetValue()//查询
-    {
-        instance.WriteData("01 03 60 64 00 02", true);
-    }
+    #endregion      
 
+    public static void MoveLeft()
+    {
+        SendMSG("<color=green>左移</color>");
+        Write("01 10 60 40 00 06 0C 00 0F 00 03 00 00 00 28 03 32 03 E8 F6 EE");
+    }
+    public static void MoveRight()
+    {
+        SendMSG("<color=green>右移</color>");
+        Write("01 10 60 40 00 06 0C 00 0F 00 03 FF FF FF D8 03 32 03 E8 E2 FF");
+    }
+    public static void StopMove()
+    {
+        SendMSG("<color=green>刹车</color>");
+        Write("01 06 60 40 00 03 D6 1F");
+    }
+    public static void GetValue()
+    {
+        SendMSG("<color=green>查询</color>");
+        Write("01 03 60 64 00 02 9B D4");
+    }
 
     public static async void 设置回零()
     {
-        int t = 200;
+        SendMSG("设置回零");
 
-        PortControl.Write("01 06 60 40 00 01 57 DE", false);//上电初始化
-        await Task.Delay(t);
+        Write("01 06 60 40 00 01 57 DE");//上电初始化
+        SendMSG($"------------------驱动器上电初始化");
+        await new WaitPortCallback("01066040000157de");
 
-        PortControl.Write("01 06 60 40 00 03 D6 1F", false);//刹车
-        await Task.Delay(t);
+        Write("01 06 60 40 00 03 D6 1F");//刹车 // 等价 ->StopMove();
+        SendMSG($"------------------驱动器正常运行，但电机未使能，松开刹车");
+        await new WaitPortCallback("010660400003d61f");
 
-        PortControl.Write("01 06 60 40 00 0F D6 1A", false);//给电
-        await Task.Delay(t);
+        Write("01 06 60 40 00 0F D6 1A");//给电
+        SendMSG($"------------------电机给电，处于可运行状态");
+        await new WaitPortCallback("01066040000fd61a");
 
         //左对齐
         PortControl.MoveLeft();
-        await Task.Delay(t);
+        await new WaitPortCallback("0110604000065fdf");
+
+        PortControl.GetValue();
+        int last = await new WaitGetValueCallback();
+
         while (true)
         {
-            int last = PortControl.LastPosition;
+            await Task.Delay(500);
 
-            PortControl.GetValue();
-            await Task.Delay(t);
-            int next = PortControl.LastPosition;
+            var next = await new WaitGetValueCallback();
 
             if (Mathf.Abs(last - next) < 100)
             {
                 Debug.Log("到达左限位器");
+                SendMSG($"------------------到达左限位器");
+
                 PortControl.StopMove();
+                await new WaitPortCallback("010660400003d61f");
                 break;
             }
+            last = next;
         }
 
-        await Task.Delay(t);
-        PortControl.Write("01 06 60 60 00 06 17 D6", false);//设置成回零模式
-        await Task.Delay(t);
-        PortControl.Write("01 06 60 98 00 00 16 25", false);//设置回零方式
-        await Task.Delay(t);
-        PortControl.Write("01 10 60 99 00 02 04 00 00 00 32 13 7E", false);//设置回零速度
-        await Task.Delay(t);
-        PortControl.Write("01 06 60 9A 03 E8 B7 5B", false);//设置回零加减速
-        await Task.Delay(t);
-        PortControl.Write("01 06 60 40 00 1F D7 D6", false);//启动回零
-        await Task.Delay(t);
 
-        PortControl.Write("01 06 60 60 00 01 56 14", false);//设置位置模式
-        await Task.Delay(t);
-        PortControl.Write("01 10 60 81 00 02 04 00 00 00 28 92 1F", false);//设置目标速度
-        await Task.Delay(t);
-        PortControl.Write("01 06 60 83 03 E8 66 9C", false);//设置加速度
-        await Task.Delay(t);
-        PortControl.Write("01 06 60 84 03 E8 D7 5D", false);//设置减速度
+        Write("01 06 60 60 00 06 17 D6");//设置成回零模式
+        SendMSG($"------------------设置成回零模式");
+        await new WaitPortCallback("01066060000617d6");
 
+        Write("01 06 60 98 00 00 16 25");//设置回零方式
+        SendMSG($"------------------设置回零方式");
+        await new WaitPortCallback("0106609800001625");
+
+        //Write($"01 10 60 99 00 02 04 00 00 00 {BootStrap.optionValues[2]} 13 7E");//设置回零速度
+        SendMSG($"------------------设置回零速度");
+        await new WaitPortCallback("0110609900028fe7");
+
+        Write("01 06 60 9A 03 E8 B7 5B");//设置回零加减速
+        SendMSG($"------------------设置回零加减速");
+        await new WaitPortCallback("0106609a03e8b75b");
+
+        Write("01 06 60 40 00 1F D7 D6");//启动回零
+        SendMSG($"------------------启动回零");
+        await new WaitPortCallback("01066040001fd7d6");
+
+        //位置模式--->
+
+        Write("01 06 60 60 00 01 56 14");//设置位置模式
+        SendMSG($"------------------设置位置模式");
+        await  new WaitPortCallback("0106606000015614");
+
+        //Write($"01 10 60 81 00 02 04 {BootStrap.optionValues[3]} 92 1F");//设置目标速度
+        SendMSG($"------------------设置目标速度");
+        await new WaitPortCallback("0110608100020fe0");
+
+        //Write($"01 06 60 83 {BootStrap.optionValues[4]} 66 9C");//设置加速度
+        SendMSG($"------------------设置加速度");
+        await new WaitPortCallback("0106608303e8669c");
+
+        //Write($"01 06 60 84 {BootStrap.optionValues[5]} D7 5D");//设置减速度
+        SendMSG($"------------------设置减速度");
+        await new WaitPortCallback("0106608403e8d75d");
     }
-    public static async void 移动到(int value)
+
+    static bool isMoving = false;
+    public static async Task 移动到(int value)
     {
-        PortControl.Write("01 06 60 40 00 0F D6 1A", false);//上电使能
-        await Task.Delay(200);
+        if (isMoving) return;
+        isMoving = true;
+        SendMSG("移动到->" + value);
+
+        Write("01 06 60 40 00 0F D6 1A");//上电使能
+        SendMSG($"------------------上电使能");
+        await new WaitPortCallback("01066040000fd61a");
 
         var valueStr = Convert.ToString(value, 16);
-
         var zeroCount = 8 - valueStr.Length;
         for (int i = 0; i < zeroCount; i++)
         {
-            valueStr = valueStr.Insert(0, "0");
+            valueStr = valueStr.Insert(0, "0");//补0到8位
         }
 
-        PortControl.Write($"01 10 60 7A 00 02 04  {valueStr}", true);//设置目标位置（绝对定位）
-        await Task.Delay(200);
+        Write($"01 10 60 7A 00 02 04 {valueStr}", true);//设置目标位置（绝对定位）
+        SendMSG($"------------------设置目标位置");
+        await new WaitPortCallback("0110607a00027e11");
 
-        PortControl.Write("01 06 60 40 00 1F D7 D6", false);//启动运行到目标位置 和启动回零同一个指令
+        Write("01 06 60 40 00 1F D7 D6");//启动运行到目标位置 和启动回零同一个指令
+        SendMSG($"------------------启动运行到目标位置");
+        await new WaitPortCallback("01066040001fd7d6");
 
+        //等待回零 然后刹车
+        while (true)
+        {
+            await Task.Delay(1000);
+            PortControl.GetValue();
+            int last = await new WaitGetValueCallback();
+
+            if (Mathf.Abs(value - last) < 100)
+            {
+                Debug.Log("到达目的地");
+                SendMSG($"------------------到达目的地");
+                StopMove();
+                await new WaitPortCallback("010660400003d61f");
+                isMoving = false;
+                return;
+            }
+        }
     }
 
+    public static Action<byte[]> CallbackAction;//缓冲区的内容超过8位并通过CRC验证  就发出广播 游标归零
 
-    public static void Call(string value)//回调
+
+    public static void SendMSG(string msg) => messageAction?.Invoke(msg);
+    public static Action<string> messageAction;
+
+    #region 旧的
+
+    static int LastPosition;//上一次查询的位置
+    public static void Callback(string value)//回调
     {
         //Debug.Log("回执->" + value);
         value = value.Replace(" ", "");
@@ -471,8 +437,7 @@ public class PortControl : MonoBehaviour
 
                 case "01066040000fd61a"://上电使能
                 case "0110607a00027e11"://设置目标位置
-                    //case "01066040001fd7d6"://启动运行到目标位置（绝对定位） 和启动回零同一个指令
-
+                                        //case "01066040001fd7d6"://启动运行到目标位置（绝对定位） 和启动回零同一个指令
 
                     Debug.Log("回执->" + value);
                     clear = true;
@@ -481,24 +446,16 @@ public class PortControl : MonoBehaviour
 
             if (clear)
             {
-                lock (lockObj)
-                {
-                    instance.cc = String.Empty;
-                }
                 return;
             }
         }
-
         if (value.Length == 18)//查询位置反馈
         {
-            Debug.Log("查询回调->" + value);
-            var head =  value.Substring(0, 6);
-            if (head == "010304")
+            if (value.Substring(0, 6) == "010304")
             {
-                var notCrc = value.Substring(0, value.Length - 4);
-                Debug.Log("Not CRC-->" + notCrc);
                 var remoteCRC = value.Substring(value.Length - 4, 4);
                 Debug.Log("RetemoCRC->" + remoteCRC);
+                var notCrc = value.Substring(0, value.Length - 4);
                 var LocalCRC = GetCRC(notCrc);
                 Debug.Log("LocalCRC->" + LocalCRC);
 
@@ -507,16 +464,91 @@ public class PortControl : MonoBehaviour
                     var valueString = notCrc.Substring(6, notCrc.Length - 6);
                     LastPosition = Convert.ToInt32(valueString, 16);
 
-                    lock (lockObj)
-                    {
-                        instance.cc = String.Empty;
-                    }
                     Debug.Log($"<color=green>位置->{LastPosition}</color>");
                 }
             }
         }
-    }
+    } 
 
-    public static int LastPosition;
+    #endregion
 
 }
+
+public class WaitPortCallback
+{
+    byte[] keys;
+    TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
+    public WaitPortCallback(string input)
+    {
+        input = input.Replace(" ", "");
+        keys = new byte[input.Length / 2];
+        for (int i = 0; i < keys.Length; i++)
+        {
+            keys[i] = Convert.ToByte(input.Substring(i * 2, 2), 16);
+        }
+    }
+
+    public TaskAwaiter GetAwaiter()
+    {
+        PortControl.CallbackAction += Callback;
+        return ((Task)taskCompletionSource.Task).GetAwaiter();
+    }
+
+    void Callback(byte[] value)
+    {
+        if (value.Length == keys.Length)
+        {
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] != keys[i])
+                {
+                    taskCompletionSource.SetResult(false);
+                    return;
+                }
+            }
+        }
+        PortControl.CallbackAction -= Callback;
+        taskCompletionSource.SetResult(null);
+    }
+}
+
+public class WaitGetValueCallback
+{
+    TaskCompletionSource<int> taskCompletionSource = new TaskCompletionSource<int>();
+
+    public TaskAwaiter<int> GetAwaiter()
+    {
+        PortControl.CallbackAction += Callback;
+        return taskCompletionSource.Task.GetAwaiter();
+    }
+
+    void Callback(byte[] value)
+    {
+        if (value.Length == 9)//查询位置反馈 固定是9位
+        {
+            //if (value.Substring(0, 6) == "010304")
+            if (value[0] == 1 && value[1] == 3 && value[2] == 4)
+            {
+                byte[] remoteCRC = new byte[] { value[7], value[8] };
+                byte[] LocalCRC = PortControl.GetCRC(value, 0, 9 - 2);
+
+                if (remoteCRC[0] == LocalCRC[0] && remoteCRC[1] == LocalCRC[1])//校验通过
+                {
+                    var a = Convert.ToString(value[3], 16);
+                    var b = Convert.ToString(value[4], 16);
+                    var c = Convert.ToString(value[5], 16);
+                    var d = Convert.ToString(value[6], 16);
+
+                    var LastPosition = Convert.ToInt32($"{a}{b}{c}{d}", 16);
+
+                    Debug.Log($"<color=green>位置->{LastPosition}</color>");
+                    PortControl.SendMSG($"<color=green>位置------------->{LastPosition}</color>");
+
+                    PortControl.CallbackAction -= Callback;
+                    taskCompletionSource.SetResult(LastPosition);
+                }
+            }
+        }
+    }
+}
+

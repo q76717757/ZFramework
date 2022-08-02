@@ -17,8 +17,8 @@ namespace ZFramework
         {
             await BuildAssembly("Model", new[]
             {
-                "Codes/ServerModel/",
-                "Codes/ClientModel/"
+                "Assets/ZFramework/.Hotfix/CommonModel/",
+                "Assets/ZFramework/.Hotfix/ClientModel/"
             }, Array.Empty<string>());
             await CompileAssembly_Logic();
         }
@@ -32,8 +32,8 @@ namespace ZFramework
             string logicFile = $"Logic_{DateTime.Now.Ticks / 10000:X2}";//不改名重载不了
             await BuildAssembly(logicFile, new[]
             {
-                "Codes/ServerLogic/",
-                "Codes/ClientLogic/"
+                "Assets/ZFramework/.Hotfix/CommonLogic/",
+                "Assets/ZFramework/.Hotfix/ClientLogic/"
             }, new[] {Path.Combine(UnityTempDllPath, "Model.dll") });//hotfix引用model
 
             return logicFile;
@@ -41,10 +41,9 @@ namespace ZFramework
 
         public static async void CompileAssembly_Debug()
         {
-            await BuildAssembly("Code", new string[] { "Codes/" }, Array.Empty<string>(), CodeOptimization.Debug);
+            await BuildAssembly("Code", new string[] { "Assets/ZFramework/.Hotfix/" }, Array.Empty<string>(), CodeOptimization.Debug);
             CopyDllToAsssetFromTemp("Code");
         }
-
 
         private static async Task BuildAssembly(string assemblyName, string[] codeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization = CodeOptimization.Debug)
         {

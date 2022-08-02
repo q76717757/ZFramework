@@ -4,7 +4,7 @@
     "references": [
         "Unity.ThirdParty",
         "Unity.BuildIn",
-        "Unity.ServerModel"
+        "Unity.CommonModel"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
