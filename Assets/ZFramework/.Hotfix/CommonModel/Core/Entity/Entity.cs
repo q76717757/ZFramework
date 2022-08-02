@@ -180,8 +180,6 @@ namespace ZFramework
             Game.PlayLoop.RemoveEntityFromPlayloop(this);
         }
 
-      
-
     }
 
 }

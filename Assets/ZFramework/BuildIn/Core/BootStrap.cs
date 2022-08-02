@@ -21,24 +21,21 @@ namespace ZFramework
         Release,//发布模式
     }
 
+    [AddComponentMenu("ZFramework/BootStrap")]
     [DisallowMultipleComponent]
     public class BootStrap : MonoBehaviour
     {
-        public static BootStrap instance;
-
         public IEntry entry;
         public CompileMode mode;
 
         void Awake()
         {
-            instance = this;
-            Application.targetFrameRate = 60;
-
-            //ZLogVisualization.Visua = true;
-
             DontDestroyOnLoad(gameObject);
 
-            Screen.SetResolution(1080, 1920, true);
+            ET.ETTask.ExceptionHandler += (e) =>
+            {
+                Debug.Log(e.Message);
+            };
         }
 
         void Start() => entry = AssemblyLoader.GetEntry(mode);

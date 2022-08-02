@@ -10,13 +10,10 @@ namespace ZFramework
 
     public class PlayLoopAttribute : BaseAttribute
     {
-
     }
 
     public class EventAttribute : BaseAttribute
     {
-
     }
-
 
 }

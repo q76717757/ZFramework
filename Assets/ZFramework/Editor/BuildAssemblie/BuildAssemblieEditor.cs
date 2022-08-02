@@ -17,7 +17,7 @@ namespace ZFramework
         {
             await BuildAssembly("Model", new[]
             {
-                "Assets/ZFramework/.Hotfix/ServerModel/",
+                "Assets/ZFramework/.Hotfix/CommonModel/",
                 "Assets/ZFramework/.Hotfix/ClientModel/"
             }, Array.Empty<string>());
             await CompileAssembly_Logic();
@@ -32,7 +32,7 @@ namespace ZFramework
             string logicFile = $"Logic_{DateTime.Now.Ticks / 10000:X2}";//不改名重载不了
             await BuildAssembly(logicFile, new[]
             {
-                "Assets/ZFramework/.Hotfix/ServerLogic/",
+                "Assets/ZFramework/.Hotfix/CommonLogic/",
                 "Assets/ZFramework/.Hotfix/ClientLogic/"
             }, new[] {Path.Combine(UnityTempDllPath, "Model.dll") });//hotfix引用model
 

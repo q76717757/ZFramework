@@ -4,8 +4,8 @@
     "references": [
         "Unity.ThirdParty",
         "Unity.BuildIn",
-        "Unity.ServerModel",
-        "Unity.ServerLogic",
+        "Unity.CommonModel",
+        "Unity.CommonLogic",
         "Unity.ClientModel",
         "UniTask"
     ],

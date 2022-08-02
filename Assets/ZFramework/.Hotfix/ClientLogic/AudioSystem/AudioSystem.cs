@@ -8,7 +8,7 @@ namespace ZFramework
 {
     public class AudioAwake : AwakeSystem<AudioComponent>
     {
-        public override void Awake(AudioComponent component)
+        public override void OnAwake(AudioComponent component)
         {
 
         }

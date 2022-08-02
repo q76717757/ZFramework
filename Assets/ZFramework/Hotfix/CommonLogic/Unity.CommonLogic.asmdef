@@ -1,9 +1,9 @@
 {
-    "name": "Unity.ServerLogic",
+    "name": "Unity.CommonLogic",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.BuildIn",
-        "Unity.ServerModel",
+        "Unity.CommonModel",
         "UniTask"
     ],
     "includePlatforms": [],

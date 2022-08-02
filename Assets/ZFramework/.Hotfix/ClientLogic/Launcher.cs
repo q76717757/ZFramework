@@ -19,7 +19,6 @@ namespace ZFramework
             //Game.Root.AddComponent<HttpComponent>();
             //Game.Root.AddComponent<BundleComponent>();
 
-            //new TestForTask().StartTest();
 
             var text = (TextAsset)await Resources.LoadAsync<TextAsset>("Version");
             Debug.Log(text.text);

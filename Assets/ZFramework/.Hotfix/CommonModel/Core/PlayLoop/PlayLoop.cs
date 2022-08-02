@@ -7,7 +7,7 @@ namespace ZFramework
     public sealed class PlayLoop : IEntry
     {
         //生命周期辅助对象映射表 //componentType - loopType - loopSystemObject
-        private readonly Dictionary<Type, Dictionary<Type, List<IPlayLoop>>> maps = new Dictionary<Type, Dictionary<Type, List<IPlayLoop>>>();
+        private readonly Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>> maps = new Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>>();
         //特性-类型映射表
         private readonly Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();
         //所有实体集合
@@ -62,15 +62,15 @@ namespace ZFramework
             {
                 object componentLiveSystemObj = Activator.CreateInstance(useLifeTypes);
 
-                if (componentLiveSystemObj is IPlayLoop iSystem)
+                if (componentLiveSystemObj is IPlayLoopSystem iSystem)
                 {
                     if (!maps.ContainsKey(iSystem.EntityType))
                     {
-                        maps.Add(iSystem.EntityType, new Dictionary<Type, List<IPlayLoop>>());
+                        maps.Add(iSystem.EntityType, new Dictionary<Type, List<IPlayLoopSystem>>());
                     }
                     if (!maps[iSystem.EntityType].ContainsKey(iSystem.PlayLoopType))
                     {
-                        maps[iSystem.EntityType][iSystem.PlayLoopType] = new List<IPlayLoop>();
+                        maps[iSystem.EntityType][iSystem.PlayLoopType] = new List<IPlayLoopSystem>();
                     }
                     maps[iSystem.EntityType][iSystem.PlayLoopType].Add(iSystem);
                 }
@@ -125,11 +125,11 @@ namespace ZFramework
 
                 if (maps.ContainsKey(entityType))
                 {
-                    if (maps[entityType].ContainsKey(typeof(IUpdate)))
+                    if (maps[entityType].ContainsKey(typeof(IUpdateSystem)))
                     {
                         updates.Enqueue(instanceId);
                     }
-                    if (maps[entityType].ContainsKey(typeof(ILateUpdate)))
+                    if (maps[entityType].ContainsKey(typeof(ILateUpdateSystem)))
                     {
                         lateUpdates.Enqueue(instanceId);
                     }
@@ -150,15 +150,15 @@ namespace ZFramework
                     allEntities.Remove(instanceId);
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoop>> life))
+                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(IReLoad), out List<IPlayLoop> systemlist))
+                    if (life.TryGetValue(typeof(IReLoadSystem), out List<IPlayLoopSystem> systemlist))
                     {
-                        foreach (IReLoad system in systemlist)
+                        foreach (IReLoadSystem system in systemlist)
                         {
                             try
                             {
-                                system.Reload(entity);
+                                system.OnReload(entity);
                             }
                             catch (Exception e)
                             {
@@ -186,16 +186,16 @@ namespace ZFramework
                 {
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoop>> life))
+                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(IUpdate), out List<IPlayLoop> systemlist))
+                    if (life.TryGetValue(typeof(IUpdateSystem), out List<IPlayLoopSystem> systemlist))
                     {
                         updates2.Enqueue(instanceId);
-                        foreach (IUpdate system in systemlist)
+                        foreach (IUpdateSystem system in systemlist)
                         {
                             try
                             {
-                                system.Update(entity);
+                                system.OnUpdate(entity);
                             }
                             catch (Exception e)
                             {
@@ -220,16 +220,16 @@ namespace ZFramework
                 {
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoop>> life))
+                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(ILateUpdate), out List<IPlayLoop> systemlist))
+                    if (life.TryGetValue(typeof(ILateUpdateSystem), out List<IPlayLoopSystem> systemlist))
                     {
                         lateUpdates2.Enqueue(instanceId);
-                        foreach (ILateUpdate system in systemlist)
+                        foreach (ILateUpdateSystem system in systemlist)
                         {
                             try
                             {
-                                system.LateUpdate(entity);
+                                system.OnLateUpdate(entity);
                             }
                             catch (Exception e)
                             {
@@ -256,15 +256,15 @@ namespace ZFramework
                 {
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoop>> life))
+                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(IDestory), out List<IPlayLoop> systemlist))
+                    if (life.TryGetValue(typeof(IDestorySystem), out List<IPlayLoopSystem> systemlist))
                     {
-                        foreach (IDestory system in systemlist)//这个生命周期一般就只有一个 考虑把列表去掉?
+                        foreach (IDestorySystem system in systemlist)//这个生命周期一般就只有一个 考虑把列表去掉?
                         {
                             try
                             {
-                                system.Destory(entity);
+                                system.OnDestory(entity);
                                 entity.InstanceID = 0;
                                 allEntities.Remove(instanceId);
                             }
@@ -282,15 +282,15 @@ namespace ZFramework
 
         void Awake(Entity entity)
         {
-            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoop>> iLifes))
+            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> iLifes))
             {
-                if (iLifes.TryGetValue(typeof(IAwake), out List<IPlayLoop> systems))
+                if (iLifes.TryGetValue(typeof(IAwakeSystem), out List<IPlayLoopSystem> systems))
                 {
-                    foreach (IAwake system in systems)
+                    foreach (IAwakeSystem system in systems)
                     {
                         try
                         {
-                            system.Awake(entity);
+                            system.OnAwake(entity);
                         }
                         catch (Exception e)
                         {
@@ -313,11 +313,11 @@ namespace ZFramework
             {
                 return;
             }
-            if (maps[entity.GetType()].ContainsKey(typeof(IUpdate)))
+            if (maps[entity.GetType()].ContainsKey(typeof(IUpdateSystem)))
             {
                 updates.Enqueue(entity.InstanceID);
             }
-            if (maps[entity.GetType()].ContainsKey(typeof(ILateUpdate)))
+            if (maps[entity.GetType()].ContainsKey(typeof(ILateUpdateSystem)))
             {
                 lateUpdates.Enqueue(entity.InstanceID);
             }

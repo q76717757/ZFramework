@@ -9,7 +9,7 @@ namespace ZFramework
 {
     public class ResourcesAwake : AwakeSystem<ResourcesComponent>
     {
-        public override void Awake(ResourcesComponent component)
+        public override void OnAwake(ResourcesComponent component)
         {
             Log.Info("ResourcesAwake");
         }

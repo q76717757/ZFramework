@@ -9,7 +9,7 @@ namespace ZFramework
 
     public class TimerAwake : AwakeSystem<TimerComponent>
     {
-        public override void Awake(TimerComponent component)
+        public override void OnAwake(TimerComponent component)
         {
             component.Init();
         }

@@ -10,7 +10,7 @@ namespace ZFramework
 {
     public class TaskComponentAwake : AwakeSystem<TaskComponent>
     {
-        public override void Awake(TaskComponent entity)
+        public override void OnAwake(TaskComponent entity)
         {
         }
     }

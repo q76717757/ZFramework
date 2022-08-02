@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public class VersionComponent : Entity
-    {
-        public VersionInfo localVersion;
-        public VersionInfo serverVersion;
-    }
+
+
 }

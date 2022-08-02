@@ -10,7 +10,7 @@ namespace ZFramework
 {
     public class BundleSystemAwake : AwakeSystem<BundleComponent>
     {
-        public override void Awake(BundleComponent component)
+        public override void OnAwake(BundleComponent component)
         {
             //switch (Define.RunMode)
             //{

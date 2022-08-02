@@ -1,5 +1,5 @@
 {
-    "name": "Unity.ServerModel",
+    "name": "Unity.CommonModel",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.BuildIn"

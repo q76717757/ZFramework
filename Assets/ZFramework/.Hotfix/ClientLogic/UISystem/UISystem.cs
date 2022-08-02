@@ -10,7 +10,7 @@ namespace ZFramework
 {
     public class UISystemAwake : AwakeSystem<UIComponent>
     {
-        public override void Awake(UIComponent component)
+        public override void OnAwake(UIComponent component)
         {
             var ui = new UnityEngine.GameObject("[UI]");
             var canvas = ui.AddComponent<Canvas>();

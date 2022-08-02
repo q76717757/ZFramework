@@ -10,7 +10,7 @@ namespace ZFramework
 {
     public class EventReload : ReloadSystem<EventComponent>
     {
-        public override void Reload(EventComponent component)
+        public override void OnReload(EventComponent component)
         {
             component.Reset();
         }
@@ -18,7 +18,7 @@ namespace ZFramework
 
     public class EventAwake : AwakeSystem<EventComponent>
     {
-        public override void Awake(EventComponent component)
+        public override void OnAwake(EventComponent component)
         {
             component.Reset();
         }
