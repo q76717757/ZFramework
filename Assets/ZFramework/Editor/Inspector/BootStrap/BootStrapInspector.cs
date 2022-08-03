@@ -14,6 +14,16 @@ namespace ZFramework
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlaying);
+
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("引导文件", GUILayout.Width(50));
+            var obj = serializedObject.FindProperty("boot");
+            obj.objectReferenceValue = EditorGUILayout.ObjectField(obj.objectReferenceValue, typeof(BootFile), false);
+            serializedObject.ApplyModifiedProperties();
+            serializedObject.UpdateIfRequiredOrScript();
+            EditorGUILayout.EndHorizontal();
+
             (target as BootStrap).mode = (CompileMode)EditorGUILayout.EnumPopup("编译模式",(target as BootStrap).mode);
             EditorGUI.EndDisabledGroup();
 
@@ -101,15 +111,17 @@ namespace ZFramework
                         {
                             BuildAssemblieEditor.CompileAssembly_Debug();
                         }
-                        EditorGUI.EndDisabledGroup();
+                     
                     }
                     break;
                 default:
                     break;
             }
 
-        }
+           
 
+            EditorGUI.EndDisabledGroup();
+        }
 
         async void HotReload()
         {
@@ -119,7 +131,6 @@ namespace ZFramework
             Assembly logic = Assembly.Load(dll,pdb);
             (target as BootStrap).entry.Reload(logic);
         }
-
     }
 
 
@@ -131,7 +142,6 @@ namespace ZFramework
         {
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyWindowItemOnGUI;
         }
-
         private static void OnHierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
         {
             var obj = EditorUtility.InstanceIDToObject(instanceID) as GameObject;

@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d6c89552a652374ab6887bb767988ef, type: 3}
-  m_Name: GlobalConfig
+  m_Name: BootFile 2
   m_EditorClassIdentifier: 
   aa: 0

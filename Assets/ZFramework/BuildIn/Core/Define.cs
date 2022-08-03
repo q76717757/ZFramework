@@ -2,8 +2,6 @@
 {
     public static class Define
     {
-
-
 #if UNITY_EDITOR
         public const bool IsEditor = true;
 #else

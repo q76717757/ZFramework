@@ -5,24 +5,20 @@ using UnityEditor;
 
 namespace ZFramework
 {
-    [CustomEditor(typeof(GlobalConfig))]
-    public class GlobalConfigEditor : Editor
+    [CustomEditor(typeof(BootFile))]
+    public class BootFileEditor : Editor
     {
-        GlobalConfig Config => target as GlobalConfig;
-
+        BootFile boot => target as BootFile;
 
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginDisabledGroup(true);
-
-
-
             base.OnInspectorGUI();
 
             EditorGUI.EndDisabledGroup();
             if (GUILayout.Button("´ò¿ªÅäÖÃ´°¿Ú"))
             {
-                GlobalConfigEditorWindow.Open(Config);
+                BootFileEditorWindow.Open(boot);
             }
         }
     }

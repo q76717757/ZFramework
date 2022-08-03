@@ -8,7 +8,7 @@ namespace ZFramework
 {
     public static class AssemblyLoader
     {
-        public static IEntry GetEntry(CompileMode mode)
+        public static IEntry GetEntry(string gameKey, CompileMode mode)
         {
 #if !UNITY_EDITOR
             mode = CompileMode.Release;
@@ -27,7 +27,7 @@ namespace ZFramework
                         }
                     case CompileMode.Release:
                         {
-                            var codesAssembly = LoadCode();
+                            var codesAssembly = LoadCode(gameKey);
                             var entry = Activator.CreateInstance(codesAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
                             entry.Start(codesAssembly);
                             return entry;
@@ -41,7 +41,7 @@ namespace ZFramework
             return null;
         }
 
-        //开发模式 使用热重载模式 分2个dll进行加载
+        //热重载模式 分2个dll进行加载
         static Assembly LoadModel()
         {
             var pathA = "Temp/Bin/Debug/Model.dll";
@@ -64,7 +64,7 @@ namespace ZFramework
         }
 
         //发布模式  打包成一个热更dll->code.dll  客户端更新要求重启应用
-        static Assembly LoadCode()
+        static Assembly LoadCode(string gameKey)
         {
 #if UNITY_EDITOR
             var dll = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Bundles/Code/Code.dll.bytes");

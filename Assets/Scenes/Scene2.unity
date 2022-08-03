@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
+  boot: {fileID: 11400000, guid: 5f3c08a91f685b141a30c09fc867fb14, type: 2}
 --- !u!4 &1561377799
 Transform:
   m_ObjectHideFlags: 0
