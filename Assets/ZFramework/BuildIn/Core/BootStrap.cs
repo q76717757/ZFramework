@@ -20,8 +20,8 @@ namespace ZFramework
     [DisallowMultipleComponent]
     public class BootStrap : MonoBehaviour
     {
-        public IEntry entry;
         public BootFile boot;
+        public IEntry entry;
 
         void Awake()
         {
@@ -42,7 +42,7 @@ namespace ZFramework
         }
         void LateUpdate()
         {
-            entry.Update();
+            entry.LateUpdate();
         }
 
         void OnApplicationQuit()

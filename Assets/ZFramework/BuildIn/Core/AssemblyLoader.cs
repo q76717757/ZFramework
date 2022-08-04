@@ -25,16 +25,17 @@ namespace ZFramework
             entry.Start(modelAssembly, logicAssembly);
             return entry;
         }
-        static IEntry GetEntryRelease()
+
+        static IEntry GetEntryRelease(BootFile boot)
         {
-            var codesAssembly = LoadCode("");
+            var codesAssembly = LoadCode(boot);
             var entry = Activator.CreateInstance(codesAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
             entry.Start(codesAssembly);
             return entry;
         }
 
 
-        //热重载模式 分2个dll进行加载
+        //热重载/开发模式 分2个dll进行加载
         static Assembly LoadModel()
         {
             var pathA = "Temp/Bin/Debug/Model.dll";
@@ -56,8 +57,9 @@ namespace ZFramework
             return Assembly.Load(c, d);
         }
 
+
         //发布模式  打包成一个热更dll->code.dll  客户端更新要求重启应用
-        static Assembly LoadCode(string gameKey)
+        static Assembly LoadCode(BootFile boot)
         {
 #if UNITY_EDITOR
             var dll = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Bundles/Code/Code.dll.bytes");
@@ -71,6 +73,7 @@ namespace ZFramework
             //这个要分模式 本地内置模式直接反射(针对不能使用loadAssembly的平台 如UWP,其他平台可以用wolong热更) 远程模式(包含web下载/本地文件夹)
 
         }
+
     }
 
 }

@@ -18,7 +18,6 @@ namespace ZFramework
             //Game.Root.AddComponent<HttpComponent>();
             //Game.Root.AddComponent<BundleComponent>();
 
-
             //var text = (TextAsset)await Resources.LoadAsync<TextAsset>("Version");
             //Debug.Log(text.text);
         }
@@ -100,4 +99,5 @@ namespace ZFramework
             return (asset as TextAsset)?.text ?? throw new InvalidOperationException("Asset not found");
         }
     }
+
 }
