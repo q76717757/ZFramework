@@ -10,19 +10,23 @@ namespace ZFramework
 {
     public static class BuildAssemblieEditor
     {
-        public const string UnityTempDllPath = "Temp/Bin/Debug/";//编译程序集的输出位置
+        public const string UnityTempDllPath = ".cache/";//编译程序集的输出位置
         public const string AssetsSaveDllPath = "Assets/Bundles/Code/";//程序集的保存位置
 
         public static async void CompileAssembly_Development()
         {
+            string projectName = "";
+            string tick = (DateTime.Now.Ticks / 10000).ToString("X2");
+
             await BuildAssembly("Model", new[]
             {
                 "Assets/ZFramework/.Hotfix/CommonModel/",
                 "Assets/ZFramework/.Hotfix/ClientModel/"
             }, Array.Empty<string>());
-            await CompileAssembly_Logic();
+
+            await CompileAssembly_Logic(projectName, tick);
         }
-        public static async Task<string> CompileAssembly_Logic()//only UnityEditor
+        public static async Task<string> CompileAssembly_Logic(string projectName,string modelTick)
         {
             string[] logicFiles = Directory.GetFiles(UnityTempDllPath, "Logic_*");
             foreach (string file in logicFiles)
@@ -39,7 +43,7 @@ namespace ZFramework
             return logicFile;
         }
 
-        public static async void CompileAssembly_Debug()
+        public static async void CompileAssembly_Debug(string projectName)
         {
             await BuildAssembly("Code", new string[] { "Assets/ZFramework/.Hotfix/" }, Array.Empty<string>(), CodeOptimization.Debug);
             CopyDllToAsssetFromTemp("Code");
@@ -81,7 +85,7 @@ namespace ZFramework
             BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             assemblyBuilder.buildTarget = EditorUserBuildSettings.activeBuildTarget;
             assemblyBuilder.buildTargetGroup = buildTargetGroup;
-            assemblyBuilder.compilerOptions.CodeOptimization = codeOptimization;//19版本没有这项 20版本有
+            assemblyBuilder.compilerOptions.CodeOptimization = codeOptimization;
             assemblyBuilder.compilerOptions.ApiCompatibilityLevel = PlayerSettings.GetApiCompatibilityLevel(buildTargetGroup);
             //assemblyBuilder.compilerOptions.AllowUnsafeCode = true;
             assemblyBuilder.additionalReferences = additionalReferences;

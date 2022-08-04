@@ -7,7 +7,6 @@ bin/
 Library/
 *.csproj
 *.sln
-Assets/Bundles/Code/Code.dll.bytes
-Assets/Bundles/Code/Code.pdb.bytes
-Assets/Bundles/Code/Code.dll.bytes.meta
-Assets/Bundles/Code/Code.pdb.bytes.meta
+Assets/Bundles/
+.cache/
+Assets/BootFiles/

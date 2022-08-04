@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using ET;
 using Cysharp.Threading.Tasks;
 
 namespace ZFramework
@@ -20,8 +19,8 @@ namespace ZFramework
             //Game.Root.AddComponent<BundleComponent>();
 
 
-            var text = (TextAsset)await Resources.LoadAsync<TextAsset>("Version");
-            Debug.Log(text.text);
+            //var text = (TextAsset)await Resources.LoadAsync<TextAsset>("Version");
+            //Debug.Log(text.text);
         }
     }
 

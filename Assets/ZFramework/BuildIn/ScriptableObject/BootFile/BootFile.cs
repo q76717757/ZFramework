@@ -4,9 +4,19 @@ using UnityEngine;
 
 namespace ZFramework
 {
-    [CreateAssetMenu(fileName = "BootFile", menuName = "ZFramework/Boot File", order = 1)]
+    public enum AssemblyLoadPathType
+    {
+        BuildIn,
+        StreamingAssets,
+        Resources,
+        Network
+    }
+
+    [CreateAssetMenu(fileName = "BootFile", menuName = "ZFramework/引导文件", order = 0)]
     public class BootFile : ScriptableObject
     {
-        public int projectName;
+        public string projectName;
+        public AssemblyLoadPathType assemblyLoadPathType;
+
     }
 }

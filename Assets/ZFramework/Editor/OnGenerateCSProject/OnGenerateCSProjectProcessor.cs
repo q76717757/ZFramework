@@ -18,8 +18,8 @@ namespace ZFramework
             {
                 if (path.EndsWith($"Unity.{name}.csproj"))
                 {
-                    content = content.Replace($"<Compile Include=\"Assets\\ZFramework\\Hotfix\\{name}\\Empty.cs\" />", string.Empty);
-                    content = content.Replace($"<None Include=\"Assets\\ZFramework\\Hotfix\\{name}\\Unity.{name}.asmdef\" />", string.Empty);
+                    content = content.Replace($"<Compile Include=\"Assets\\ZFramework\\BuildIn\\Hotfix\\{name}\\Empty.cs\" />", string.Empty);
+                    content = content.Replace($"<None Include=\"Assets\\ZFramework\\BuildIn\\Hotfix\\{name}\\Unity.{name}.asmdef\" />", string.Empty);
 
                     return IncludeCustom(content, $"Assets\\ZFramework\\.Hotfix\\{name}\\**\\*.cs");
                 }

@@ -15,7 +15,6 @@ namespace ZFramework
         {
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlaying);
 
-
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("引导文件", GUILayout.Width(50));
             var obj = serializedObject.FindProperty("boot");
@@ -24,115 +23,105 @@ namespace ZFramework
             serializedObject.UpdateIfRequiredOrScript();
             EditorGUILayout.EndHorizontal();
 
-            (target as BootStrap).mode = (CompileMode)EditorGUILayout.EnumPopup("编译模式",(target as BootStrap).mode);
             EditorGUI.EndDisabledGroup();
 
-            EditorGUILayout.Space(20);
+            EditorGUILayout.Space(10);
+            GUILayout.Label("Model");
+            EditorGUI.BeginDisabledGroup(true);
+            var modelDll = File.Exists($"{BuildAssemblieEditor.UnityTempDllPath}Model.dll");
+            GUILayout.TextField(modelDll ? $"{BuildAssemblieEditor.UnityTempDllPath}Model.dll" : "Model.Dll Not Exists");
+            EditorGUI.EndDisabledGroup();
 
-            switch ((target as BootStrap).mode)
+            GUILayout.Label("Logic");
+            EditorGUI.BeginDisabledGroup(true);
+            if (Directory.Exists(BuildAssemblieEditor.UnityTempDllPath))
             {
-                case CompileMode.Development:
-                    GUILayout.Label("Model");
-                    EditorGUI.BeginDisabledGroup(true);
-                    var modelDll = File.Exists($"{BuildAssemblieEditor.UnityTempDllPath}Model.dll");
-                    GUILayout.TextField(modelDll ? $"{BuildAssemblieEditor.UnityTempDllPath}Model.dll" : "Model.Dll Not Exists");
-                    EditorGUI.EndDisabledGroup();
-
-                    GUILayout.Label("Logic");
-                    EditorGUI.BeginDisabledGroup(true);
-                    if (Directory.Exists(BuildAssemblieEditor.UnityTempDllPath))
+                string[] logicFiles = Directory.GetFiles(BuildAssemblieEditor.UnityTempDllPath, "Logic_*.dll");
+                if (logicFiles.Length > 0)
+                {
+                    foreach (string file in logicFiles)
                     {
-                        string[] logicFiles = Directory.GetFiles(BuildAssemblieEditor.UnityTempDllPath, "Logic_*.dll");
-                        if (logicFiles.Length > 0)
-                        {
-                            foreach (string file in logicFiles)
-                            {
-                                GUILayout.TextField(file);
-                            }
-                        }
-                        else
-                        {
-                            GUILayout.TextField("Logic.Dll Not Exists");
-                        }
+                        GUILayout.TextField(file);
                     }
-                    else
-                    {
-                        GUILayout.TextField("Logic.Dll Not Exists");
-                    }
-                    EditorGUI.EndDisabledGroup();
-
-                    EditorGUI.BeginDisabledGroup(EditorApplication.isCompiling);
-                    if (!EditorApplication.isPlaying)
-                    {
-                        if (GUILayout.Button("Compile Model + Logic"))
-                        {
-                            BuildAssemblieEditor.CompileAssembly_Development();
-                        }
-                    }
-                    else
-                    {
-                        if (GUILayout.Button("逻辑热重载"))
-                        {
-                            HotReload();
-                        }
-                    }
-                    EditorGUI.EndDisabledGroup();
-                    break;
-                case CompileMode.Release:
-                    {
-                        //资源路径可以改成从配置文件获取
-                        var dll = AssetDatabase.LoadAssetAtPath<TextAsset>(BuildAssemblieEditor.AssetsSaveDllPath + "Code.dll.bytes");
-                        var pdb = AssetDatabase.LoadAssetAtPath<TextAsset>(BuildAssemblieEditor.AssetsSaveDllPath + "Code.pdb.bytes");
-
-                        EditorGUILayout.BeginHorizontal();
-                        if (dll == null || pdb == null)
-                        {
-                            EditorGUILayout.HelpBox("Assembly Not Exist", MessageType.Error);
-                        }
-                        else
-                        {
-                            
-                            EditorGUI.BeginDisabledGroup(true);
-                            EditorGUILayout.ObjectField(dll, typeof(TextAsset), false);
-                            EditorGUILayout.ObjectField(pdb, typeof(TextAsset), false);
-                            EditorGUI.EndDisabledGroup();
-                        }
-                        EditorGUILayout.EndHorizontal();
-
-                        FileInfo fileInfo = new FileInfo(BuildAssemblieEditor.AssetsSaveDllPath + "Code.dll.bytes");
-                        if (fileInfo.Exists)
-                        {
-                            GUILayout.Label("最后编译时间: " + fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                        }
-
-                        bool disable = EditorApplication.isPlaying || EditorApplication.isCompiling;
-                        EditorGUI.BeginDisabledGroup(disable);
-                        if (GUILayout.Button("Compile Assembly"))
-                        {
-                            BuildAssemblieEditor.CompileAssembly_Debug();
-                        }
-                     
-                    }
-                    break;
-                default:
-                    break;
+                }
+                else
+                {
+                    GUILayout.TextField("Logic.Dll Not Exists");
+                }
             }
+            else
+            {
+                GUILayout.TextField("Logic.Dll Not Exists");
+            }
+            EditorGUI.EndDisabledGroup();
 
-           
+            EditorGUI.BeginDisabledGroup(EditorApplication.isCompiling);
+            if (!EditorApplication.isPlaying)
+            {
+                if (GUILayout.Button("Compile Model + Logic"))
+                {
+                    BuildAssemblieEditor.CompileAssembly_Development();
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("逻辑热重载"))
+                {
+                    HotReload();
+                }
+            }
+            EditorGUI.EndDisabledGroup();
 
             EditorGUI.EndDisabledGroup();
+
         }
+
 
         async void HotReload()
         {
-            var assemblyName = await BuildAssemblieEditor.CompileAssembly_Logic();
+            var assemblyName = await BuildAssemblieEditor.CompileAssembly_Logic("", "");
             var dll = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.dll");
             var pdb = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.pdb");
             Assembly logic = Assembly.Load(dll,pdb);
             (target as BootStrap).entry.Reload(logic);
+
+        }
+
+        void backup()
+        {
+            //资源路径可以改成从配置文件获取
+            var dll = AssetDatabase.LoadAssetAtPath<TextAsset>(BuildAssemblieEditor.AssetsSaveDllPath + "Code.dll.bytes");
+            var pdb = AssetDatabase.LoadAssetAtPath<TextAsset>(BuildAssemblieEditor.AssetsSaveDllPath + "Code.pdb.bytes");
+
+            EditorGUILayout.BeginHorizontal();
+            if (dll == null || pdb == null)
+            {
+                EditorGUILayout.HelpBox("Assembly Not Exist", MessageType.Error);
+            }
+            else
+            {
+                EditorGUI.BeginDisabledGroup(true);
+                EditorGUILayout.ObjectField(dll, typeof(TextAsset), false);
+                EditorGUILayout.ObjectField(pdb, typeof(TextAsset), false);
+                EditorGUI.EndDisabledGroup();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            FileInfo fileInfo = new FileInfo(BuildAssemblieEditor.AssetsSaveDllPath + "Code.dll.bytes");
+            if (fileInfo.Exists)
+            {
+                GUILayout.Label("最后编译时间: " + fileInfo.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            }
+
+            bool disable = EditorApplication.isPlaying || EditorApplication.isCompiling;
+            EditorGUI.BeginDisabledGroup(disable);
+            if (GUILayout.Button("Compile Assembly"))
+            {
+                string projectName = "";
+                BuildAssemblieEditor.CompileAssembly_Debug(projectName);
+            }
         }
     }
-
 
 #if UNITY_2020_3_OR_NEWER
     [InitializeOnLoad]

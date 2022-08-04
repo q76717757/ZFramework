@@ -8,38 +8,31 @@ namespace ZFramework
 {
     public static class AssemblyLoader
     {
-        public static IEntry GetEntry(string gameKey, CompileMode mode)
+        public static IEntry GetEntry(BootFile boot)
         {
-#if !UNITY_EDITOR
-            mode = CompileMode.Release;
+#if UNITY_EDITOR
+            return GetEntryDevelopment();
+#else
+            return GetEntryRelease();
 #endif
-            try
-            {
-                switch (mode)
-                {
-                    case CompileMode.Development:
-                        {
-                            var modelAssembly = LoadModel();
-                            var logicAssembly = LoadLogic();
-                            var entry = Activator.CreateInstance(modelAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
-                            entry.Start(modelAssembly, logicAssembly);
-                            return entry;
-                        }
-                    case CompileMode.Release:
-                        {
-                            var codesAssembly = LoadCode(gameKey);
-                            var entry = Activator.CreateInstance(codesAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
-                            entry.Start(codesAssembly);
-                            return entry;
-                        }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e.Message);
-            }
-            return null;
         }
+
+        static IEntry GetEntryDevelopment()
+        {
+            var modelAssembly = LoadModel();
+            var logicAssembly = LoadLogic();
+            var entry = Activator.CreateInstance(modelAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
+            entry.Start(modelAssembly, logicAssembly);
+            return entry;
+        }
+        static IEntry GetEntryRelease()
+        {
+            var codesAssembly = LoadCode("");
+            var entry = Activator.CreateInstance(codesAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
+            entry.Start(codesAssembly);
+            return entry;
+        }
+
 
         //热重载模式 分2个dll进行加载
         static Assembly LoadModel()
