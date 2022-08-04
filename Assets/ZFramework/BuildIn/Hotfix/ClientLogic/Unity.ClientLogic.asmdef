@@ -6,7 +6,7 @@
         "Unity.CommonModel",
         "Unity.CommonLogic",
         "Unity.ClientModel",
-        "UniTask"
+        "Unity.ThirdPart.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

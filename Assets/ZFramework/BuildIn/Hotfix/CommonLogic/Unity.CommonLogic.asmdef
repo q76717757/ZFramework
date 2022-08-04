@@ -4,7 +4,7 @@
     "references": [
         "Unity.BuildIn",
         "Unity.CommonModel",
-        "UniTask"
+        "Unity.ThirdPart.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

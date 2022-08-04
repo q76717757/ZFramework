@@ -1,11 +1,10 @@
 {
-    "name": "UniTask.Linq",
-    "references": [
-        "UniTask"
-    ],
+    "name": "Unity.ThirdPart.Runtime",
+    "rootNamespace": "",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

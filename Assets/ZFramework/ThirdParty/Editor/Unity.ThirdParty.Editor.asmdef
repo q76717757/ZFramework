@@ -1,16 +1,17 @@
 {
-    "name": "UniTask.Editor",
+    "name": "Unity.ThirdParty.Editor",
+    "rootNamespace": "",
     "references": [
-        "UniTask"
+        "Unity.ThirdPart.Runtime"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false

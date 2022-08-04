@@ -13,7 +13,7 @@ namespace ZFramework
 #if UNITY_EDITOR
             return GetEntryDevelopment();
 #else
-            return GetEntryRelease();
+            return GetEntryRelease(boot);
 #endif
         }
 
@@ -38,22 +38,22 @@ namespace ZFramework
         //热重载/开发模式 分2个dll进行加载
         static Assembly LoadModel()
         {
-            var pathA = "Temp/Bin/Debug/Model.dll";
-            var pathB = "Temp/Bin/Debug/Model.pdb";
+            var pathA = ".cache/Model.dll";
+            var pathB = ".cache/Model.pdb";
             var a = File.ReadAllBytes(pathA);
             var b = File.ReadAllBytes(pathB);
             return Assembly.Load(a, b);
         }
         static Assembly LoadLogic()
         {
-            string[] hotfixFiles = Directory.GetFiles("Temp/Bin/Debug/", "Logic_*.dll");
+            string[] hotfixFiles = Directory.GetFiles(".cache/", "Logic_*.dll");
             if (hotfixFiles.Length != 1)
             {
                 throw new Exception("logic.dll count != 1");
             }
             string hotfix = Path.GetFileNameWithoutExtension(hotfixFiles[0]);
-            var c = File.ReadAllBytes($"Temp/Bin/Debug/{hotfix}.dll");
-            var d = File.ReadAllBytes($"Temp/Bin/Debug/{hotfix}.pdb");
+            var c = File.ReadAllBytes($".cache/{hotfix}.dll");
+            var d = File.ReadAllBytes($".cache/{hotfix}.pdb");
             return Assembly.Load(c, d);
         }
 

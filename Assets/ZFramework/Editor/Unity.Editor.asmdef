@@ -2,7 +2,13 @@
     "name": "Unity.Editor",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.BuildIn"
+        "Unity.BuildIn",
+        "Unity.CommonModel",
+        "Unity.CommonLogic",
+        "Unity.ClientModel",
+        "Unity.ClientLogic",
+        "Unity.ThirdPart.Runtime",
+        "Unity.ThirdParty.Editor"
     ],
     "includePlatforms": [
         "Editor"
