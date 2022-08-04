@@ -31,28 +31,15 @@ namespace ZFramework
                 Debug.Log(e.Message);
             };
         }
-        void Start()
-        {
-            entry = AssemblyLoader.GetEntry(boot);
-        }
 
-        void Update()
-        {
-            entry.Update();
-        }
-        void LateUpdate()
-        {
-            entry.LateUpdate();
-        }
-
+        async void Start() => entry = await AssemblyLoader.GetEntry(boot);
+        void Update() => entry?.Update();
+        void LateUpdate()=> entry?.LateUpdate();
         void OnApplicationQuit()
         {
-            if (entry != null)
-            {
-                entry.Close();
-                entry = null;
-            }
+            entry?.Close();
+            entry = null;
         }
-    }
 
+    }
 }
