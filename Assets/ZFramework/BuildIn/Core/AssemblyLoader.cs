@@ -17,6 +17,9 @@ namespace ZFramework
 #endif
         }
 
+
+
+        //热重载/开发模式
         static IEntry GetEntryDevelopment()
         {
             var modelAssembly = LoadModel();
@@ -25,17 +28,6 @@ namespace ZFramework
             entry.Start(modelAssembly, logicAssembly);
             return entry;
         }
-
-        static async Task<IEntry> GetEntryRelease(BootFile boot)
-        {
-            var codesAssembly = await LoadCode(boot);
-            var entry = Activator.CreateInstance(codesAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
-            entry.Start(codesAssembly);
-            return entry;
-        }
-
-
-        //热重载/开发模式
         static Assembly LoadModel()
         {
             var pathA = ".cache/Model.dll";
@@ -59,8 +51,14 @@ namespace ZFramework
 
 
 
-
         //发布模式  打包成一个热更dll->code.dll  客户端更新要求重启应用
+        static async Task<IEntry> GetEntryRelease(BootFile boot)
+        {
+            var codesAssembly = await LoadCode(boot);
+            var entry = Activator.CreateInstance(codesAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
+            entry.Start(codesAssembly);
+            return entry;
+        }
         static async Task<Assembly> LoadCode(BootFile boot)
         {
             //获取远程版本
