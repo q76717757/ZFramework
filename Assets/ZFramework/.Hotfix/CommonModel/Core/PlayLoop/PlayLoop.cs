@@ -280,7 +280,7 @@ namespace ZFramework
         void IEntry.Close() { }
 
 
-        void Awake(Entity entity)
+        void CallAwake(Entity entity)
         {
             if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> iLifes))
             {
@@ -321,7 +321,7 @@ namespace ZFramework
             {
                 lateUpdates.Enqueue(entity.InstanceID);
             }
-            Awake(entity);
+            CallAwake(entity);
         }//临时的UI有需要把生命周期注册曝露出来
         internal void RemoveEntityFromPlayloop(Entity entity)
         {
