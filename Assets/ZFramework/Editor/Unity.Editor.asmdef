@@ -7,8 +7,7 @@
         "Unity.CommonLogic",
         "Unity.ClientModel",
         "Unity.ClientLogic",
-        "Unity.ThirdPart.Runtime",
-        "Unity.ThirdParty.Editor"
+        "Unity.ThirdPart.Runtime"
     ],
     "includePlatforms": [
         "Editor"
