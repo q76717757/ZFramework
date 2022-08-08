@@ -28,5 +28,8 @@ namespace ZFramework
             serializedObject.ApplyModifiedProperties();
             serializedObject.UpdateIfRequiredOrScript();
         }
+
+        protected override bool ShouldHideOpenButton() => true;
+
     }
 }
