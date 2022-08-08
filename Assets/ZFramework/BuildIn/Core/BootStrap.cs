@@ -7,8 +7,8 @@ namespace ZFramework
 {
     public interface IEntry
     {
-        void Start(Assembly code);
-        void Start(Assembly model, Assembly logic);
+        void Load(Assembly code);
+        void Load(Assembly model, Assembly logic);
         void Reload(Assembly logic);
 
         void Update();

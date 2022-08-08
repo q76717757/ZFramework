@@ -3,7 +3,6 @@ using System.Reflection;
 using System;
 using System.IO;
 using Cysharp.Threading.Tasks;
-using System.Threading.Tasks;
 
 namespace ZFramework
 {
@@ -26,7 +25,7 @@ namespace ZFramework
             var logicAssembly = LoadLogic();
 
             var entry = modelAssembly.GetType("ZFramework.Game").GetProperty("GameLoop").GetValue(null) as IEntry;
-            entry.Start(modelAssembly, logicAssembly);
+            entry.Load(modelAssembly, logicAssembly);
             return entry;
         }
         static Assembly LoadModel()
@@ -53,15 +52,15 @@ namespace ZFramework
 
 
         //发布模式  打包成一个热更dll->code.dll  客户端更新要求重启应用
-        static async Task<IEntry> GetEntryRelease(BootFile boot)
+        static async UniTask<IEntry> GetEntryRelease(BootFile boot)
         {
             var codesAssembly = await LoadCode(boot);
 
             var entry = codesAssembly.GetType("ZFramework.Game").GetProperty("GameLoop").GetValue(null) as IEntry;
-            entry.Start(codesAssembly);
+            entry.Load(codesAssembly);
             return entry;
         }
-        static async Task<Assembly> LoadCode(BootFile boot)
+        static async UniTask<Assembly> LoadCode(BootFile boot)
         {
             //获取远程版本
             //对比本地版本

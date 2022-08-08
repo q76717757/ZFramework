@@ -76,7 +76,7 @@ namespace ZFramework
         }
 
         //入口
-        void IEntry.Start(Assembly model, Assembly logicAssembly)
+        void IEntry.Load(Assembly model, Assembly logicAssembly)
         {
             modelTypeCache = model.GetTypes();
             var types = new List<Type>();
@@ -88,7 +88,7 @@ namespace ZFramework
             var met = logicAssembly.GetType("ZFramework.Launcher").GetMethod("Start");
             met.Invoke(null, new object[met.GetParameters().Length]);
         }
-        void IEntry.Start(Assembly code)
+        void IEntry.Load(Assembly code)
         {
             LoadAssembly(code.GetTypes());
 
@@ -133,11 +133,8 @@ namespace ZFramework
             foreach (var item in allEntities)
             {
                 var instanceId = item.Key;
+                var entity = item.Value;
 
-                if (!allEntities.TryGetValue(instanceId, out Entity entity))
-                {
-                    continue;
-                }
                 if (entity.IsDisposed)
                 {
                     allEntities.Remove(instanceId);
