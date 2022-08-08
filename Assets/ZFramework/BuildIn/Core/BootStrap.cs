@@ -35,11 +35,6 @@ namespace ZFramework
         async void Start() => entry = await AssemblyLoader.GetEntry(boot);
         void Update() => entry?.Update();
         void LateUpdate()=> entry?.LateUpdate();
-        void OnApplicationQuit()
-        {
-            entry?.Close();
-            entry = null;
-        }
-
+        void OnApplicationQuit() => entry?.Close();
     }
 }

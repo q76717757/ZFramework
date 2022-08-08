@@ -8,6 +8,11 @@ namespace ZFramework
 {
     public class Process : Entity
     {
+        public ProcessType ProcessType { get; }
 
+        public Process(ProcessType processType)
+        { 
+            ProcessType = processType;
+        }
     }
 }

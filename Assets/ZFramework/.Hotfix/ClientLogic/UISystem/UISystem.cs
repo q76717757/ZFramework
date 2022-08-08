@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-
+  
 namespace ZFramework
 {
     public class UISystemAwake : AwakeSystem<UIComponent>
@@ -92,7 +92,7 @@ namespace ZFramework
                 uicanvas.rect = uiInstance.GetComponent<RectTransform>();
                 component.UICanvas.Add(uiType, uicanvas);
 
-                Game.GameLoop.RegisterEntityToPlayloop(uicanvas);
+                Game.GameLoop.CallAwake(uicanvas);
                 return uicanvas;
             }
             else

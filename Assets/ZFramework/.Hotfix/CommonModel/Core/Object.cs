@@ -2,7 +2,7 @@ using System;
 
 namespace ZFramework
 {
-    public abstract class Object: IDisposable
+    public abstract class Object : IDisposable
     {
         public long InstanceID { get; internal set; }
         public bool IsDisposed => InstanceID == 0;
@@ -23,7 +23,7 @@ namespace ZFramework
 
         public override int GetHashCode()
         {
-            return (int)InstanceID;
+            return base.GetHashCode();
         }
         public override bool Equals(object obj)
         {

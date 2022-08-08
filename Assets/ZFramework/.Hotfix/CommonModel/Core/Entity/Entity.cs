@@ -4,6 +4,12 @@ using System;
 
 namespace ZFramework
 {
+    public enum EntityState
+    {
+
+
+    }
+
     public class Entity : Object
     {
         private Entity parent;
@@ -15,6 +21,17 @@ namespace ZFramework
         //protected Entity()
         //{ 
         //}
+
+        public bool Enable
+        {
+            get;
+            set;
+        }
+
+        public Process Process
+        {
+            get;
+        }
 
         public Entity Parent
         {
@@ -33,7 +50,7 @@ namespace ZFramework
             com.InstanceID = IdGenerater.Instance.GenerateInstanceId();
             if (reg)
             {
-                Game.GameLoop.RegisterEntityToPlayloop(com);
+                Game.GameLoop.CallAwake(com);
             }
             return com;
         }
@@ -50,7 +67,7 @@ namespace ZFramework
             }
             var component = CreateEntity(type);
             components.Add(component.GetType(), component);
-            Game.GameLoop.RegisterEntityToPlayloop(component);
+            Game.GameLoop.CallAwake(component);
             return component;
         }
         public T AddComponent<T>() where T : Entity
@@ -143,14 +160,14 @@ namespace ZFramework
         {
             if (components.TryGetValue(component.GetType(), out Entity target))
             {
-                Game.GameLoop.RemoveEntityFromPlayloop(target);
+                Game.GameLoop.CallDestory(target);
             }
         }
         public void RemoveComponent<T>() where T : Entity
         {
             if (components.TryGetValue(typeof(T),out Entity component))
             {
-                Game.GameLoop.RemoveEntityFromPlayloop(component);
+                Game.GameLoop.CallDestory(component);
             }
         }
 
@@ -177,7 +194,7 @@ namespace ZFramework
                 }
             }
             Parent = null;
-            Game.GameLoop.RemoveEntityFromPlayloop(this);
+            Game.GameLoop.CallDestory(this);
         }
 
     }

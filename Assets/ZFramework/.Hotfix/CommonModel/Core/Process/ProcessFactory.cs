@@ -8,10 +8,9 @@ namespace ZFramework
 {
     public static class ProcessFactory
     {
-        public static Process CreateProcess()
+        public static Process CreateProcess(ProcessType processType)
         { 
-            Process process = new Process();
-
+            Process process = new Process(processType);
 
 
             return process;

@@ -15,6 +15,8 @@ namespace ZFramework
             Log.ILog = new UnityLogger();
             Log.Info("<color=green>Launcher Start!</color>");
 
+
+
             //Game.Root.AddComponent<HttpComponent>();
             //Game.Root.AddComponent<BundleComponent>();
 
@@ -22,6 +24,14 @@ namespace ZFramework
             //Debug.Log(text.text);
         }
     }
+
+
+
+
+
+
+
+
 
     public class UniTaskDemo : MonoBehaviour
     {

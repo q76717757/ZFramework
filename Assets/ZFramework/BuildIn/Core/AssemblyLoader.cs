@@ -24,9 +24,8 @@ namespace ZFramework
         {
             var modelAssembly = LoadModel();
             var logicAssembly = LoadLogic();
-            //var entry = Activator.CreateInstance(modelAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
 
-            var entry = (modelAssembly.GetType("ZFramework.Game").GetProperty("GameLoop").GetValue(null)) as IEntry;
+            var entry = modelAssembly.GetType("ZFramework.Game").GetProperty("GameLoop").GetValue(null) as IEntry;
             entry.Start(modelAssembly, logicAssembly);
             return entry;
         }
@@ -57,7 +56,8 @@ namespace ZFramework
         static async Task<IEntry> GetEntryRelease(BootFile boot)
         {
             var codesAssembly = await LoadCode(boot);
-            var entry = Activator.CreateInstance(codesAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
+
+            var entry = codesAssembly.GetType("ZFramework.Game").GetProperty("GameLoop").GetValue(null) as IEntry;
             entry.Start(codesAssembly);
             return entry;
         }
