@@ -2,40 +2,40 @@ using System;
 
 namespace ZFramework
 {
-    public interface IPlayLoopSystem
+    public interface IGameLoopSystem
     {
         Type EntityType { get; }
         Type PlayLoopType { get; }
     }
-    public interface IReLoadSystem : IPlayLoopSystem
+    public interface IReLoadSystem : IGameLoopSystem
     {
         void OnReload(Entity entity);
     }
-    public interface IAwakeSystem : IPlayLoopSystem
+    public interface IAwakeSystem : IGameLoopSystem
     {
         void OnAwake(Entity entity);
     }
-    public interface IUpdateSystem : IPlayLoopSystem
+    public interface IUpdateSystem : IGameLoopSystem
     {
         void OnUpdate(Entity entity);
     }
-    public interface IEnableSystem : IPlayLoopSystem
+    public interface IEnableSystem : IGameLoopSystem
     {
         void OnEnable(Entity entity);
     }
-    public interface IDisableSystem : IPlayLoopSystem
+    public interface IDisableSystem : IGameLoopSystem
     {
         void OnDisable(Entity entity);
     }
-    public interface ILateUpdateSystem : IPlayLoopSystem
+    public interface ILateUpdateSystem : IGameLoopSystem
     {
         void OnLateUpdate(Entity entity);
     }
-    public interface IDestorySystem : IPlayLoopSystem
+    public interface IDestorySystem : IGameLoopSystem
     {
         void OnDestory(Entity entity);
     }
-    [PlayLoop]
+    [GameLoop]
     public abstract class ReloadSystem<T> : IReLoadSystem where T : Entity
     {
         public Type EntityType => typeof(T);
@@ -43,7 +43,7 @@ namespace ZFramework
         void IReLoadSystem.OnReload(Entity entity) => OnReload((T)entity);
         public abstract void OnReload(T entity);
     }
-    [PlayLoop]
+    [GameLoop]
     public abstract class AwakeSystem<T> : IAwakeSystem where T : Entity
     {
         public Type EntityType => typeof(T);
@@ -51,7 +51,7 @@ namespace ZFramework
         void IAwakeSystem.OnAwake(Entity entity) => OnAwake((T)entity);
         public abstract void OnAwake(T entity);
     }
-    [PlayLoop]
+    [GameLoop]
     public abstract class EnableSystem<T> : IEnableSystem where T : Entity
     {
         public Type EntityType => typeof(T);
@@ -59,7 +59,7 @@ namespace ZFramework
         void IEnableSystem.OnEnable(Entity entity) => OnEnable((T)entity);
         public abstract void OnEnable(T entity);
     }
-    [PlayLoop]
+    [GameLoop]
     public abstract class DisableSystem<T> : IDisableSystem where T : Entity
     {
         public Type EntityType => typeof(T);
@@ -67,7 +67,7 @@ namespace ZFramework
         void IDisableSystem.OnDisable(Entity entity) => OnDisable((T)entity);
         public abstract void OnDisable(T entity);
     }
-    [PlayLoop]
+    [GameLoop]
     public abstract class UpdateSystem<T> : IUpdateSystem where T : Entity
     {
         public Type EntityType => typeof(T); 
@@ -75,7 +75,7 @@ namespace ZFramework
         void IUpdateSystem.OnUpdate(Entity entity) => OnUpdate((T)entity);
         public abstract void OnUpdate(T entity);
     }
-    [PlayLoop]
+    [GameLoop]
     public abstract class LateUpdateSystem<T> : ILateUpdateSystem where T : Entity
     {
         public Type EntityType => typeof(T); 
@@ -83,7 +83,7 @@ namespace ZFramework
         void ILateUpdateSystem.OnLateUpdate(Entity entity)=> OnLateUpdate((T)entity);
         public abstract void OnLateUpdate(T entity);
     }
-    [PlayLoop]
+    [GameLoop]
     public abstract class DestorySystem<T> : IDestorySystem where T : Entity
     {
         public Type EntityType => typeof(T);

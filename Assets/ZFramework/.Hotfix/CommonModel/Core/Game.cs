@@ -8,7 +8,7 @@ namespace ZFramework
 {
     public static class Game//他引用不到client层的东西  把game移到client层上???
     {
-        public static PlayLoop PlayLoop { get; set; }
+        public static GameLoop GameLoop { get;} = new GameLoop();
 
         private static World world;
         public static World World
@@ -22,4 +22,5 @@ namespace ZFramework
             }
         }
     }
+
 }

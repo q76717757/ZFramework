@@ -4,10 +4,10 @@ using System.Reflection;
 
 namespace ZFramework
 {
-    public sealed class PlayLoop : IEntry
+    public sealed class GameLoop : IEntry
     {
         //生命周期辅助对象映射表 //componentType - loopType - loopSystemObject
-        private readonly Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>> maps = new Dictionary<Type, Dictionary<Type, List<IPlayLoopSystem>>>();
+        private readonly Dictionary<Type, Dictionary<Type, List<IGameLoopSystem>>> maps = new Dictionary<Type, Dictionary<Type, List<IGameLoopSystem>>>();
         //特性-类型映射表
         private readonly Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();
         //所有实体集合
@@ -58,19 +58,19 @@ namespace ZFramework
         void BuildPlayerLoopMaps()
         {
             maps.Clear();
-            foreach (Type useLifeTypes in GetTypesByAttribute(typeof(PlayLoopAttribute)))
+            foreach (Type useLifeTypes in GetTypesByAttribute(typeof(GameLoopAttribute)))
             {
                 object componentLiveSystemObj = Activator.CreateInstance(useLifeTypes);
 
-                if (componentLiveSystemObj is IPlayLoopSystem iSystem)
+                if (componentLiveSystemObj is IGameLoopSystem iSystem)
                 {
                     if (!maps.ContainsKey(iSystem.EntityType))
                     {
-                        maps.Add(iSystem.EntityType, new Dictionary<Type, List<IPlayLoopSystem>>());
+                        maps.Add(iSystem.EntityType, new Dictionary<Type, List<IGameLoopSystem>>());
                     }
                     if (!maps[iSystem.EntityType].ContainsKey(iSystem.PlayLoopType))
                     {
-                        maps[iSystem.EntityType][iSystem.PlayLoopType] = new List<IPlayLoopSystem>();
+                        maps[iSystem.EntityType][iSystem.PlayLoopType] = new List<IGameLoopSystem>();
                     }
                     maps[iSystem.EntityType][iSystem.PlayLoopType].Add(iSystem);
                 }
@@ -80,8 +80,6 @@ namespace ZFramework
         //入口
         void IEntry.Start(Assembly model, Assembly logicAssembly)
         {
-            Game.PlayLoop = this;
-
             modelTypeCache = model.GetTypes();
             var types = new List<Type>();
             types.AddRange(modelTypeCache);
@@ -95,8 +93,6 @@ namespace ZFramework
         }
         void IEntry.Start(Assembly code)
         {
-            Game.PlayLoop = this;
-
             BuildAttributeMap(code.GetTypes());
             BuildPlayerLoopMaps();
 
@@ -150,9 +146,9 @@ namespace ZFramework
                     allEntities.Remove(instanceId);
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
+                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(IReLoadSystem), out List<IPlayLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(IReLoadSystem), out List<IGameLoopSystem> systemlist))
                     {
                         foreach (IReLoadSystem system in systemlist)
                         {
@@ -186,9 +182,9 @@ namespace ZFramework
                 {
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
+                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(IUpdateSystem), out List<IPlayLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(IUpdateSystem), out List<IGameLoopSystem> systemlist))
                     {
                         updates2.Enqueue(instanceId);
                         foreach (IUpdateSystem system in systemlist)
@@ -220,9 +216,9 @@ namespace ZFramework
                 {
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
+                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(ILateUpdateSystem), out List<IPlayLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(ILateUpdateSystem), out List<IGameLoopSystem> systemlist))
                     {
                         lateUpdates2.Enqueue(instanceId);
                         foreach (ILateUpdateSystem system in systemlist)
@@ -256,9 +252,9 @@ namespace ZFramework
                 {
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> life))
+                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> life))
                 {
-                    if (life.TryGetValue(typeof(IDestorySystem), out List<IPlayLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(IDestorySystem), out List<IGameLoopSystem> systemlist))
                     {
                         foreach (IDestorySystem system in systemlist)//这个生命周期一般就只有一个 考虑把列表去掉?
                         {
@@ -282,9 +278,9 @@ namespace ZFramework
 
         void CallAwake(Entity entity)
         {
-            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IPlayLoopSystem>> iLifes))
+            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> iLifes))
             {
-                if (iLifes.TryGetValue(typeof(IAwakeSystem), out List<IPlayLoopSystem> systems))
+                if (iLifes.TryGetValue(typeof(IAwakeSystem), out List<IGameLoopSystem> systems))
                 {
                     foreach (IAwakeSystem system in systems)
                     {

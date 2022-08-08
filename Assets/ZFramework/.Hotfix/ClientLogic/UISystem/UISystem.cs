@@ -33,7 +33,7 @@ namespace ZFramework
         {
             //UI类型映射表
             component.types = new Dictionary<string, Type>();
-            var uitypes = Game.PlayLoop.GetTypesByAttribute(typeof(UITypeAttribute));
+            var uitypes = Game.GameLoop.GetTypesByAttribute(typeof(UITypeAttribute));
 
             foreach (var uitype in uitypes)
             {
@@ -53,7 +53,7 @@ namespace ZFramework
         {
             //UI生命周期映射表
             component.maps = new Dictionary<Type, Dictionary<Type, IUILiveSystem>>();
-            foreach (Type uiLiveTypes in Game.PlayLoop.GetTypesByAttribute(typeof(UILiveAttribute)))
+            foreach (Type uiLiveTypes in Game.GameLoop.GetTypesByAttribute(typeof(UILiveAttribute)))
             {
                 object uiLiveSystemObj = Activator.CreateInstance(uiLiveTypes);
                 if (uiLiveSystemObj is IUILiveSystem iSystem)
@@ -92,7 +92,7 @@ namespace ZFramework
                 uicanvas.rect = uiInstance.GetComponent<RectTransform>();
                 component.UICanvas.Add(uiType, uicanvas);
 
-                Game.PlayLoop.RegisterEntityToPlayloop(uicanvas);
+                Game.GameLoop.RegisterEntityToPlayloop(uicanvas);
                 return uicanvas;
             }
             else

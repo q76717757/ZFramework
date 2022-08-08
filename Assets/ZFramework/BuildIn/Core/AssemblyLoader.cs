@@ -2,13 +2,14 @@
 using System.Reflection;
 using System;
 using System.IO;
+using Cysharp.Threading.Tasks;
 using System.Threading.Tasks;
 
 namespace ZFramework
 {
     public static class AssemblyLoader
     {
-        public static async Task<IEntry> GetEntry(BootFile boot)
+        public static async UniTask<IEntry> GetEntry(BootFile boot)
         {
 #if UNITY_EDITOR
             return GetEntryDevelopment();
@@ -18,13 +19,14 @@ namespace ZFramework
         }
 
 
-
         //热重载/开发模式
         static IEntry GetEntryDevelopment()
         {
             var modelAssembly = LoadModel();
             var logicAssembly = LoadLogic();
-            var entry = Activator.CreateInstance(modelAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
+            //var entry = Activator.CreateInstance(modelAssembly.GetType("ZFramework.PlayLoop")) as IEntry;
+
+            var entry = (modelAssembly.GetType("ZFramework.Game").GetProperty("GameLoop").GetValue(null)) as IEntry;
             entry.Start(modelAssembly, logicAssembly);
             return entry;
         }

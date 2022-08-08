@@ -33,7 +33,7 @@ namespace ZFramework
             com.InstanceID = IdGenerater.Instance.GenerateInstanceId();
             if (reg)
             {
-                Game.PlayLoop.RegisterEntityToPlayloop(com);
+                Game.GameLoop.RegisterEntityToPlayloop(com);
             }
             return com;
         }
@@ -50,7 +50,7 @@ namespace ZFramework
             }
             var component = CreateEntity(type);
             components.Add(component.GetType(), component);
-            Game.PlayLoop.RegisterEntityToPlayloop(component);
+            Game.GameLoop.RegisterEntityToPlayloop(component);
             return component;
         }
         public T AddComponent<T>() where T : Entity
@@ -143,14 +143,14 @@ namespace ZFramework
         {
             if (components.TryGetValue(component.GetType(), out Entity target))
             {
-                Game.PlayLoop.RemoveEntityFromPlayloop(target);
+                Game.GameLoop.RemoveEntityFromPlayloop(target);
             }
         }
         public void RemoveComponent<T>() where T : Entity
         {
             if (components.TryGetValue(typeof(T),out Entity component))
             {
-                Game.PlayLoop.RemoveEntityFromPlayloop(component);
+                Game.GameLoop.RemoveEntityFromPlayloop(component);
             }
         }
 
@@ -177,7 +177,7 @@ namespace ZFramework
                 }
             }
             Parent = null;
-            Game.PlayLoop.RemoveEntityFromPlayloop(this);
+            Game.GameLoop.RemoveEntityFromPlayloop(this);
         }
 
     }
