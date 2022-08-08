@@ -77,6 +77,7 @@ namespace ZFramework
             }
         }
 
+
         //入口
         void IEntry.Start(Assembly model, Assembly logicAssembly)
         {
@@ -167,8 +168,8 @@ namespace ZFramework
             Log.Info("<color=green>Hot Reload!</color>");
         }
 
-        //生命周期
 
+        //生命周期
         void IEntry.Update()
         {
             while (updates.Count > 0)
@@ -273,8 +274,10 @@ namespace ZFramework
                 }
             }
         }
-        void IEntry.Close() { }
+        void IEntry.Close() 
+        {
 
+        }
 
         void CallAwake(Entity entity)
         {
@@ -296,6 +299,47 @@ namespace ZFramework
                 }
             }
         }
+        void CallEnable(Entity entity)
+        {
+            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> iLifes))
+            {
+                if (iLifes.TryGetValue(typeof(IEnableSystem), out List<IGameLoopSystem> systems))
+                {
+                    foreach (IEnableSystem system in systems)
+                    {
+                        try
+                        {
+                            system.OnEnable(entity);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    }
+                }
+            }
+        }
+        void CallDisable(Entity entity)
+        {
+            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> iLifes))
+            {
+                if (iLifes.TryGetValue(typeof(IDisableSystem), out List<IGameLoopSystem> systems))
+                {
+                    foreach (IDisableSystem system in systems)
+                    {
+                        try
+                        {
+                            system.OnDisable(entity);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    }
+                }
+            }
+        }
+
 
         public void RegisterEntityToPlayloop(Entity entity)
         {
@@ -327,6 +371,7 @@ namespace ZFramework
             }
             destory.Enqueue(entity.InstanceID);
         }
+
     }
 
 }

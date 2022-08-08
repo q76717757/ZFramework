@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public class World : Entity
+    public class Process : Entity
     {
 
     }

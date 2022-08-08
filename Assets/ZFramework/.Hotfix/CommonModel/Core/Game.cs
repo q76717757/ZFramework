@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public static class Game//他引用不到client层的东西  把game移到client层上???
+    public static class Game
     {
         public static GameLoop GameLoop { get;} = new GameLoop();
 
-        private static World world;
-        public static World World
+        private static Process main;
+        public static Process Main
         {
             get {
-                if (world == null)
-                { 
-                    world = Entity.CreateEntity<World>();
+                if (main == null)
+                {
+                    main = ProcessFactory.CreateProcess();
                 }
-                return world;
+                return main;
             }
         }
     }
