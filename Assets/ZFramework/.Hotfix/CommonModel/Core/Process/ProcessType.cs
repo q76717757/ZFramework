@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
+    //commong
+    //Game.Root   only one
+
     //Client  
-    //Game.Root -> ClientProcess -> CurrentProcess
+    //Game.Root -> ClientProcess -> components
 
 
     //Server
-    //Game.Root -> GateProcess -> CurrentProcess
-    //Game.Root -> LocationProcess -> CurrentProcess
-    //Game.Root -> MapProcess -> CurrentProcess
+    //Game.Root -> GateProcess -> components
+    //          -> LocationProcess -> components
+    //          -> MapProcess -> components
 
     public enum ProcessType
     {
