@@ -70,10 +70,26 @@ namespace ZFramework
             Game.GameLoop.CallAwake(component);
             return component;
         }
+
+
         public T AddComponent<T>() where T : Entity
         {
             return (T)AddComponent(typeof(T));
         }
+        public T AddCompnent<T, A>(A a) where T : Entity
+        {
+            if (components.ContainsKey(typeof(T)))
+            {
+                Log.Error("一个entity下 每种component只能挂一个");
+                return null;
+            }
+            var component = CreateEntity(typeof(T));
+            components.Add(component.GetType(), component);
+            Game.GameLoop.CallAwake(component);
+            Game.GameLoop.CallAwake(component, a);
+            return component;
+        }
+
         public Entity GetComponent(Type type)
         {
             if (components.TryGetValue(type, out Entity component))

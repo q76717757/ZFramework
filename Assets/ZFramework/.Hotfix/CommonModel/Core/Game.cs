@@ -10,16 +10,16 @@ namespace ZFramework
     {
         public static GameLoop GameLoop { get;} = new GameLoop();
 
-        private static Process root;
-        public static Process Root
+        private static Process rootProcess;
+        public static Process RootProcess
         {
             get
             {
-                if (root == null)
+                if (rootProcess == null)
                 {
-                    root = ProcessFactory.CreateProcess(ProcessType.Root);
+                    rootProcess = ProcessFactory.CreateProcess(ProcessType.Root);
                 }
-                return root;
+                return rootProcess;
             }
         }
     }

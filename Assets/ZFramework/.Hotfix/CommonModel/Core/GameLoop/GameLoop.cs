@@ -307,6 +307,11 @@ namespace ZFramework
                 }
             }
         }
+        public void CallAwake<A>(Entity entity, A a)
+        { 
+
+        }
+
         public void CallEnable(Entity entity)
         {
             if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> iLifes))
