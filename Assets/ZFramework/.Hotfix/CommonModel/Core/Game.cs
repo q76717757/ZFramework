@@ -17,7 +17,7 @@ namespace ZFramework
             {
                 if (rootProcess == null)
                 {
-                    rootProcess = ProcessFactory.CreateProcess(ProcessType.Root);
+                    rootProcess = new Process();
                 }
                 return rootProcess;
             }

@@ -7,7 +7,9 @@ namespace ZFramework
     public sealed class GameLoop : IEntry
     {
         //生命周期辅助对象映射表 //componentType - loopType - loopSystemObject
-        private readonly Dictionary<Type, Dictionary<Type, List<IGameLoopSystem>>> maps = new Dictionary<Type, Dictionary<Type, List<IGameLoopSystem>>>();
+        private readonly Dictionary<Type, Dictionary<Type, IGameLoopSystem>> gameloopSystemMaps = new Dictionary<Type, Dictionary<Type, IGameLoopSystem>>();
+        //实体生命周期注册情况
+        private readonly Dictionary<Type, EntityGameLoopUsing> gameloopUsing = new Dictionary<Type, EntityGameLoopUsing>();
         //特性-类型映射表
         private readonly Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();
         //所有实体集合
@@ -24,45 +26,40 @@ namespace ZFramework
         void LoadAssembly(Type[] allTypes)
         {
             attributeMap.Clear();
+            gameloopSystemMaps.Clear();
+            gameloopUsing.Clear();
+
             foreach (Type classType in allTypes)
             {
                 if (classType.IsAbstract)
                 {
                     continue;
                 }
-                object[] attributesObj = classType.GetCustomAttributes(typeof(BaseAttribute), true);
-                if (attributesObj.Length == 0)
+                foreach (BaseAttribute attribute in classType.GetCustomAttributes<BaseAttribute>(true))
                 {
-                    continue;
-                }
-
-                foreach (BaseAttribute baseAttribute in attributesObj)
-                {
-                    Type attributeType = baseAttribute.AttributeType;
-                    if (!attributeMap.ContainsKey(attributeType))
+                    if (!attributeMap.TryGetValue(attribute.AttributeType, out List<Type> list))
                     {
-                        attributeMap.Add(attributeType, new List<Type>());
+                        list = new List<Type>();
                     }
-                    attributeMap[attributeType].Add(classType);
+                    list.Add(classType);
                 }
             }
 
-            maps.Clear();
-            foreach (Type useLifeTypes in GetTypesByAttribute(typeof(GameLoopAttribute)))
+            foreach (Type useGameLoopType in GetTypesByAttribute(typeof(GameLoopAttribute)))
             {
-                object componentLiveSystemObj = Activator.CreateInstance(useLifeTypes);
+                object gameloopSystemObj = Activator.CreateInstance(useGameLoopType);
 
-                if (componentLiveSystemObj is IGameLoopSystem iSystem)
+                if (gameloopSystemObj is IGameLoopSystem iSystem)
                 {
-                    if (!maps.ContainsKey(iSystem.EntityType))
+                    if (!gameloopSystemMaps.TryGetValue(iSystem.EntityType,out Dictionary<Type, IGameLoopSystem> systemMap))
                     {
-                        maps.Add(iSystem.EntityType, new Dictionary<Type, List<IGameLoopSystem>>());
+                        systemMap = new Dictionary<Type, IGameLoopSystem>();
                     }
-                    if (!maps[iSystem.EntityType].ContainsKey(iSystem.GameLoopType))
+
+                    if (!systemMap.TryGetValue(iSystem.GameLoopType,out IGameLoopSystem system))
                     {
-                        maps[iSystem.EntityType][iSystem.GameLoopType] = new List<IGameLoopSystem>();
+                        system = iSystem;
                     }
-                    maps[iSystem.EntityType][iSystem.GameLoopType].Add(iSystem);
                 }
             }
         }
@@ -116,13 +113,13 @@ namespace ZFramework
                 var instanceId = item.Key;
                 var entityType = item.Value.GetType();
 
-                if (maps.ContainsKey(entityType))
+                if (gameloopSystemMaps.ContainsKey(entityType))
                 {
-                    if (maps[entityType].ContainsKey(typeof(IUpdateSystem)))
+                    if (gameloopSystemMaps[entityType].ContainsKey(typeof(IUpdateSystem)))
                     {
                         updates.Enqueue(instanceId);
                     }
-                    if (maps[entityType].ContainsKey(typeof(ILateUpdateSystem)))
+                    if (gameloopSystemMaps[entityType].ContainsKey(typeof(ILateUpdateSystem)))
                     {
                         lateUpdates.Enqueue(instanceId);
                     }
@@ -140,20 +137,17 @@ namespace ZFramework
                     allEntities.Remove(instanceId);
                     continue;
                 }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> life))
+                if (gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> life))
                 {
-                    if (life.TryGetValue(typeof(IReLoadSystem), out List<IGameLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(IReLoadSystem), out IGameLoopSystem systemlist) && systemlist is IReLoadSystem system)
                     {
-                        foreach (IReLoadSystem system in systemlist)
+                        try
                         {
-                            try
-                            {
-                                system.OnReload(entity);
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error(e);
-                            }
+                            system.OnReload(entity);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
                         }
                     }
                 }
@@ -167,29 +161,22 @@ namespace ZFramework
             while (updates.Count > 0)
             {
                 long instanceId = updates.Dequeue();
-                if (!allEntities.TryGetValue(instanceId, out Entity entity))
+                if (!allEntities.TryGetValue(instanceId, out Entity entity) || entity.IsDisposed)
                 {
                     continue;
                 }
-                if (entity.IsDisposed)//改成==null?   好像没有必要
+                if (gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> life))
                 {
-                    continue;
-                }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> life))
-                {
-                    if (life.TryGetValue(typeof(IUpdateSystem), out List<IGameLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(IUpdateSystem), out IGameLoopSystem systemlist))
                     {
                         updates2.Enqueue(instanceId);
-                        foreach (IUpdateSystem system in systemlist)
+                        try
                         {
-                            try
-                            {
-                                system.OnUpdate(entity);
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error(e);
-                            }
+                            ((IUpdateSystem)systemlist).OnUpdate(entity);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
                         }
                     }
                 }
@@ -201,29 +188,22 @@ namespace ZFramework
             while (lateUpdates.Count > 0)
             {
                 long instanceId = lateUpdates.Dequeue();
-                if (!allEntities.TryGetValue(instanceId, out Entity entity))
+                if (!allEntities.TryGetValue(instanceId, out Entity entity) || entity.IsDisposed)
                 {
                     continue;
                 }
-                if (entity.IsDisposed)
+                if (gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> life))
                 {
-                    continue;
-                }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> life))
-                {
-                    if (life.TryGetValue(typeof(ILateUpdateSystem), out List<IGameLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(ILateUpdateSystem), out IGameLoopSystem systemlist))
                     {
                         lateUpdates2.Enqueue(instanceId);
-                        foreach (ILateUpdateSystem system in systemlist)
+                        try
                         {
-                            try
-                            {
-                                system.OnLateUpdate(entity);
-                            }
-                            catch (Exception e)
-                            {
-                                Log.Error(e);
-                            }
+                            ((ILateUpdateSystem)systemlist).OnLateUpdate(entity);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e); 
                         }
                     }
                 }
@@ -234,24 +214,20 @@ namespace ZFramework
             while (destory.Count > 0)
             {
                 long instanceId = destory.Dequeue();
-                if (!allEntities.TryGetValue(instanceId, out Entity entity))
+                if (!allEntities.TryGetValue(instanceId, out Entity entity) || entity.IsDisposed)
                 {
                     continue;
                 }
-                if (entity.IsDisposed)
+                if (gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> life))
                 {
-                    continue;
-                }
-                if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> life))
-                {
-                    if (life.TryGetValue(typeof(IDestorySystem), out List<IGameLoopSystem> systemlist))
+                    if (life.TryGetValue(typeof(IDestorySystem), out IGameLoopSystem systemlist))
                     {
-                        foreach (IDestorySystem system in systemlist)//这个生命周期一般就只有一个 考虑把列表去掉?
+                        if (systemlist is IDestorySystem system)
                         {
                             try
                             {
                                 system.OnDestory(entity);
-                                entity.InstanceID = 0;
+                                //entity.Dispose();
                                 allEntities.Remove(instanceId);
                             }
                             catch (Exception e)
@@ -268,86 +244,114 @@ namespace ZFramework
 
         }
 
-        public void CallAwake(Entity entity)
+        bool Register(Entity entity, out Dictionary<Type, IGameLoopSystem> gameLoop)
         {
             if (entity == null || allEntities.ContainsKey(entity.InstanceID))
             {
-                return;
+                gameLoop = null;
+                return false;
             }
             allEntities.Add(entity.InstanceID, entity);
 
-            if (!maps.ContainsKey(entity.GetType()))
+            if (!gameloopSystemMaps.TryGetValue(entity.GetType(), out gameLoop))
             {
-                return;
+                return false;
             }
-            if (maps[entity.GetType()].ContainsKey(typeof(IUpdateSystem)))
+            if (gameLoop.ContainsKey(typeof(IUpdateSystem)))
             {
                 updates.Enqueue(entity.InstanceID);
             }
-            if (maps[entity.GetType()].ContainsKey(typeof(ILateUpdateSystem)))
+            if (gameLoop.ContainsKey(typeof(ILateUpdateSystem)))
             {
                 lateUpdates.Enqueue(entity.InstanceID);
             }
-
-            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> iLifes))
+            return true;
+        }
+        public void CallAwake(Entity entity)
+        {
+            if (!Register(entity, out Dictionary<Type, IGameLoopSystem> gameLoop))
             {
-                if (iLifes.TryGetValue(typeof(IAwakeSystem), out List<IGameLoopSystem> systems))
+                return;
+            }
+            if (gameLoop == null)
+            {
+                return;
+            }
+            if (gameLoop.TryGetValue(typeof(IAwakeSystem), out IGameLoopSystem systems))
+            {
+                try
                 {
-                    foreach (IAwakeSystem system in systems)
-                    {
-                        try
-                        {
-                            system.OnAwake(entity);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e);
-                        }
-                    }
+                    ((IAwakeSystem)systems).OnAwake(entity);
                 }
+                catch (Exception e) { Log.Error(e); }
             }
         }
         public void CallAwake<A>(Entity entity, A a)
-        { 
-
+        {
+            if (!gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> gameLoop))
+            {
+                return;
+            }
+            if (gameLoop.TryGetValue(typeof(IAwakeSystem), out IGameLoopSystem systems))
+            {
+                try
+                {
+                    ((IAwakeSystem)systems).OnAwake(entity);
+                }
+                catch (Exception e) { Log.Error(e); }
+            }
+        }
+        public void CallAwake<A, B>(Entity entity, A a, B b)
+        {
+            if (!gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> gameLoop))
+            {
+                return;
+            }
+            if (gameLoop.TryGetValue(typeof(IAwakeSystem), out IGameLoopSystem systems))
+            {
+                try
+                {
+                    ((IAwakeSystem)systems).OnAwake(entity);
+                }
+                catch (Exception e) { Log.Error(e); }
+            }
         }
 
         public void CallEnable(Entity entity)
         {
-            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> iLifes))
+            if ((entity.GameLoopUsing & EntityGameLoopUsing.Enable) == EntityGameLoopUsing.Enable)
             {
-                if (iLifes.TryGetValue(typeof(IEnableSystem), out List<IGameLoopSystem> systems))
+                ((IEnableSystem)gameloopSystemMaps[entity.GetType()][typeof(IEnableSystem)]).OnEnable(entity);
+            }
+
+            if (gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> iLifes))
+            {
+                if (iLifes.TryGetValue(typeof(IEnableSystem), out IGameLoopSystem systems))
                 {
-                    foreach (IEnableSystem system in systems)
+                    try
                     {
-                        try
-                        {
-                            system.OnEnable(entity);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e);
-                        }
+                        ((IEnableSystem)systems).OnEnable(entity);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e);
                     }
                 }
             }
         }
         public void CallDisable(Entity entity)
         {
-            if (maps.TryGetValue(entity.GetType(), out Dictionary<Type, List<IGameLoopSystem>> iLifes))
+            if (gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> iLifes))
             {
-                if (iLifes.TryGetValue(typeof(IDisableSystem), out List<IGameLoopSystem> systems))
+                if (iLifes.TryGetValue(typeof(IDisableSystem), out IGameLoopSystem systems))
                 {
-                    foreach (IDisableSystem system in systems)
+                    try
                     {
-                        try
-                        {
-                            system.OnDisable(entity);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e);
-                        }
+                        ((IDisableSystem)systems as IDisableSystem).OnDisable(entity);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e);
                     }
                 }
             }

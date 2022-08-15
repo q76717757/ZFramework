@@ -11,6 +11,7 @@ namespace ZFramework
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class GameLoopAttribute : BaseAttribute
     {
+        public EntityGameLoopUsing LoopType;
     }
 
 

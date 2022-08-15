@@ -15,10 +15,14 @@ namespace ZFramework
             Log.ILog = new UnityLogger();
             Log.Info("<color=green>Launcher Start!</color>");
 
+            var clientProcess = Game.RootProcess.AddComponent<Process, ProcessType>(ProcessType.Client);
+            clientProcess.AddComponent<VersionComponent>();
 
 
-            //Game.Root.AddComponent<HttpComponent>();
-            //Game.Root.AddComponent<BundleComponent>();
+            //Game.RootProcess.AddComponent<VersionComponent>();
+            //Game.RootProcess.AddComponent<ConfigComponent>();
+            //Game.RootProcess.AddComponent<BundleComponent>();
+            //Game.RootProcess.AddComponent<UIComponent>();
 
             //var text = (TextAsset)await Resources.LoadAsync<TextAsset>("Version");
             //Debug.Log(text.text);

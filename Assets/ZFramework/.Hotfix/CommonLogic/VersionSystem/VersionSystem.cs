@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
+    public class VersionAwake : AwakeSystem<VersionComponent>
+    {
+        public override void OnAwake(VersionComponent entity)
+        {
+            Log.Info("Awake");
+        }
+    }
+
     public static class VersionSystem
     {
         //public static async Task<VersionInfo> GetServerVersionAsync(this VersionComponent component,string versionFileURL)

@@ -4,15 +4,17 @@ namespace ZFramework
 {
     public abstract class Object : IDisposable
     {
-        public long InstanceID { get; internal set; }
+        public long InstanceID { get; private set; }
         public bool IsDisposed => InstanceID == 0;
 
-        protected Object()
+        protected Object(long instanceID)
         {
+            InstanceID = instanceID;
         }
 
         public virtual void Dispose()
         {
+            InstanceID = 0;
         }
 
 

@@ -4,11 +4,27 @@ using System;
 
 namespace ZFramework
 {
-    public enum EntityState
+    [Flags]
+    public enum EntityStatus : byte
     {
-
-
+        None = 0,
+        IsFromPool = 1,
+        IsRegister = 1 << 1,
+        IsComponent = 1 << 2,
+        IsCreated = 1 << 3,
+        IsNew = 1 << 4,
     }
+    [Flags]
+    public enum EntityGameLoopUsing : byte
+    { 
+        None = 0,
+        Update = 1,
+        LateUpdate = 1<< 1,
+        Enable = 1 << 2,
+        Disable = 1 << 3,
+        Destory = 1 << 4
+    }
+
 
     public class Entity : Object
     {
@@ -16,11 +32,12 @@ namespace ZFramework
         private readonly Dictionary<Type, Entity> components = new Dictionary<Type, Entity>();//当前entity上的组件 唯一
         private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//当前entity下挂的子entity
 
-        private readonly Dictionary<Type,Dictionary<long,Entity>> componentss = new Dictionary<Type, Dictionary<long, Entity>>();
+        private readonly Dictionary<Type, List<Entity>> componentss = new Dictionary<Type, List<Entity>>();//按类型分类
+        private readonly Dictionary<long, Entity> componentsss = new Dictionary<long, Entity>();//所有child entity 按id索引
+        public Entity() : base(IdGenerater.Instance.GenerateInstanceId())
+        {
 
-        //protected Entity()
-        //{ 
-        //}
+        }
 
         public bool Enable
         {
@@ -32,7 +49,7 @@ namespace ZFramework
         {
             get;
         }
-
+        public EntityGameLoopUsing GameLoopUsing;
         public Entity Parent
         {
             get => parent;
@@ -42,12 +59,9 @@ namespace ZFramework
             }
         }
 
-
-
         public static Entity CreateEntity(Type type,bool reg = true)
         {
             Entity com = (Entity)Activator.CreateInstance(type);
-            com.InstanceID = IdGenerater.Instance.GenerateInstanceId();
             if (reg)
             {
                 Game.GameLoop.CallAwake(com);
@@ -71,22 +85,32 @@ namespace ZFramework
             return component;
         }
 
-
         public T AddComponent<T>() where T : Entity
         {
             return (T)AddComponent(typeof(T));
         }
-        public T AddCompnent<T, A>(A a) where T : Entity
+        public T AddComponent<T, A>(A a) where T : Entity
         {
             if (components.ContainsKey(typeof(T)))
             {
                 Log.Error("一个entity下 每种component只能挂一个");
                 return null;
             }
-            var component = CreateEntity(typeof(T));
+            var component = CreateEntity<T>();
             components.Add(component.GetType(), component);
-            Game.GameLoop.CallAwake(component);
             Game.GameLoop.CallAwake(component, a);
+            return component;
+        }
+        public T AddComponent<T, A, B>(A a, B b) where T : Entity
+        {
+            if (components.ContainsKey(typeof(T)))
+            {
+                Log.Error("一个entity下 每种component只能挂一个");
+                return null;
+            }
+            var component = CreateEntity<T>();
+            components.Add(component.GetType(), component);
+            Game.GameLoop.CallAwake(component, a, b);
             return component;
         }
 
@@ -189,11 +213,10 @@ namespace ZFramework
 
         public override void Dispose()
         {
-            if (this.IsDisposed)
+            if (IsDisposed)
             {
                 return;
             }
-            base.Dispose();
 
             foreach (var item in childrens.Values)
             {
@@ -211,6 +234,8 @@ namespace ZFramework
             }
             Parent = null;
             Game.GameLoop.CallDestory(this);
+
+            base.Dispose();
         }
 
     }
