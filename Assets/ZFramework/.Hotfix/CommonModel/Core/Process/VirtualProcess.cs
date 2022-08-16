@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-
-    public class Process : Entity
+    public class VirtualProcess : Entity
     {
         public ProcessType ProcessType { get; }
 
-        //public Process(ProcessType processType)
-        //{ 
-        //    ProcessType = processType;
-        //}
+        public new VirtualProcess Process
+        {
+            get => this;
+        }
     }
 }

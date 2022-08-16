@@ -10,7 +10,7 @@ namespace ZFramework
     {
         public override void OnAwake(VersionComponent entity)
         {
-            Log.Info("Awake");
+            //Log.Info("VersionAwake");
         }
     }
 

@@ -94,7 +94,7 @@ namespace ZFramework
             {
                 var uiInstance = UnityEngine.GameObject.Instantiate<GameObject>(uiPre, component.root);
 
-                var uicanvas = (UICanvasComponent)Entity.CreateEntity(type);
+                var uicanvas = (UICanvasComponent)component.CreateEntity(type);
                 uicanvas.gameObject = uiInstance;
                 uicanvas.rect = uiInstance.GetComponent<RectTransform>();
                 component.UICanvas.Add(uiType, uicanvas);

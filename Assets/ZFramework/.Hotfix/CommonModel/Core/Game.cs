@@ -10,14 +10,14 @@ namespace ZFramework
     {
         public static GameLoop GameLoop { get;} = new GameLoop();
 
-        private static Process rootProcess;
-        public static Process RootProcess
+        private static VirtualProcess rootProcess;
+        public static VirtualProcess RootProcess
         {
             get
             {
                 if (rootProcess == null)
                 {
-                    rootProcess = new Process();
+                    rootProcess = new VirtualProcess();
                 }
                 return rootProcess;
             }

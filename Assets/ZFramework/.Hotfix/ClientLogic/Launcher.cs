@@ -15,17 +15,12 @@ namespace ZFramework
             Log.ILog = new UnityLogger();
             Log.Info("<color=green>Launcher Start!</color>");
 
-            var clientProcess = Game.RootProcess.AddComponent<Process, ProcessType>(ProcessType.Client);
-            clientProcess.AddComponent<VersionComponent>();
+            var clientProcess = Game.RootProcess.AddComponent<VirtualProcess, ProcessType>(ProcessType.Client);
 
+            clientProcess.AddComponent<VRTouchBtnListenerComponent>();
 
-            //Game.RootProcess.AddComponent<VersionComponent>();
-            //Game.RootProcess.AddComponent<ConfigComponent>();
-            //Game.RootProcess.AddComponent<BundleComponent>();
-            //Game.RootProcess.AddComponent<UIComponent>();
-
-            //var text = (TextAsset)await Resources.LoadAsync<TextAsset>("Version");
-            //Debug.Log(text.text);
+            var ui = clientProcess.AddComponent<UIComponent>();
+            ui.Show(UIType.Canvas_Menu);
         }
     }
 

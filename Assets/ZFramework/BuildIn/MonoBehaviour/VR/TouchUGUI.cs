@@ -21,7 +21,6 @@ namespace ZFramework
 			currentHand = hand;
 			InputModule.instance.HoverBegin(gameObject);
 			//ControllerButtonHints.ShowButtonHint(hand, hand.uiInteractAction);
-			Debug.Log("1");
 
 			//Valve.VR.SteamVR_Fade.View(Color.yellow,5);
         }
@@ -31,7 +30,6 @@ namespace ZFramework
 			InputModule.instance.HoverEnd(gameObject);
 			//ControllerButtonHints.HideButtonHint(hand, hand.uiInteractAction);
 			currentHand = null;
-			Debug.Log("2");
 		}
 
 		protected virtual void HandHoverUpdate(Hand hand)
@@ -40,7 +38,6 @@ namespace ZFramework
 			{
 				InputModule.instance.Submit(gameObject);
 				//ControllerButtonHints.HideButtonHint(hand, hand.uiInteractAction);
-				Debug.Log("3");
 			}
 		}
 

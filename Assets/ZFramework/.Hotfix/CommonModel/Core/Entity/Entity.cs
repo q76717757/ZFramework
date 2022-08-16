@@ -39,15 +39,28 @@ namespace ZFramework
 
         }
 
+        private bool enable;
         public bool Enable
         {
-            get;
-            set;
+            get => enable;
+            set
+            {
+                enable = value;
+                if (enable)
+                {
+                    Game.GameLoop.CallEnable(this);
+                }
+                else
+                {
+                    Game.GameLoop.CallDisable(this);
+                }
+            }
         }
 
-        public Process Process
+        public VirtualProcess Process
         {
             get;
+            private set;
         }
         public EntityGameLoopUsing GameLoopUsing;
         public Entity Parent
@@ -59,12 +72,21 @@ namespace ZFramework
             }
         }
 
-        public static Entity CreateEntity(Type type)
+        public Entity CreateEntity(Type type)
         {
             Entity com = (Entity)Activator.CreateInstance(type);
+            if (this is VirtualProcess vp)
+            {
+                com.Process = vp.Process;
+            }
+            else
+            {
+                com.Process = Process;
+            }
+            com.Parent = this;
             return com;
         }
-        public static T CreateEntity<T>() where T : Entity
+        public T CreateEntity<T>() where T : Entity
         {
             return (T)CreateEntity(typeof(T)); ;
         }
