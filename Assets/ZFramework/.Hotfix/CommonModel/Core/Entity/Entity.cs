@@ -59,18 +59,14 @@ namespace ZFramework
             }
         }
 
-        public static Entity CreateEntity(Type type,bool reg = true)
+        public static Entity CreateEntity(Type type)
         {
             Entity com = (Entity)Activator.CreateInstance(type);
-            if (reg)
-            {
-                Game.GameLoop.CallAwake(com);
-            }
             return com;
         }
         public static T CreateEntity<T>() where T : Entity
         {
-            return (T)CreateEntity(typeof(T)); 
+            return (T)CreateEntity(typeof(T)); ;
         }
         public Entity AddComponent(Type type)
         {

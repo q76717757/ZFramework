@@ -37,9 +37,10 @@ namespace ZFramework
                 }
                 foreach (BaseAttribute attribute in classType.GetCustomAttributes<BaseAttribute>(true))
                 {
-                    if (!attributeMap.TryGetValue(attribute.AttributeType, out List<Type> list))
+                    if (!attributeMap.TryGetValue(attribute.AttributeType,out List<Type> list))
                     {
                         list = new List<Type>();
+                        attributeMap.Add(attribute.AttributeType, list);
                     }
                     list.Add(classType);
                 }
@@ -54,22 +55,24 @@ namespace ZFramework
                     if (!gameloopSystemMaps.TryGetValue(iSystem.EntityType,out Dictionary<Type, IGameLoopSystem> systemMap))
                     {
                         systemMap = new Dictionary<Type, IGameLoopSystem>();
+                        gameloopSystemMaps.Add(iSystem.EntityType, systemMap);
                     }
 
-                    if (!systemMap.TryGetValue(iSystem.GameLoopType,out IGameLoopSystem system))
+                    if (!systemMap.ContainsKey(iSystem.GameLoopType))
                     {
-                        system = iSystem;
+                        systemMap.Add(iSystem.GameLoopType, iSystem);
                     }
                 }
             }
         }
         public Type[] GetTypesByAttribute(Type AttributeType)
         {
-            if (!attributeMap.ContainsKey(AttributeType))
+            if (!attributeMap.TryGetValue(AttributeType, out List<Type> list))
             {
-                attributeMap.Add(AttributeType, new List<Type>());
+                list=new List<Type>();
+                attributeMap.Add(AttributeType, list);
             }
-            return attributeMap[AttributeType].ToArray();
+            return list.ToArray();
         }
 
         //入口
@@ -257,6 +260,7 @@ namespace ZFramework
             {
                 return false;
             }
+
             if (gameLoop.ContainsKey(typeof(IUpdateSystem)))
             {
                 updates.Enqueue(entity.InstanceID);
@@ -273,14 +277,11 @@ namespace ZFramework
             {
                 return;
             }
-            if (gameLoop == null)
-            {
-                return;
-            }
             if (gameLoop.TryGetValue(typeof(IAwakeSystem), out IGameLoopSystem systems))
             {
                 try
                 {
+                    Log.Info(systems.GameLoopType  + ":" + systems.EntityType);
                     ((IAwakeSystem)systems).OnAwake(entity);
                 }
                 catch (Exception e) { Log.Error(e); }
@@ -288,30 +289,30 @@ namespace ZFramework
         }
         public void CallAwake<A>(Entity entity, A a)
         {
-            if (!gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> gameLoop))
+            if (!Register(entity, out Dictionary<Type, IGameLoopSystem> gameLoop))
             {
                 return;
             }
-            if (gameLoop.TryGetValue(typeof(IAwakeSystem), out IGameLoopSystem systems))
+            if (gameLoop.TryGetValue(typeof(IAwakeSystem<A>), out IGameLoopSystem systems))
             {
                 try
                 {
-                    ((IAwakeSystem)systems).OnAwake(entity);
+                    ((IAwakeSystem<A>)systems).OnAwake(entity, a);
                 }
                 catch (Exception e) { Log.Error(e); }
             }
         }
         public void CallAwake<A, B>(Entity entity, A a, B b)
         {
-            if (!gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> gameLoop))
+            if (!Register(entity, out Dictionary<Type, IGameLoopSystem> gameLoop))
             {
                 return;
             }
-            if (gameLoop.TryGetValue(typeof(IAwakeSystem), out IGameLoopSystem systems))
+            if (gameLoop.TryGetValue(typeof(IAwakeSystem<A,B>), out IGameLoopSystem systems))
             {
                 try
                 {
-                    ((IAwakeSystem)systems).OnAwake(entity);
+                    ((IAwakeSystem<A, B>)systems).OnAwake(entity, a, b);
                 }
                 catch (Exception e) { Log.Error(e); }
             }
