@@ -12,17 +12,24 @@ namespace ZFramework
     {
         public override void OnAwake(UIComponent component)
         {
+            Log.Info("UIComponent Awake");
             var ui = new UnityEngine.GameObject("[UI]");
-            var canvas = ui.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            var scaler = ui.AddComponent<CanvasScaler>();
-            scaler.referenceResolution = new Vector2(1080, 1920);
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+            UnityEngine.GameObject.DontDestroyOnLoad(ui);
+            if (true)//isVR?
+            {
+
+            }
+            else
+            {
+                var canvas = ui.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                var scaler = ui.AddComponent<CanvasScaler>();
+                scaler.referenceResolution = new Vector2(1080, 1920);
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+            }
 
             component.root = ui.transform;
-            UnityEngine.GameObject.DontDestroyOnLoad(component.root.gameObject);
-
             component.UICanvas = new Dictionary<string, UICanvasComponent>();
 
             BulidUITypeMaps(component);
@@ -80,14 +87,14 @@ namespace ZFramework
     {
         public static UICanvasComponent Create(this UIComponent component, string uiType)
         {
-            var uiPre = Resources.Load<GameObject>(uiType);
+            var uiPre = Resources.Load<GameObject>("UI/" + uiType);
             //var uiPre = Game.World.GetComponent<BundleComponent>().LoadAsset(uiType + ".unity3d", uiType) as GameObject;
 
             if (uiPre != null && component.types.TryGetValue(uiType,out Type type))
             {
                 var uiInstance = UnityEngine.GameObject.Instantiate<GameObject>(uiPre, component.root);
 
-                var uicanvas = (UICanvasComponent)Entity.CreateEntity(type,false);
+                var uicanvas = (UICanvasComponent)Entity.CreateEntity(type);
                 uicanvas.gameObject = uiInstance;
                 uicanvas.rect = uiInstance.GetComponent<RectTransform>();
                 component.UICanvas.Add(uiType, uicanvas);
@@ -97,8 +104,7 @@ namespace ZFramework
             }
             else
             {
-                Log.Info("Create" + uiType + " Fail");
-                Log.Info(uiPre != null);
+                Log.Info($"Create {uiType} Fail");
                 return null;
             }
         }
