@@ -8,10 +8,10 @@ namespace ZFramework
 {
 	//public enum AttachmentFlags
 	//{
-	//	SnapOnAttach = 1 << 0, // 该对象应该吸附到手上指定的连接点的位置。
+	//	SnapOnAttach = 1 << 0, // 抓取的瞬间，调整抓取物位置，以适应手柄状态  该对象应该吸附到手上指定的连接点的位置。
 	//	DetachOthers = 1 << 1, // 附在这只手上的其他物体将被分离。
-	//	DetachFromOtherHand = 1 << 2, // This object will be detached from the other hand.
-	//	ParentToHand = 1 << 3, // 该对象将与另一只手分离。
+	//	DetachFromOtherHand = 1 << 2, // 一只手抓取时，另一只手也要抓取同一个物体时，原手自动松开。
+	//	ParentToHand = 1 << 3, // 该对象将成为手的父对象
 	//	VelocityMovement = 1 << 4, // 物体将尝试移动以匹配手的位置和旋转。
 	//	TurnOnKinematic = 1 << 5, // 这个物体不会对外部物理反应。
 	//	TurnOffGravity = 1 << 6, // 这个物体不会对外部物理反应。
@@ -23,7 +23,9 @@ namespace ZFramework
     {
 		private Interactable interactable;
 
-		private Hand.AttachmentFlags attachmentFlags = Hand.defaultAttachmentFlags & (~Hand.AttachmentFlags.SnapOnAttach) & (~Hand.AttachmentFlags.DetachOthers) & (~Hand.AttachmentFlags.VelocityMovement);
+		//private Hand.AttachmentFlags attachmentFlags = Hand.defaultAttachmentFlags & (~Hand.AttachmentFlags.SnapOnAttach) & (~Hand.AttachmentFlags.DetachOthers) & (~Hand.AttachmentFlags.VelocityMovement);
+		//拾取的物体
+		public Hand.AttachmentFlags attachmentFlags = Hand.AttachmentFlags.DetachFromOtherHand;//车门
 		//-------------------------------------------------
 		void Awake()
 		{
