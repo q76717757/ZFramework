@@ -38,7 +38,7 @@ namespace ZFramework
 			Debug.Log("OnHandHoverBegin ->" + hand.name);
 		}
 
-		// 当手停止悬停在该物体上时调用
+		// 当手停止悬停在该物体上时调用//joint1_M
 		private void OnHandHoverEnd(Hand hand)
 		{
 			Debug.Log("OnHandHoverEnd ->" + hand.name);
