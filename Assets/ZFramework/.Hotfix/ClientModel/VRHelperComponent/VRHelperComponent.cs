@@ -10,8 +10,10 @@ using Valve.VR.Extras;
 
 namespace ZFramework
 {
-    public class VRTouchBtnListenerComponent:Entity
+    public class VRHelperComponent:Entity
     {
+        public Player player;
+
         public SteamVR_Action_Boolean btnA;
         public SteamVR_Action_Boolean btnB;
         public SteamVR_Action_Boolean btnX;
@@ -21,10 +23,18 @@ namespace ZFramework
 
         public SnapTurn snapTurn;
 
-        public Kvr_InputModule kvr_InputModule;
+
+        public bool LineIsOn;
+
+        public bool hasLineLeft;//从前瞻虚拟世界进来 也许本来就有lp了 离开的时候就不移除 
+        public bool hasLineRight;
         public SteamVR_LaserPointer lineLeft;
         public SteamVR_LaserPointer lineRight;
+
+        public Kvr_InputModule kvr_InputModule;
         public Kvr_UIPointer uiPointerLeft;
         public Kvr_UIPointer uiPointerRight;
+
+        //public Teleport teleport;//好像没有位移的API了? set transform用着先
     }
 }
