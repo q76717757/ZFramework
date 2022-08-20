@@ -66,10 +66,10 @@ namespace KVR_UI
 
         public static bool TouchBtnValue = false;
 
-        [Header("UI交互动作"), SerializeField]
+        //[Header("UI交互动作"), SerializeField]
         private SteamVR_Action_Boolean action = SteamVR_Actions.default_InteractUI;
 
-        [Header("显示激光"), SerializeField]
+        //[Header("显示激光"), SerializeField]
         private bool enableLaserPointer = true;
 
         private SteamVR_LaserPointer laserPointer;
