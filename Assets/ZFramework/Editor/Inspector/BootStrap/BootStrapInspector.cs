@@ -62,6 +62,10 @@ namespace ZFramework
                 {
                     BuildAssemblieEditor.CompileAssembly_Development();
                 }
+                if (GUILayout.Button("临时编译release"))
+                {
+                    BuildAssemblieEditor.CompileAssembly_Debug("");
+                }
             }
             else
             {

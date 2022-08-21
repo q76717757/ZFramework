@@ -3,6 +3,7 @@ using System.Reflection;
 using System;
 using System.IO;
 using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 namespace ZFramework
 {
@@ -62,14 +63,18 @@ namespace ZFramework
         }
         static async UniTask<Assembly> LoadCode(BootFile boot)
         {
+            byte[] dll = File.ReadAllBytes(Application.streamingAssetsPath + "/Code.dll");
+            byte[] pdb = File.ReadAllBytes(Application.streamingAssetsPath + "/Code.pdb");
+            var assembly = Assembly.Load(dll, pdb);
+            return assembly;
+
+
             //获取远程版本
             //对比本地版本
             //检查本地文件完整性
 
-
-
             //这个要分模式 本地内置模式直接反射(针对不能使用loadAssembly的平台 如UWP,其他平台可以用wolong热更) 远程模式(包含web下载/本地文件夹)
-            return null;
+            //return null;
         }
 
     }
