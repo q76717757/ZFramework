@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
+using System;
 
 namespace ZFramework
 {
@@ -32,42 +33,46 @@ namespace ZFramework
 			interactable = this.GetComponent<Interactable>();
 		}
 
+		public Action<Hand> OnEnter;
         // 当手开始悬停在该对象上时调用
         private void OnHandHoverBegin(Hand hand)
 		{
+			OnEnter?.Invoke(hand);
 			Debug.Log("OnHandHoverBegin ->" + hand.name);
 		}
 
 		// 当手停止悬停在该物体上时调用//joint1_M
+		public Action<Hand> OnExit;
 		private void OnHandHoverEnd(Hand hand)
 		{
+			OnExit?.Invoke(hand);
 			Debug.Log("OnHandHoverEnd ->" + hand.name);
 		}
 
+		public Action<Hand> OnClient;
 		// 当一个手悬停在这个对象上时调用every Update()
 		private void HandHoverUpdate(Hand hand)
 		{
 			GrabTypes startingGrabType = hand.GetGrabStarting();
-			bool isGrabEnding = hand.IsGrabEnding(this.gameObject);
-
 			if (interactable.attachedToHand == null && startingGrabType != GrabTypes.None)
 			{
 				// 调用这个来继续接收HandHoverUpdate消息，
 				// 并防止手悬停在任何其他东西上
-				hand.HoverLock(interactable);
+				//hand.HoverLock(interactable);
 
 				// 把这个物体系在手上
-				hand.AttachObject(gameObject, startingGrabType, attachmentFlags);
+				//hand.AttachObject(gameObject, startingGrabType, attachmentFlags);
+				OnClient?.Invoke(hand);
 			}
-			else if (isGrabEnding)
-			{
-				// 从手上取下这个物体
-				hand.DetachObject(gameObject);
+            //else if (hand.IsGrabEnding(this.gameObject))
+            //{
+            //    // 从手上取下这个物体
+            //    hand.DetachObject(gameObject);
 
-				// 调用该函数来撤销HoverLock
-				hand.HoverUnlock(interactable);
-			}
-		}
+            //    // 调用该函数来撤销HoverLock
+            //    hand.HoverUnlock(interactable);
+            //}
+        }
 
 		// 当GameObject连接到手上时调用
 		private void OnAttachedToHand(Hand hand)

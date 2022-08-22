@@ -11,7 +11,6 @@ namespace ZFramework
     [RequireComponent(typeof(Rigidbody))]
     public class RemoteControl : MonoBehaviour
     {
-
         public Transform Joystick;
         public float joyMove = 0.1f;
         public SteamVR_Action_Vector2 moveAction = SteamVR_Input.GetAction<SteamVR_Action_Vector2>("platformer", "Move");
@@ -19,7 +18,7 @@ namespace ZFramework
 
         private Vector3 movement;
         private float glow;
-        private SteamVR_Input_Sources hand;
+        public SteamVR_Input_Sources hand;
         private Interactable interactable;
         private Vector3 brithPos;
         private Quaternion brithQua;
@@ -147,8 +146,6 @@ namespace ZFramework
             attached = true;
             onAttached?.Invoke(hand.handType, true);
 
-            //onPickUp.Invoke();
-
             hand.HoverLock(null);
 
             body.interpolation = RigidbodyInterpolation.None;
@@ -185,7 +182,6 @@ namespace ZFramework
         {
             attached = false;
             onAttached?.Invoke(hand.handType, false);
-            //onDetachFromHand.Invoke();
 
             hand.HoverUnlock(null);
 
