@@ -21,10 +21,7 @@ namespace ZFramework
         public SteamVR_Action_Boolean snapLeftAction;
         public SteamVR_Action_Boolean snapRightAction;
 
-        public SnapTurn snapTurn;
-
-
-        public bool LineIsOn;
+        public RemoteControl remoteControl;//遥控器
 
         public bool hasLineLeft;//从前瞻虚拟世界进来 也许本来就有lp了 离开的时候就不移除 
         public bool hasLineRight;
@@ -35,6 +32,5 @@ namespace ZFramework
         public Kvr_UIPointer uiPointerLeft;
         public Kvr_UIPointer uiPointerRight;
 
-        //public Teleport teleport;//好像没有位移的API了? set transform用着先
     }
 }
