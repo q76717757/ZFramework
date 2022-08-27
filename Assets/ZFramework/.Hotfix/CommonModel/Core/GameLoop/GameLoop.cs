@@ -8,12 +8,14 @@ namespace ZFramework
     {
         //生命周期辅助对象映射表 //componentType - loopType - loopSystemObject
         private readonly Dictionary<Type, Dictionary<Type, IGameLoopSystem>> gameloopSystemMaps = new Dictionary<Type, Dictionary<Type, IGameLoopSystem>>();
-        //实体生命周期注册情况
-        private readonly Dictionary<Type, EntityGameLoopUsing> gameloopUsing = new Dictionary<Type, EntityGameLoopUsing>();
+        ////实体生命周期注册情况
+        //private readonly Dictionary<Type, EntityGameLoopUsing> gameloopUsing = new Dictionary<Type, EntityGameLoopUsing>();
         //特性-类型映射表
         private readonly Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();
         //所有实体集合
         private readonly Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
+
+        private readonly VirtualProcess[] vrs = new VirtualProcess[5];//虚拟进程 分布式部署的基本单位
 
         private Queue<long> updates = new Queue<long>();
         private Queue<long> updates2 = new Queue<long>();
@@ -27,7 +29,7 @@ namespace ZFramework
         {
             attributeMap.Clear();
             gameloopSystemMaps.Clear();
-            gameloopUsing.Clear();
+            //gameloopUsing.Clear();
 
             foreach (Type classType in allTypes)
             {
@@ -320,10 +322,10 @@ namespace ZFramework
 
         public void CallEnable(Entity entity)
         {
-            if ((entity.GameLoopUsing & EntityGameLoopUsing.Enable) == EntityGameLoopUsing.Enable)
-            {
-                ((IEnableSystem)gameloopSystemMaps[entity.GetType()][typeof(IEnableSystem)]).OnEnable(entity);
-            }
+            //if ((entity.GameLoopUsing & EntityGameLoopUsing.Enable) == EntityGameLoopUsing.Enable)
+            //{
+            //    ((IEnableSystem)gameloopSystemMaps[entity.GetType()][typeof(IEnableSystem)]).OnEnable(entity);
+            //}
 
             if (gameloopSystemMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoopSystem> iLifes))
             {

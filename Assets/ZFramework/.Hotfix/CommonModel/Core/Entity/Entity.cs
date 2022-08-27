@@ -14,26 +14,15 @@ namespace ZFramework
         IsCreated = 1 << 3,
         IsNew = 1 << 4,
     }
-    [Flags]
-    public enum EntityGameLoopUsing : byte
-    { 
-        None = 0,
-        Update = 1,
-        LateUpdate = 1<< 1,
-        Enable = 1 << 2,
-        Disable = 1 << 3,
-        Destory = 1 << 4
-    }
-
 
     public class Entity : Object
     {
         private Entity parent;
         private readonly Dictionary<Type, Entity> components = new Dictionary<Type, Entity>();//当前entity上的组件 唯一
         private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//当前entity下挂的子entity
+        //private readonly Dictionary<Type, List<Entity>> componentss = new Dictionary<Type, List<Entity>>();//按类型分类
+        //private readonly Dictionary<long, Entity> componentsss = new Dictionary<long, Entity>();//所有child entity 按id索引
 
-        private readonly Dictionary<Type, List<Entity>> componentss = new Dictionary<Type, List<Entity>>();//按类型分类
-        private readonly Dictionary<long, Entity> componentsss = new Dictionary<long, Entity>();//所有child entity 按id索引
         public Entity() : base(IdGenerater.Instance.GenerateInstanceId())
         {
 
@@ -62,7 +51,7 @@ namespace ZFramework
             get;
             private set;
         }
-        public EntityGameLoopUsing GameLoopUsing;
+
         public Entity Parent
         {
             get => parent;
