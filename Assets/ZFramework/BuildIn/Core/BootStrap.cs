@@ -5,6 +5,13 @@ using System.Collections;
 
 namespace ZFramework
 {
+    public interface IAssemblyLoader
+    {
+        void Load(Assembly code);
+        void Load(Assembly model, Assembly logic);
+        void Reload(Assembly logic);
+    }
+
     public interface IEntry
     {
         void Load(Assembly code);

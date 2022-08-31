@@ -13,7 +13,7 @@ namespace ZFramework
             {
                 "CommonModel","CommonLogic","ClientModel","ClientLogic",
             };
-            string emptyCSPath = @"Assets\ZFramework\BuildIn\Hotfix\";
+            string emptyCSPath = @"Assets\ZFramework\Core\HotfixAssemblyDefinition\";
             foreach (var name in csprojNames)
             {
                 if (path.EndsWith($"Unity.{name}.csproj"))

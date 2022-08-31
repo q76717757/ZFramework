@@ -2,7 +2,9 @@
     "name": "Unity.BuildIn",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.ThirdPart.Runtime"
+        "Unity.ThirdPart.Runtime",
+        "SteamVR",
+        "SteamVR_Actions"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,10 +1,14 @@
 {
-    "name": "Unity.CommonLogic",
+    "name": "Unity.ClientModel",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.BuildIn",
         "Unity.CommonModel",
-        "Unity.ThirdPart.Runtime"
+        "Unity.ThirdPart.Runtime",
+        "SteamVR",
+        "SteamVR_Actions",
+        "Unity.TextMeshPro",
+        "Unity.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,14 +1,14 @@
 {
-    "name": "Unity.ClientModel",
+    "name": "Unity.CommonModel",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.BuildIn",
-        "Unity.CommonModel",
-        "Unity.ThirdPart.Runtime"
+        "Unity.ThirdPart.Runtime",
+        "Unity.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
