@@ -1,7 +1,9 @@
 {
     "name": "Unity.ThirdPart.Runtime",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "Unity.RenderPipelines.Universal.Runtime"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
