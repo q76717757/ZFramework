@@ -7,7 +7,7 @@ namespace ZFramework
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Start");
 			//AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 			//{
 			//	Log.Error(e.ExceptionObject.ToString());
@@ -37,6 +37,8 @@ namespace ZFramework
 
 			//Log.Console($"app start: {Game.Scene.Id} options: {JsonHelper.ToJson(Options.Instance)} ");
 
+			//new AssemblyLoader().Start();
+
 			while (true)
 			{
 				try
@@ -50,6 +52,7 @@ namespace ZFramework
 					//Log.Error(e);
 				}
 			}
+
 		}
     }
 }

@@ -1,12 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
 	  <TargetFramework>net6.0</TargetFramework>
 	  <RootNamespace>ZFramework</RootNamespace>
+	  <BaseOutputPath>..\bin</BaseOutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="ThirdParty\" />
-  </ItemGroup>
-
+	<!--<ItemGroup>
+		<Compile Include="..\..\.Hotfix\Assets\Scripts\Core\**\*.cs">
+			<Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Compile>
+	</ItemGroup>-->
+	
 </Project>
