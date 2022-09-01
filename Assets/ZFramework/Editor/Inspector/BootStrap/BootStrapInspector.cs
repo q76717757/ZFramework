@@ -19,13 +19,26 @@ namespace ZFramework
             EditorGUILayout.LabelField("引导文件", GUILayout.Width(50));
             var obj = serializedObject.FindProperty("boot");
             obj.objectReferenceValue = EditorGUILayout.ObjectField(obj.objectReferenceValue, typeof(BootFile), false);
-            serializedObject.ApplyModifiedProperties();
-            serializedObject.UpdateIfRequiredOrScript();
             EditorGUILayout.EndHorizontal();
 
+            if (obj.objectReferenceValue == null)
+            {
+
+            }
+            else
+            {
+                EditorGUILayout.BeginVertical("Box");
+                BootFileEditor.Draw(new SerializedObject(obj.objectReferenceValue));
+                EditorGUILayout.EndVertical();
+            }
+
+            serializedObject.ApplyModifiedProperties();
+            serializedObject.UpdateIfRequiredOrScript();
             EditorGUI.EndDisabledGroup();
 
+
             EditorGUILayout.Space(10);
+            GUILayout.Label("==========================================");
             GUILayout.Label("Model");
             EditorGUI.BeginDisabledGroup(true);
             var modelDll = File.Exists($"{BuildAssemblieEditor.UnityTempDllPath}Model.dll");

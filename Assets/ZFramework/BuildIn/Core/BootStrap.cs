@@ -43,5 +43,11 @@ namespace ZFramework
         void Update() => entry?.Update();
         void LateUpdate()=> entry?.LateUpdate();
         void OnApplicationQuit() => entry?.Close();
+
+
+        public static void Load(BootFile bootFile)
+        {
+
+        }
     }
 }

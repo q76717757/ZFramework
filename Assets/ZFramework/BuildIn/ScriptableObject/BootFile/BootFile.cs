@@ -18,13 +18,22 @@ namespace ZFramework
         Other,
         Web,
     }
-
+    public enum Platform
+    {
+        Win,
+        Andorid,
+        IOS,
+        WebGL,
+        UWP
+    }
 
     [CreateAssetMenu(fileName = "BootFile", menuName = "ZFramework/引导文件", order = 0)]
     public class BootFile : ScriptableObject
     {
-        //public string projectName;
+        public Platform platform;
 
+
+        //public string projectName;
         public int useHotfix;
         public int hotfixType;
 
