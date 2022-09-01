@@ -8,11 +8,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>ZFramework</RootNamespace>
-    <ProjectGuid>{6AC054C1-2F4F-36FD-0199-BA41762E767F}</ProjectGuid>
+    <RootNamespace></RootNamespace>
+    <ProjectGuid>{05A92D8B-E8CE-5E3D-DCA5-68E65D34D9D7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Unity.Core</AssemblyName>
+    <AssemblyName>Unity.PlugIn.Runtime</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -26,7 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,7 +35,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <NoConfig>true</NoConfig>
@@ -57,40 +57,395 @@
     <Analyzer Include="E:\_UnityProject\DaschowProjects\TianTao\Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\ZFramework\Core\IdGenerater.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\GameLoop.cs" />
-    <Compile Include="Assets\ZFramework\Core\Process\ProcessType.cs" />
-    <Compile Include="Assets\ZFramework\Core\Log\UnityLogger.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonMockWrapper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Entity\Entity.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\ByteHelper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\Lexer.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\SingletonCS.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\IJsonWrapper.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\IGameLoopSystem.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\MD5Helper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\ParserToken.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonExpand.cs" />
-    <Compile Include="Assets\ZFramework\Core\Log\ILog.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\windowEx.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\GameLoopSystem.cs" />
-    <Compile Include="Assets\ZFramework\Core\Log\Log.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonReader.cs" />
-    <Compile Include="Assets\ZFramework\Core\Object.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\Json.cs" />
-    <Compile Include="Assets\ZFramework\Core\CustomAttribute.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\Math3d.cs" />
-    <Compile Include="Assets\ZFramework\Core\Process\VirtualProcess.cs" />
-    <Compile Include="Assets\ZFramework\Core\Log\LogVisualization.cs" />
-    <Compile Include="Assets\ZFramework\Core\Game.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\NetHelper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\TimeHelper2.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonData.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\SingletonMono.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonWriter.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.Bridge.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\Error.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\EnumerableAsyncExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Select.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\Support\PlayMaker\Actions\AVProVideoInfo.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\VolumetricLightBeam.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\ETTaskHelper.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\AsyncEnumeratorBase.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Camera\CameraSwitcher.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\TransformUtils.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\DiagnosticsExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\AudioOutputManager.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\CompilerServices\AsyncUniTaskVoidMethodBuilder.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\UpdateStereoMaterial.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\JitterMotionGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\RuntimeHelpersAbstraction.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\BatchingHelper.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\TriggerEvent.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.Threading.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\TaskPool.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\OSXMediaPlayer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\SpringCollider.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ToLookup.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\AsyncETTaskMethodBuilder.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\ChangeVideoExample.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\EffectPulse.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\ArrayPool.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\MusicStarter.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Empty.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTaskExtensions.Shorthand.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\SphereDemo.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\Support\NGUI\ApplyToTextureWidgetNGUI.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\ContinuationQueue.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\Scriptlets\ChangeAudioTrack.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\EnumeratorAsyncExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Director\PropActivator.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\TakeUntil.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Take.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\SkipUntilCanceled.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\ArrayUtil.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\SpringManager.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\Spawner.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\AnimatorGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Join.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\DOTween\Modules\DOTweenModuleAudio.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\ExceptionExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Samples\Scripts\FreeCameraController.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\Support\PlayMaker\Actions\AVProVideoPlayer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniteInTheSky\Scripts\LipSyncController.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\InjectorLink.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\AsyncLazy.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Repeat.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Subscribe.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\CachedLightProperties.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Cast.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\PlayerLoopHelper.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\ConstantMotion.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\TransformGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Never.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\CompilerServices\StateMachineRunner.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Union.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\StatePool.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\TakeLast.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UnityAsyncExtensions.Jobs.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\ShaderProperties.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\AutoRotate.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\ThirdPersonCamera.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\CancellationTokenExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\AsUniTaskAsyncEnumerable.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\UnityEqualityComparer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\UnityWebRequestExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\Scriptlets\NativeMediaOpen.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\CompilerServices\AsyncUniTaskMethodBuilder.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ToDictionary.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ElementAt.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Channel.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\MinMax.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\GlobalMesh.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\IUniTaskSource.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Progress.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\ShaderKeywords.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UnityAsyncExtensions.uGUI.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\AudioOutput.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ToUniTaskAsyncEnumerable.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\DynamicOcclusionRaycasting.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\ETCancellationToken.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\IUniTaskAsyncEnumerable.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\AsyncUnit.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\_InternalVisibleTo.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Where.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\GroupBy.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\DynamicOcclusionDepthBuffer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\Scriptlets\PlaybackSync.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\MidiJack.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Triggers\AsyncTriggerBase.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\First.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\DisplayBackground.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\MaterialModifier.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\LightGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\WeakDictionary.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Samples\Scripts\CheckIfInsideBeam.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\Support\PlayMaker\Actions\AVProVideoControl.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\Noise3D.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\OfType.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\BaseMediaPlayer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\PlatformHelper.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Except.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\DistinctUntilChanged.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Publish.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\VCR.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\DummyMaterial.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\ShaderGenerator.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\WindowsMediaPlayer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\FaceUpdate.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Visualizer\MirrorReflection.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\HighlightNullAttribute.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\ValueStopwatch.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\SpawnerGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UnityAsyncExtensions.AssetBundleRequestAllAssets.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\VolumetricDustParticles.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Throw.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\ObjectParticleSystem.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\DynamicOcclusionAbstractBase.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ForEach.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\Version.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.WaitUntil.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\Scriptlets\LoadFromBuffer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\All.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\MinMaxRangeFloat.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Sum.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Max.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\MoveNextSource.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\WebGLMediaPlayer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\CameraGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\HLSStream.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\MediaPlayer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\StreamParser.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\SimpleController.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\ApplyToMesh.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.WhenAny.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\SelfDestruction.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Range.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\DefaultIfEmpty.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Zip.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\Enums.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTaskExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\JitterMotion.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\SpringBone.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\SpotLightHelper.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Triggers\AsyncDestroyTrigger.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\DeltaLookAtAxis.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\DOTween\Modules\DOTweenModuleEPOOutline.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Samples\Scripts\Rotater.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\Perlin.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\TurbulentMotion.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\GenericLink.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\Stream.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\CameraController.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.WhenAny.Generated.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\TakeUntilCanceled.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\DisplayIMGUI.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\MeshGenerator.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\DOTween\Modules\DOTweenModuleUnityVersion.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\InjectorBase.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Aggregate.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\PolygonHelper.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UnityAsyncExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\CancellationTokenSourceExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Skip.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\EffectFlicker.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\DOTween\Modules\DOTweenModulePhysics.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\GroupJoin.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Do.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTaskVoid.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UnityBindingExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\DemoInfo.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\ETVoid.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\IAwaiter.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Single.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\DOTween\Modules\DOTweenModuleUtils.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\Trigger.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\EditorPrefsStrings.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\GlobalSettingGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\SkipLast.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Triggers\AsyncStartTrigger.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Reaktor\Reaktor.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Effects\Back Screen\ForceAspectRatio.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ToArray.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Average.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTaskScheduler.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\Remote.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\TimeoutController.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.WhenAll.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.Factory.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\Consts.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\Interfaces.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\TakeWhile.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\SkewingHandle.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Contains.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\Scriptlets\StartEndPoint.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\SkipUntil.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\VariableMotion.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\Resampler.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\AndroidMediaPlayer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\MaterialGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Create.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Reverse.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Triggers\MonoBehaviourMessagesTriggers.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\RandomWind.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\UnityExtensions\EveryValueChanged.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\Modifier.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\UnityExtensions\EveryUpdate.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Samples\Scripts\CameraToggleBeamVisibility.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\Config.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Samples\Scripts\LightGenerator.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Injector\AudioInjector.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Pairwise.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\MinimumQueue.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\SequenceEqual.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\DOTween\Modules\DOTweenModuleSprite.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\IKCtrlRightHand.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\ParticleSystemGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTaskObservableExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\TriggerZone.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\IdleChanger.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Triggers\AsyncTriggerExtensions.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ToList.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\TaskTracker.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\AutoBlink.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Injector\BeatInjector.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\CancellationTokenEqualityComparer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Distinct.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ToObservable.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\AsyncETVoidMethodBuilder.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\CombineLatest.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\MaterialManager.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Gear\ConstantMotionGear.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\PooledDelegate.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\Scripts\UnityChanControlScriptWithRgidBody.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\AsyncETTaskCompletedMethodBuilder.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\ETTask.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UnityAsyncExtensions.MonoBehaviour.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTaskCompletionSource.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\SubtitlesUGUI.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Triggers\AsyncAwakeTrigger.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Visualizer\Visualizer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\ToHashSet.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Director\StageDirector.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\BandPassFilter.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Intersect.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Return.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\AsyncMethodBuilderAttribute.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\DOTween\Modules\DOTweenModulePhysics2D.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\CubemapCube.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\SelectMany.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UnityWebRequestException.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\FrameExtract.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\BeamGeometry.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\Mapping3D.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTaskSynchronizationContext.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Concat.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.Delay.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Last.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\LongCount.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\SampleApp_Multiple.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\DisplayUGUI.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\DOTween\Modules\DOTweenModuleUI.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\ApplyToMaterial.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\PlayerLoopTimer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Utility\Planter.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\Utils.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Buffer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\PlayerLoopRunner.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\Reaktion\Internal\ReaktorLink.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.Run.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Any.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\ETTask\ETTaskCompleted.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\SRPHelper.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Queue.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Scripts\Scriptlets\VideoTrigger.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Count.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\OrderBy.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Internal\NullMediaPlayer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\AsyncReactiveProperty.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\Support\PlayMaker\Actions\Internal\AVProVideoActionBase.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Scripts\EffectAbstractBase.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UniTask.WhenAll.Generated.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\Min.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\AppendPrepend.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\UnityAsyncExtensions.AsyncGPUReadback.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Samples\Scripts\FeaturesNotSupportedMessage.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\UnityExtensions\Timer.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Linq\SkipWhile.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Scripts\Components\Support\PlayMaker\Actions\AVProVideoEvent.cs" />
+    <Compile Include="Assets\ZFramework\PlugIn\Runtime\UniTask\Internal\ArrayPoolUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\ZFramework\Core\Unity.Core.asmdef" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_fuku.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\shadergen_includes_hdrp.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMPro.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\WSA\SDK81\ARM\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-UI-Default-Stereo.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\x86\Audio360.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-Background-FullScreen.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-IMGUI-Transparent.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_akarami_blend.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\VolumetricLightBeamShared.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Materials\UI-Default-ExtraTexture.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-VR-InsideSphere-AndroidOES.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_hair_ds.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\shadergen_includes_urp.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Effects\Shaders\Confetti.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Effects\Shaders\Scrolling Ticker.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_hada.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-UI-Default-Transparent.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\WSA\PhoneSDK81\x86\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\WSA\UWP\x86\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Effects\Shaders\Light Beam.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\ShaderUtils.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.XML" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\ShaderSpecificURP.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-Lit-Transparent-Diffuse.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\WSA\UWP\ARM\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\DOTween\readme.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-Lit-Diffuse.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Demos\Materials\UI-DefaultFont-ExtraTexture.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-VR-InsideSphere.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-VR-InsideSphere-Transparent.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_fuku_ds.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_eyelash_blend.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\WSA\SDK81\x86\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\shadergen_pass.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Visualizer\CopyDepth.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\ShaderProperties.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\x86_64\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\shadergen_base.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-VR-InsideSphere-StereoUV.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-Background-FullScreenTransparent.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\x86\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Effects\Shaders\Emmisive Surface.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\ShaderSpecificHDRP.hlsl" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\VLBGeneratedShader.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\ShaderDefines.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_hada_blend.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\WSA\PhoneSDK81\ARM\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Readme.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\WSA\UWP\x86_64\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_eye.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Effects\Shaders\Tree Leaf.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-Unlit-AndroidOES.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Visualizer\Visualizer.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-Unlit.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\ShaderPropertySystem.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\Unity.PlugIn.Runtime.asmdef" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-Unlit-Transparent.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\ShaderMaths.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Resources\Shaders\AVProVideo-BlendFrames.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\shadergen_includes_builtin.txt" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_hair.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Effects\Shaders\Back Screen.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\VolumetricLightBeam\Shaders\ShaderSpecificBuiltin.cginc" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\WSA\SDK81\x86_64\AVProVideo.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\AVProVideo\Plugins\x86_64\Audio360.dll" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChan\CandyRockStar\Shader\Unitychan_chara_eye_blend.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\TextMesh Pro\Shaders\TMP_Sprite.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Effects\Shaders\Unlit Alpha Cutout.shader" />
+    <None Include="Assets\ZFramework\PlugIn\Runtime\UnityChanStage\Textures\New Amplify Shader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -696,6 +1051,9 @@
     <Reference Include="System.Xml.XPath.XDocument">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.RenderPipelines.Universal.Runtime">
+      <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
@@ -704,14 +1062,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Unity.ZPlugIn.Runtime.csproj">
-      <Project>{A21ACAEE-FEE4-2B35-29F4-2ED67D07A676}</Project>
-      <Name>Unity.ZPlugIn.Runtime</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.BuildIn.csproj">
-      <Project>{43F577FD-5CFA-A9E5-E75A-9159BCA07B47}</Project>
-      <Name>Unity.BuildIn</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

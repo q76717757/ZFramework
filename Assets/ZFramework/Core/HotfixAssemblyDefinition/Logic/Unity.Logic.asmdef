@@ -1,9 +1,11 @@
 {
-    "name": "Unity.Core",
+    "name": "Unity.Logic",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.ZPlugIn.Runtime",
-        "Unity.BuildIn"
+        "Unity.BuildIn",
+        "Unity.Core",
+        "Unity.Data"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -16,8 +16,7 @@ namespace ZFramework
             Draw(serializedObject);
         }
 
-
-        public static async void Draw(SerializedObject serializedObject)
+        public static void Draw(SerializedObject serializedObject)
         {
             EditorGUILayout.LabelField("PlayerSetting");
             EditorGUI.BeginDisabledGroup(true);//HyCLR要求 IL2CPP后端 关闭增量GC
@@ -50,6 +49,16 @@ namespace ZFramework
             {
 
             }
+
+            //临时用
+            if (true)//前瞻子项目 win平台 mono后端  not HyCLY
+            {
+
+            }
+
+            //core层在unity工程内  在win平台下  可以和il2cpp一样的流程  打包剥离core程序集  (需要测试)?
+            //但是在其他平台要剥离core  需要HyCLR的支持
+            //否则Core将跟随工程 并且不能更新
 
             if (true)//支持热更的平台
             {

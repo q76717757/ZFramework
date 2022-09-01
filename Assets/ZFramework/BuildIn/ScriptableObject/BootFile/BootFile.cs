@@ -32,8 +32,6 @@ namespace ZFramework
     {
         public Platform platform;
 
-
-        //public string projectName;
         public int useHotfix;
         public int hotfixType;
 

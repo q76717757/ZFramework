@@ -1,13 +1,12 @@
 {
-    "name": "Unity.Core",
-    "rootNamespace": "ZFramework",
+    "name": "Unity.ZPlugIn.Runtime",
+    "rootNamespace": "",
     "references": [
-        "Unity.ZPlugIn.Runtime",
-        "Unity.BuildIn"
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

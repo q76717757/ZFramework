@@ -9,10 +9,10 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace>ZFramework</RootNamespace>
-    <ProjectGuid>{6AC054C1-2F4F-36FD-0199-BA41762E767F}</ProjectGuid>
+    <ProjectGuid>{28478B66-BD34-3B12-BA0E-CCD57E32FDA9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Unity.Core</AssemblyName>
+    <AssemblyName>Unity.ViewData</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -56,42 +56,8 @@
     <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
     <Analyzer Include="E:\_UnityProject\DaschowProjects\TianTao\Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\ZFramework\Core\IdGenerater.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\GameLoop.cs" />
-    <Compile Include="Assets\ZFramework\Core\Process\ProcessType.cs" />
-    <Compile Include="Assets\ZFramework\Core\Log\UnityLogger.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonMockWrapper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Entity\Entity.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\ByteHelper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\Lexer.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\SingletonCS.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\IJsonWrapper.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\IGameLoopSystem.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\MD5Helper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\ParserToken.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonExpand.cs" />
-    <Compile Include="Assets\ZFramework\Core\Log\ILog.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\windowEx.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\GameLoopSystem.cs" />
-    <Compile Include="Assets\ZFramework\Core\Log\Log.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonReader.cs" />
-    <Compile Include="Assets\ZFramework\Core\Object.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\Json.cs" />
-    <Compile Include="Assets\ZFramework\Core\CustomAttribute.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\Math3d.cs" />
-    <Compile Include="Assets\ZFramework\Core\Process\VirtualProcess.cs" />
-    <Compile Include="Assets\ZFramework\Core\Log\LogVisualization.cs" />
-    <Compile Include="Assets\ZFramework\Core\Game.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\NetHelper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\TimeHelper2.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonData.cs" />
-    <Compile Include="Assets\ZFramework\Core\Helper\SingletonMono.cs" />
-    <Compile Include="Assets\ZFramework\Core\Json\JsonWriter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\ZFramework\Core\Unity.Core.asmdef" />
-  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup />
   <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
@@ -696,6 +662,9 @@
     <Reference Include="System.Xml.XPath.XDocument">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
@@ -712,6 +681,22 @@
       <Project>{43F577FD-5CFA-A9E5-E75A-9159BCA07B47}</Project>
       <Name>Unity.BuildIn</Name>
     </ProjectReference>
+    <ProjectReference Include="Unity.Core.csproj">
+      <Project>{6AC054C1-2F4F-36FD-0199-BA41762E767F}</Project>
+      <Name>Unity.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Data.csproj">
+      <Project>{E73A8638-9744-B6EE-BE70-413F455972DB}</Project>
+      <Name>Unity.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="SteamVR.csproj">
+      <Project>{05A13294-9BF3-A5B4-4109-795B5DC7B864}</Project>
+      <Name>SteamVR</Name>
+    </ProjectReference>
+    <ProjectReference Include="SteamVR_Actions.csproj">
+      <Project>{301FFB60-DEE7-AC15-3D3E-D9DEC40D3456}</Project>
+      <Name>SteamVR_Actions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
@@ -722,4 +707,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Compile Include="Assets\ZFramework\.Code\ViewData\**\*.cs" />
+  </ItemGroup>
 </Project>

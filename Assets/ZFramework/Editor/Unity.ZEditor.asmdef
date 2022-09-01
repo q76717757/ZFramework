@@ -1,13 +1,15 @@
 {
-    "name": "Unity.Core",
+    "name": "Unity.ZEditor",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.ZPlugIn.Runtime",
-        "Unity.BuildIn"
+        "Unity.BuildIn",
+        "Unity.Core"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
