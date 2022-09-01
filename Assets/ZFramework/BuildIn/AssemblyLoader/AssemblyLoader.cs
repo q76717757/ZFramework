@@ -2,14 +2,14 @@
 using System.Reflection;
 using System;
 using System.IO;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace ZFramework
 {
     public static class AssemblyLoader
     {
-        public static async UniTask<IEntry> GetEntry(BootFile boot)
+        public static async Task<IEntry> GetEntry(BootFile boot)
         {
 #if UNITY_EDITOR
             return GetEntryDevelopment();
@@ -50,10 +50,8 @@ namespace ZFramework
             return Assembly.Load(c, d);
         }
 
-
-
         //发布模式  打包成一个热更dll->code.dll  客户端更新要求重启应用
-        static async UniTask<IEntry> GetEntryRelease(BootFile boot)
+        static async Task<IEntry> GetEntryRelease(BootFile boot)
         {
             var codesAssembly = await LoadCode(boot);
 
@@ -61,20 +59,12 @@ namespace ZFramework
             entry.Load(codesAssembly);
             return entry;
         }
-        static async UniTask<Assembly> LoadCode(BootFile boot)
+        static async Task<Assembly> LoadCode(BootFile boot)
         {
             byte[] dll = File.ReadAllBytes(Application.streamingAssetsPath + "/Code.dll");
             byte[] pdb = File.ReadAllBytes(Application.streamingAssetsPath + "/Code.pdb");
             var assembly = Assembly.Load(dll, pdb);
             return assembly;
-
-
-            //获取远程版本
-            //对比本地版本
-            //检查本地文件完整性
-
-            //这个要分模式 本地内置模式直接反射(针对不能使用loadAssembly的平台 如UWP,其他平台可以用wolong热更) 远程模式(包含web下载/本地文件夹)
-            //return null;
         }
 
     }

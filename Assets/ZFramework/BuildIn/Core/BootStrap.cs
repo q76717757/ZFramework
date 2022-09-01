@@ -33,10 +33,6 @@ namespace ZFramework
         void Awake()
         {
             DontDestroyOnLoad(gameObject);
-            ET.ETTask.ExceptionHandler += (e) =>
-            {
-                Debug.Log(e.Message);
-            };
         }
 
         async void Start() => entry = await AssemblyLoader.GetEntry(boot);
