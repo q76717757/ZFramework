@@ -5,8 +5,6 @@ Logs/
 bin/
 .DS_Store
 Library/
-*.csproj
-*.sln
 Assets/Bundles/
 .cache/
 Assets/BootFiles/
