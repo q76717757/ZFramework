@@ -7,13 +7,6 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public interface IAssemblyLoader
-    {
-        void Load(Assembly code);
-        void Load(Assembly model, Assembly logic);
-        void Reload(Assembly logic);
-    }
-
     public static class AssemblyLoader
     {
         public static async Task<IEntry> GetEntry(BootFile boot)
@@ -24,7 +17,6 @@ namespace ZFramework
             return await GetEntryRelease(boot);
 #endif
         }
-
 
         //热重载/开发模式
         static IEntry GetEntryDevelopment()
