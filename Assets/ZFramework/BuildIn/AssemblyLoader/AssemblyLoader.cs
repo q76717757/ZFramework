@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
+    public interface IAssemblyLoader
+    {
+        void Load(Assembly code);
+        void Load(Assembly model, Assembly logic);
+        void Reload(Assembly logic);
+    }
+
     public static class AssemblyLoader
     {
         public static async Task<IEntry> GetEntry(BootFile boot)

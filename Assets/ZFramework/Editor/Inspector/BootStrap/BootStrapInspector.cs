@@ -100,7 +100,7 @@ namespace ZFramework
             var dll = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.dll");
             var pdb = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.pdb");
             Assembly logic = Assembly.Load(dll,pdb);
-            (target as BootStrap).entry.Reload(logic);
+            //(target as BootStrap).entry.Reload(logic);
 
         }
 
