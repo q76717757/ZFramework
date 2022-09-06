@@ -4,46 +4,15 @@ using System;
 
 namespace ZFramework
 {
-    [Flags]
-    public enum EntityStatus : byte
+    public sealed class Entity : Object
     {
-        None = 0,
-        IsFromPool = 1,
-        IsRegister = 1 << 1,
-        IsComponent = 1 << 2,
-        IsCreated = 1 << 3,
-        IsNew = 1 << 4,
-    }
-
-    public class Entity : Object
-    {
-        private Entity parent;
-        private readonly Dictionary<Type, Entity> components = new Dictionary<Type, Entity>();//当前entity上的组件 唯一
         private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//当前entity下挂的子entity
-        //private readonly Dictionary<Type, List<Entity>> componentss = new Dictionary<Type, List<Entity>>();//按类型分类
-        //private readonly Dictionary<long, Entity> componentsss = new Dictionary<long, Entity>();//所有child entity 按id索引
+        private readonly Dictionary<Type, ComponentData> components = new Dictionary<Type, ComponentData>();//当前entity上的组件 唯一
+
+        private Entity parent;
 
         public Entity() : base(IdGenerater.Instance.GenerateInstanceId())
         {
-
-        }
-
-        private bool enable;
-        public bool Enable
-        {
-            get => enable;
-            set
-            {
-                enable = value;
-                if (enable)
-                {
-                    Game.GameLoop.CallEnable(this);
-                }
-                else
-                {
-                    Game.GameLoop.CallDisable(this);
-                }
-            }
         }
 
         public VirtualProcess Process
@@ -61,25 +30,16 @@ namespace ZFramework
             }
         }
 
-        public Entity CreateEntity(Type type)
+        public ComponentData CreateEntity(Type type)
         {
-            Entity com = (Entity)Activator.CreateInstance(type);
-            if (this is VirtualProcess vp)
-            {
-                com.Process = vp.Process;
-            }
-            else
-            {
-                com.Process = Process;
-            }
-            com.Parent = this;
+            ComponentData com = (ComponentData)Activator.CreateInstance(type,this);
             return com;
         }
-        public T CreateEntity<T>() where T : Entity
+        public T CreateEntity<T>() where T : ComponentData
         {
-            return (T)CreateEntity(typeof(T)); ;
+            return (T)CreateEntity(typeof(T));
         }
-        public Entity AddComponent(Type type)
+        public ComponentData AddComponent(Type type)
         {
             if (components.ContainsKey(type))
             {
@@ -92,11 +52,11 @@ namespace ZFramework
             return component;
         }
 
-        public T AddComponent<T>() where T : Entity
+        public T AddComponent<T>() where T : ComponentData
         {
             return (T)AddComponent(typeof(T));
         }
-        public T AddComponent<T, A>(A a) where T : Entity
+        public T AddComponent<T, A>(A a) where T : ComponentData
         {
             if (components.ContainsKey(typeof(T)))
             {
@@ -108,7 +68,7 @@ namespace ZFramework
             Game.GameLoop.CallAwake(component, a);
             return component;
         }
-        public T AddComponent<T, A, B>(A a, B b) where T : Entity
+        public T AddComponent<T, A, B>(A a, B b) where T : ComponentData
         {
             if (components.ContainsKey(typeof(T)))
             {
@@ -120,16 +80,20 @@ namespace ZFramework
             Game.GameLoop.CallAwake(component, a, b);
             return component;
         }
-
-        public Entity GetComponent(Type type)
+        public T AddComponentWithNewChild<T>()
         {
-            if (components.TryGetValue(type, out Entity component))
+            return default;
+        }
+
+        public ComponentData GetComponent(Type type)
+        {
+            if (components.TryGetValue(type, out ComponentData component))
             {
                 return component;
             }
             return null;
         }
-        public T GetComponent<T>() where T : Entity
+        public T GetComponent<T>() where T : ComponentData
         {
             var output = GetComponent(typeof(T));
             if (output != null)
@@ -138,7 +102,7 @@ namespace ZFramework
             }
             return null;
         }
-        public T GetComponentInParent<T>(bool includSelf = true) where T : Entity
+        public T GetComponentInParent<T>(bool includSelf = true) where T : ComponentData
         {
             if (includSelf)
             {
@@ -154,7 +118,7 @@ namespace ZFramework
             }
             return null;
         }
-        public T GetComponentInChildren<T>(bool includSelf = true) where T : Entity
+        public T GetComponentInChildren<T>(bool includSelf = true) where T : ComponentData
         {
             if (includSelf)
             {
@@ -178,13 +142,13 @@ namespace ZFramework
             }
             return null;
         }
-        public T[] GetComponentsInChilren<T>(bool includSelf = true) where T : Entity
+        public T[] GetComponentsInChilren<T>(bool includSelf = true) where T : ComponentData
         {
             List<T> ts = new List<T>();
             GetComponentsInChildren_private(ts, includSelf);
             return ts.ToArray();
         }
-        private void GetComponentsInChildren_private<T>(List<T> list, bool includSelf) where T : Entity
+        private void GetComponentsInChildren_private<T>(List<T> list, bool includSelf) where T : ComponentData
         {
             if (includSelf)
             {
@@ -203,16 +167,16 @@ namespace ZFramework
                 item.GetComponentsInChildren_private(list, true);
             }
         }
-        public void RemoveComponent(Entity component)
+        public void RemoveComponent(ComponentData component)
         {
-            if (components.TryGetValue(component.GetType(), out Entity target))
+            if (components.TryGetValue(component.GetType(), out ComponentData target))
             {
                 Game.GameLoop.CallDestory(target);
             }
         }
-        public void RemoveComponent<T>() where T : Entity
+        public void RemoveComponent<T>() where T : ComponentData
         {
-            if (components.TryGetValue(typeof(T),out Entity component))
+            if (components.TryGetValue(typeof(T),out ComponentData component))
             {
                 Game.GameLoop.CallDestory(component);
             }
@@ -240,7 +204,7 @@ namespace ZFramework
                 }
             }
             Parent = null;
-            Game.GameLoop.CallDestory(this);
+            //Game.GameLoop.CallDestory(this);
 
             base.Dispose();
         }

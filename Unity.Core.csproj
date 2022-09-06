@@ -54,39 +54,40 @@
   </PropertyGroup>
   <ItemGroup>
     <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-    <Analyzer Include="E:\_UnityProject\DaschowProjects\TianTao\Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\ZFramework\Core\IdGenerater.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\GameLoop.cs" />
-    <Compile Include="Assets\ZFramework\Core\Process\ProcessType.cs" />
+    <Compile Include="Assets\ZFramework\Core\Object\IdGenerater.cs" />
+    <Compile Include="Assets\ZFramework\Core\Event\EventSystem.cs" />
+    <Compile Include="Assets\ZFramework\Core\GameLoop\GameLoopSystem.cs" />
+    <Compile Include="Assets\ZFramework\Core\Object\ProcessType.cs" />
     <Compile Include="Assets\ZFramework\Core\Log\UnityLogger.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\JsonMockWrapper.cs" />
-    <Compile Include="Assets\ZFramework\Core\Entity\Entity.cs" />
+    <Compile Include="Assets\ZFramework\Core\Object\Entity.cs" />
     <Compile Include="Assets\ZFramework\Core\Helper\ByteHelper.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\Lexer.cs" />
     <Compile Include="Assets\ZFramework\Core\Helper\SingletonCS.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\IJsonWrapper.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\IGameLoopSystem.cs" />
+    <Compile Include="Assets\ZFramework\Core\GameLoop\IGameLoop.cs" />
     <Compile Include="Assets\ZFramework\Core\Helper\MD5Helper.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\ParserToken.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\JsonExpand.cs" />
     <Compile Include="Assets\ZFramework\Core\Log\ILog.cs" />
     <Compile Include="Assets\ZFramework\Core\Helper\windowEx.cs" />
-    <Compile Include="Assets\ZFramework\Core\GameLoop\GameLoopSystem.cs" />
+    <Compile Include="Assets\ZFramework\Core\GameLoop\GameLoopImpl.cs" />
     <Compile Include="Assets\ZFramework\Core\Log\Log.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\JsonReader.cs" />
-    <Compile Include="Assets\ZFramework\Core\Object.cs" />
+    <Compile Include="Assets\ZFramework\Core\Object\Object.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\Json.cs" />
     <Compile Include="Assets\ZFramework\Core\CustomAttribute.cs" />
     <Compile Include="Assets\ZFramework\Core\Helper\Math3d.cs" />
-    <Compile Include="Assets\ZFramework\Core\Process\VirtualProcess.cs" />
+    <Compile Include="Assets\ZFramework\Core\Object\VirtualProcess.cs" />
     <Compile Include="Assets\ZFramework\Core\Log\LogVisualization.cs" />
     <Compile Include="Assets\ZFramework\Core\Game.cs" />
     <Compile Include="Assets\ZFramework\Core\Helper\NetHelper.cs" />
     <Compile Include="Assets\ZFramework\Core\Helper\TimeHelper2.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\JsonData.cs" />
     <Compile Include="Assets\ZFramework\Core\Helper\SingletonMono.cs" />
+    <Compile Include="Assets\ZFramework\Core\Object\ComponentData.cs" />
     <Compile Include="Assets\ZFramework\Core\Json\JsonWriter.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -327,8 +328,14 @@
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="DOTween">
+      <HintPath>Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll</HintPath>
+    </Reference>
     <Reference Include="Valve.Newtonsoft.Json">
       <HintPath>Assets\SteamVR\Input\Plugins\JSON.NET\Valve.Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTweenEditor">
+      <HintPath>Assets\ZFramework\PlugIn\Editor\DOTween\Editor\DOTweenEditor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
       <HintPath>Library\PackageCache\com.unity.analytics@3.6.12\AnalyticsStandardEvents\Unity.Analytics.StandardEvents.dll</HintPath>
@@ -341,12 +348,6 @@
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>Library\PackageCache\com.unity.render-pipelines.core@10.6.0\Editor\ShaderGenerator\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween">
-      <HintPath>Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTweenEditor">
-      <HintPath>Assets\ZFramework\PlugIn\Editor\DOTween\Editor\DOTweenEditor.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>

@@ -24,8 +24,9 @@ namespace ZFramework
             var modelAssembly = LoadModel();
             var logicAssembly = LoadLogic();
 
-            var entry = modelAssembly.GetType("ZFramework.Game").GetProperty("GameLoop").GetValue(null) as IEntry;
-            entry.Load(modelAssembly, logicAssembly);
+            //可以考虑反射一个加载器出来 ? 在加载器里面去load文件  这样load文件逻辑也可以热更了
+            var entry = modelAssembly.GetType("ZFramework.Game").GetProperty("GameLoop").GetValue(null) as IEntry;//将框架入口反射出来
+            entry.Load(modelAssembly, logicAssembly); //然后初始化生命周期和事件系统
             return entry;
         }
         static Assembly LoadModel()

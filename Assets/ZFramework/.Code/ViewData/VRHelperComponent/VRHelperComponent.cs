@@ -10,7 +10,7 @@ using Valve.VR.Extras;
 
 namespace ZFramework
 {
-    public class VRHelperComponent:Entity
+    public class VRHelperComponent : ComponentData
     {
         public Player player;
 

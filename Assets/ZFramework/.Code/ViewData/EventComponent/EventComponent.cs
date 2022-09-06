@@ -15,7 +15,7 @@ namespace ZFramework
         public abstract void Run(T arg = default);
     }
 
-    public class EventComponent : Entity
+    public class EventComponent : ComponentData
     {
         public Dictionary<Type, List<IEvent>> allEvents = new Dictionary<Type, List<IEvent>>();
     }

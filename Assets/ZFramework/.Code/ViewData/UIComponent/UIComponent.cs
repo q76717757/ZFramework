@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ZFramework
 {
-    public class UIComponent : Entity
+    public class UIComponent : ComponentData
     {
         public Transform root;//根节点[UI]
 

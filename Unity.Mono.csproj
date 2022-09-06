@@ -8,11 +8,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>ZFramework</RootNamespace>
-    <ProjectGuid>{28478B66-BD34-3B12-BA0E-CCD57E32FDA9}</ProjectGuid>
+    <RootNamespace>ZFreamwork</RootNamespace>
+    <ProjectGuid>{92985B42-D8A7-FC9E-B4C9-9D3F3E0A3671}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>Unity.ViewData</AssemblyName>
+    <AssemblyName>Unity.Mono</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -56,10 +56,17 @@
     <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\ZFramework\Core\Components\ViewData\Empty.cs" />
+    <Compile Include="Assets\ZFramework\Mono\VR\TouchHelper.cs" />
+    <Compile Include="Assets\ZFramework\Mono\MonoBehaviour\PolygonGraphic.cs" />
+    <Compile Include="Assets\ZFramework\Mono\VR\TeleportHelper.cs" />
+    <Compile Include="Assets\ZFramework\Mono\VR\TagLookAtHelper.cs" />
+    <Compile Include="Assets\ZFramework\Mono\Temp\Canvas_Car.cs" />
+    <Compile Include="Assets\ZFramework\Mono\VR\TouchUGUI.cs" />
+    <Compile Include="Assets\ZFramework\Mono\VR\RemoteControl.cs" />
+    <Compile Include="Assets\ZFramework\Mono\MonoBehaviour\PortControl.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\ZFramework\Core\Components\ViewData\Unity.ViewData.asmdef" />
+    <None Include="Assets\ZFramework\Mono\Unity.Mono.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -665,9 +672,6 @@
     <Reference Include="System.Xml.XPath.XDocument">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\Facades\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
     </Reference>
@@ -680,17 +684,9 @@
       <Project>{A21ACAEE-FEE4-2B35-29F4-2ED67D07A676}</Project>
       <Name>Unity.ZPlugIn.Runtime</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.Mono.csproj">
-      <Project>{92985B42-D8A7-FC9E-B4C9-9D3F3E0A3671}</Project>
-      <Name>Unity.Mono</Name>
-    </ProjectReference>
     <ProjectReference Include="Unity.Core.csproj">
       <Project>{6AC054C1-2F4F-36FD-0199-BA41762E767F}</Project>
       <Name>Unity.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="Unity.Data.csproj">
-      <Project>{E73A8638-9744-B6EE-BE70-413F455972DB}</Project>
-      <Name>Unity.Data</Name>
     </ProjectReference>
     <ProjectReference Include="SteamVR.csproj">
       <Project>{05A13294-9BF3-A5B4-4109-795B5DC7B864}</Project>
@@ -710,7 +706,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Compile Include="Assets\ZFramework\.Code\ViewData\**\*.cs" />
-  </ItemGroup>
 </Project>

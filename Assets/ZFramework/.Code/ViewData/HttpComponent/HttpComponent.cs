@@ -13,7 +13,7 @@ namespace ZFramework
         public byte[] data;
     }
 
-    public class HttpComponent : Entity
+    public class HttpComponent : ComponentData
     {
         public const string HTTPURP = "http://120.79.82.49:8880/ChongqingdaxueVirtualExperiment/";
     }

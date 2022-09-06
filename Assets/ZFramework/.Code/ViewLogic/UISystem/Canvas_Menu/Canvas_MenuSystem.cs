@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace ZFramework
 {
-    public class CanvasMenuAwake : AwakeSystem<Canvas_MenuComponent>
+    public class CanvasMenuAwake : OnAwakeImpl<Canvas_MenuComponent>
     {
         public override void OnAwake(Canvas_MenuComponent entity)
         {
@@ -75,12 +75,11 @@ namespace ZFramework
             canvas.LookAt(followHead, Vector3.up);
             canvas.rotation *= Quaternion.Euler(0, 180, 0);
 
-            component.Process.GetComponent<VRHelperComponent>().SetUILine(true);
-
+            //component.Process.GetComponent<VRHelperComponent>().SetUILine(true);
         }
         public static void Hide(this Canvas_MenuComponent component)
         {
-            component.Process.GetComponent<VRHelperComponent>().SetUILine(false);
+            //component.Process.GetComponent<VRHelperComponent>().SetUILine(false);
             component.gameObject.SetActive(false);
         }
 

@@ -1,11 +1,14 @@
 {
-    "name": "Unity.Logic",
+    "name": "Unity.ViewData",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.ZPlugIn.Runtime",
-        "Unity.BuildIn",
+        "Unity.Mono",
         "Unity.Core",
-        "Unity.Data"
+        "Unity.Data",
+        "SteamVR",
+        "SteamVR_Actions",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

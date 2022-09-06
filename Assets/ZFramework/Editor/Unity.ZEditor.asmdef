@@ -3,7 +3,8 @@
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.BuildIn",
-        "Unity.Core"
+        "Unity.Core",
+        "Unity.Mono"
     ],
     "includePlatforms": [
         "Editor"

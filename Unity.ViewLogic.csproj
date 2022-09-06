@@ -54,10 +54,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-    <Analyzer Include="E:\_UnityProject\DaschowProjects\TianTao\Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll" />
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Assets\ZFramework\Core\Components\ViewLogic\Empty.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\ZFramework\Core\Components\ViewLogic\Unity.ViewLogic.asmdef" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
@@ -293,8 +296,14 @@
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\PlaybackEngines\WindowsStandaloneSupport\UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="DOTween">
+      <HintPath>Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll</HintPath>
+    </Reference>
     <Reference Include="Valve.Newtonsoft.Json">
       <HintPath>Assets\SteamVR\Input\Plugins\JSON.NET\Valve.Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTweenEditor">
+      <HintPath>Assets\ZFramework\PlugIn\Editor\DOTween\Editor\DOTweenEditor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
       <HintPath>Library\PackageCache\com.unity.analytics@3.6.12\AnalyticsStandardEvents\Unity.Analytics.StandardEvents.dll</HintPath>
@@ -307,12 +316,6 @@
     </Reference>
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>Library\PackageCache\com.unity.render-pipelines.core@10.6.0\Editor\ShaderGenerator\ICSharpCode.NRefactory.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTween">
-      <HintPath>Assets\ZFramework\PlugIn\Runtime\DOTween\DOTween.dll</HintPath>
-    </Reference>
-    <Reference Include="DOTweenEditor">
-      <HintPath>Assets\ZFramework\PlugIn\Editor\DOTween\Editor\DOTweenEditor.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>D:\Unity\2020.3.16f1c1\Editor\Data\MonoBleedingEdge\lib\mono\4.7.1-api\mscorlib.dll</HintPath>
@@ -677,9 +680,9 @@
       <Project>{A21ACAEE-FEE4-2B35-29F4-2ED67D07A676}</Project>
       <Name>Unity.ZPlugIn.Runtime</Name>
     </ProjectReference>
-    <ProjectReference Include="Unity.BuildIn.csproj">
-      <Project>{43F577FD-5CFA-A9E5-E75A-9159BCA07B47}</Project>
-      <Name>Unity.BuildIn</Name>
+    <ProjectReference Include="Unity.Mono.csproj">
+      <Project>{92985B42-D8A7-FC9E-B4C9-9D3F3E0A3671}</Project>
+      <Name>Unity.Mono</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Core.csproj">
       <Project>{6AC054C1-2F4F-36FD-0199-BA41762E767F}</Project>

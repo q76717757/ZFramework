@@ -8,7 +8,7 @@ using UnityEngine.UI;
   
 namespace ZFramework
 {
-    public class UISystemAwake : AwakeSystem<UIComponent>
+    public class UISystemAwake : OnAwakeImpl<UIComponent>
     {
         public override void OnAwake(UIComponent component)
         {
@@ -95,13 +95,14 @@ namespace ZFramework
                 var uiInstance = UnityEngine.GameObject.Instantiate<GameObject>(uiPre, component.root);
                 uiInstance.AddComponent<KVR_UI.Kvr_UICanvas>();
 
-                var uicanvas = (UICanvasComponent)component.CreateEntity(type);
-                uicanvas.gameObject = uiInstance;
-                uicanvas.rect = uiInstance.GetComponent<RectTransform>();
-                component.UICanvas.Add(uiType, uicanvas);
+                return null;
+                //var uicanvas = (UICanvasComponent)component.CreateEntity(type);
+                //uicanvas.gameObject = uiInstance;
+                //uicanvas.rect = uiInstance.GetComponent<RectTransform>();
+                //component.UICanvas.Add(uiType, uicanvas);
 
-                Game.GameLoop.CallAwake(uicanvas);
-                return uicanvas;
+                //Game.GameLoop.CallAwake(uicanvas);
+                //return uicanvas;
             }
             else
             {

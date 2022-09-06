@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ZFramework
 {
-    public class EventReload : ReloadSystem<EventComponent>
+    public class EventReload : OnReloadImpl<EventComponent>
     {
         public override void OnReload(EventComponent component)
         {
@@ -16,7 +16,7 @@ namespace ZFramework
         }
     }
 
-    public class EventAwake : AwakeSystem<EventComponent>
+    public class EventAwake : OnAwakeImpl<EventComponent>
     {
         public override void OnAwake(EventComponent component)
         {
@@ -49,8 +49,13 @@ namespace ZFramework
                 }
             }
         }
+        public static void CallNext<T>(this EventComponent self, T eventArg) where T : struct
+        {
 
-        public static void Reset(this EventComponent component) {
+        }
+
+        public static void Reset(this EventComponent component)
+        {
             var allEvents = component.allEvents;
             allEvents.Clear();
             foreach (Type useLifeTypes in Game.GameLoop.GetTypesByAttribute(typeof(EventAttribute)))

@@ -10,7 +10,7 @@ using TMPro;
 
 namespace ZFramework
 {
-    public class Canvas_VideoAwake : AwakeSystem<Canvas_VideoComponent>
+    public class Canvas_VideoAwake : OnAwakeImpl<Canvas_VideoComponent>
     {
         public override void OnAwake(Canvas_VideoComponent entity)
         {
@@ -57,6 +57,7 @@ namespace ZFramework
             entity.ChangeMod(0);
         }
     }
+
 
     public static class Canvas_VideoSystem
     {

@@ -1,14 +1,15 @@
 {
-    "name": "Unity.Data",
-    "rootNamespace": "ZFramework",
+    "name": "Unity.Mono",
+    "rootNamespace": "ZFreamwork",
     "references": [
         "Unity.ZPlugIn.Runtime",
-        "Unity.BuildIn",
-        "Unity.Core"
+        "Unity.Core",
+        "SteamVR",
+        "SteamVR_Actions"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

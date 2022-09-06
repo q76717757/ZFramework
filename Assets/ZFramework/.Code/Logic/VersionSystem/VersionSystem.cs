@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public class VersionAwake : AwakeSystem<VersionComponent>
+    public class VersionAwake : OnAwakeImpl<VersionComponent>
     {
         public override void OnAwake(VersionComponent entity)
         {

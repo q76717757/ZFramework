@@ -8,20 +8,9 @@ namespace ZFramework
 {
     public static class Game
     {
-        public static GameLoop GameLoop { get;} = new GameLoop();
-
-        private static VirtualProcess rootProcess;
-        public static VirtualProcess RootProcess
-        {
-            get
-            {
-                if (rootProcess == null)
-                {
-                    rootProcess = new VirtualProcess();
-                }
-                return rootProcess;
-            }
-        }
+        public static GameLoopSystem GameLoop { get;} = new GameLoopSystem();
+        public static EventSystem Event { get;} = new EventSystem();
     }
 
 }
+  

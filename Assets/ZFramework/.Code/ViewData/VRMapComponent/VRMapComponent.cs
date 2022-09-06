@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ZFramework
 {
-    public class VRMapComponent:Entity
+    public class VRMapComponent : ComponentData
     {
         public bool isOn;
 

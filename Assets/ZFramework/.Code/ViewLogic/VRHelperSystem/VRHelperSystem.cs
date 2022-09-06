@@ -11,7 +11,7 @@ using Valve.VR.Extras;
 
 namespace ZFramework
 {
-    public class VRHelperAwake : AwakeSystem<VRHelperComponent>
+    public class VRHelperAwake : OnAwakeImpl<VRHelperComponent>
     {
         public override void OnAwake(VRHelperComponent entity)
         {
@@ -63,7 +63,7 @@ namespace ZFramework
         }
     }
 
-    public class VRTouchBtnListenerUpdate : UpdateSystem<VRHelperComponent>
+    public class VRTouchBtnListenerUpdate : OnUpdateImpl<VRHelperComponent>
     {
         public override void OnUpdate(VRHelperComponent entity)
         {

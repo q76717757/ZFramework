@@ -14,8 +14,8 @@ namespace ZFramework
             if (entry != null)
             {
                 gameObject.AddComponent<DriveStrap>().Init(entry);
+                DontDestroyOnLoad(gameObject);
             }
-            DontDestroyOnLoad(gameObject);
         }
     }
 }

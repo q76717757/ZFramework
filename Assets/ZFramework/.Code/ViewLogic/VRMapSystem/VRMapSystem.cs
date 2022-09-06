@@ -8,7 +8,7 @@ using DG.Tweening;
 
 namespace ZFramework
 {
-    public class VRMapAwake : AwakeSystem<VRMapComponent>
+    public class VRMapAwake : OnAwakeImpl<VRMapComponent>
     {
         public override void OnAwake(VRMapComponent entity)
         {

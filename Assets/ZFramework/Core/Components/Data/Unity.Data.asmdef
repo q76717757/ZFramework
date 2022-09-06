@@ -1,10 +1,13 @@
 {
-    "name": "Unity.BuildIn",
+    "name": "Unity.Data",
     "rootNamespace": "ZFramework",
-    "references": [],
+    "references": [
+        "Unity.ZPlugIn.Runtime",
+        "Unity.Core"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

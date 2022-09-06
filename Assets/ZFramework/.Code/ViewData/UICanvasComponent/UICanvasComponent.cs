@@ -2,7 +2,7 @@
 
 namespace ZFramework
 {
-    public abstract class UICanvasComponent :Entity
+    public abstract class UICanvasComponent :ComponentData
     {
         public GameObject gameObject;
         public RectTransform rect;
