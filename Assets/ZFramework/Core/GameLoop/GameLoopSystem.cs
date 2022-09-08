@@ -86,13 +86,6 @@ namespace ZFramework
             var met = logicAssembly.GetType("ZFramework.Launcher").GetMethod("Start");
             met.Invoke(null, new object[met.GetParameters().Length]);
         }
-        void IEntry.Load(Assembly code)
-        {
-            LoadAssembly(code.GetTypes());
-
-            var met = code.GetType("ZFramework.Launcher").GetMethod("Start");
-            met.Invoke(null, new object[met.GetParameters().Length]);
-        }
         void IEntry.Reload(Assembly logicAssembly)
         {
             var types = new List<Type>();
@@ -155,6 +148,15 @@ namespace ZFramework
             }
             Log.Info("<color=green>Hot Reload!</color>");
         }
+
+        void IEntry.Load(Assembly code)
+        {
+            LoadAssembly(code.GetTypes());
+
+            var met = code.GetType("ZFramework.Launcher").GetMethod("Start");
+            met.Invoke(null, new object[met.GetParameters().Length]);
+        }
+
 
         //生命周期
         void IEntry.Update()
@@ -239,6 +241,10 @@ namespace ZFramework
                     }
                 }
             }
+        }
+        void IEntry.Fouce(bool fouce)
+        { 
+
         }
         void IEntry.Close() 
         {

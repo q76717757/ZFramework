@@ -11,6 +11,7 @@ namespace ZFramework
 
         void Update();
         void LateUpdate();
+        void Fouce(bool fouce);
         void Close();
     }
 
@@ -21,6 +22,7 @@ namespace ZFramework
         public void Init(IEntry entry)=> this.entry = entry;
         private void Update()=> entry.Update();
         private void LateUpdate() => entry.LateUpdate();
+        private void OnApplicationFocus(bool focus)=> entry.Fouce(focus);
         private void OnApplicationQuit() => entry.Close();
     }
 }
