@@ -3,8 +3,8 @@
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.ZPlugIn.Runtime",
-        "Unity.Mono",
         "Unity.Core",
+        "Unity.Mono",
         "Unity.Data",
         "SteamVR",
         "SteamVR_Actions",

@@ -13,7 +13,7 @@ namespace ZFramework
             {
                 "Data","Logic","ViewData","ViewLogic",//为了文件夹排序 用这个命名
             };
-            string emptyCSPath = @"Assets\ZFramework\Core\HotfixAssemblyDefinition\";
+            string emptyCSPath = @"Assets\ZFramework\Core\Components\";
             foreach (var name in csprojNames)
             {
                 if (path.EndsWith($"Unity.{name}.csproj"))

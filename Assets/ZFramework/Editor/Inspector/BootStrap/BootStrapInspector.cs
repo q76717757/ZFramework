@@ -11,6 +11,7 @@ namespace ZFramework
     [CustomEditor(typeof(BootStrap))]
     public class BootStrapInspector: Editor
     {
+
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlaying);
@@ -93,7 +94,6 @@ namespace ZFramework
 
         }
 
-
         async void HotReload()
         {
             var assemblyName = await BuildAssemblieEditor.CompileAssembly_Logic("", "");
@@ -101,7 +101,6 @@ namespace ZFramework
             var pdb = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.pdb");
             Assembly logic = Assembly.Load(dll,pdb);
             //(target as BootStrap).entry.Reload(logic);
-
         }
 
         void backup()
@@ -139,6 +138,9 @@ namespace ZFramework
             }
         }
     }
+
+
+
 
 #if UNITY_2020_3_OR_NEWER
     [InitializeOnLoad]

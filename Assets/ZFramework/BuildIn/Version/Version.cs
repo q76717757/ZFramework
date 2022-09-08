@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Code Version -> Download Code -> Load Code -> Asset Version -> DownLoad Asset -> Start Game
+//杩欏簲璇ユ槸涓嫭绔嬩笖缁熶竴鍥哄畾鐨勭増鏈帶鍒堕�昏緫  姝ｅ父鏉ヨ鐗堟湰鎺у埗鏂规纭畾涔嬪悗灏变笉鑳戒慨鏀逛簡  鍚﹀垯鍙兘瀵艰嚧鐗堟湰杩唬鐨勮繃绋嬩腑鍥犱负鐗堟湰鍒ゆ柇涓嶅悓鍑虹幇鏂眰
 namespace ZFramework
 {
-    //Code Version -> Download Code -> Load Code -> Asset Version -> DownLoad Asset -> Start Game
-    //这应该是个独立且统一固定的版本控制逻辑  正常来讲版本控制方案确定之后就不能修改了  否则可能导致版本迭代的过程中因为版本判断不同出现断层
     public class Version
     {
 
