@@ -11,7 +11,6 @@ namespace ZFramework
     [CustomEditor(typeof(BootStrap))]
     public class BootStrapInspector: Editor
     {
-
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginDisabledGroup(EditorApplication.isPlaying);
@@ -42,15 +41,15 @@ namespace ZFramework
             GUILayout.Label("==========================================");
             GUILayout.Label("Model");
             EditorGUI.BeginDisabledGroup(true);
-            var modelDll = File.Exists($"{BuildAssemblieEditor.UnityTempDllPath}Model.dll");
-            GUILayout.TextField(modelDll ? $"{BuildAssemblieEditor.UnityTempDllPath}Model.dll" : "Model.Dll Not Exists");
+            var modelDll = File.Exists($"{AssemblyLoader.TempDllPath}Model.dll");
+            GUILayout.TextField(modelDll ? $"{AssemblyLoader.TempDllPath}Model.dll" : "Model.Dll Not Exists");
             EditorGUI.EndDisabledGroup();
 
             GUILayout.Label("Logic");
             EditorGUI.BeginDisabledGroup(true);
-            if (Directory.Exists(BuildAssemblieEditor.UnityTempDllPath))
+            if (Directory.Exists(AssemblyLoader.TempDllPath))
             {
-                string[] logicFiles = Directory.GetFiles(BuildAssemblieEditor.UnityTempDllPath, "Logic_*.dll");
+                string[] logicFiles = Directory.GetFiles(AssemblyLoader.TempDllPath, "Logic_*.dll");
                 if (logicFiles.Length > 0)
                 {
                     foreach (string file in logicFiles)
@@ -97,8 +96,8 @@ namespace ZFramework
         async void HotReload()
         {
             var assemblyName = await BuildAssemblieEditor.CompileAssembly_Logic("", "");
-            var dll = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.dll");
-            var pdb = File.ReadAllBytes($"{BuildAssemblieEditor.UnityTempDllPath}{assemblyName}.pdb");
+            var dll = File.ReadAllBytes($"{AssemblyLoader.TempDllPath}{assemblyName}.dll");
+            var pdb = File.ReadAllBytes($"{AssemblyLoader.TempDllPath}{assemblyName}.pdb");
             Assembly logic = Assembly.Load(dll,pdb);
             //(target as BootStrap).entry.Reload(logic);
         }

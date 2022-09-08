@@ -10,7 +10,6 @@ namespace ZFramework
 {
     public static class BuildAssemblieEditor
     {
-        public const string UnityTempDllPath = ".cache/";//编译程序集的输出位置
         public const string AssetsSaveDllPath = "Assets/Bundles/Code/";//程序集的保存位置
 
         public static async void CompileAssembly_Development()
@@ -28,7 +27,7 @@ namespace ZFramework
         }
         public static async Task<string> CompileAssembly_Logic(string projectName,string modelTick)
         {
-            string[] logicFiles = Directory.GetFiles(UnityTempDllPath, "Logic_*");
+            string[] logicFiles = Directory.GetFiles(AssemblyLoader.TempDllPath, "Logic_*");
             foreach (string file in logicFiles)
             {
                 File.Delete(file);
@@ -38,7 +37,7 @@ namespace ZFramework
             {
                 "Assets/ZFramework/.Code/Logic/",
                 "Assets/ZFramework/.Code/ViewLogic/"
-            }, new[] {Path.Combine(UnityTempDllPath, "Model.dll") });//hotfix引用model
+            }, new[] {Path.Combine(AssemblyLoader.TempDllPath, "Model.dll") });//hotfix引用model
 
             return logicFile;
         }
@@ -53,8 +52,8 @@ namespace ZFramework
         {
             Directory.CreateDirectory(AssetsSaveDllPath);
 
-            File.Copy($"{UnityTempDllPath}{assemblyName}.dll", $"{AssetsSaveDllPath}{assemblyName}.dll.bytes", true);
-            File.Copy($"{UnityTempDllPath}{assemblyName}.pdb", $"{AssetsSaveDllPath}{assemblyName}.pdb.bytes", true);
+            File.Copy($"{AssemblyLoader.TempDllPath}{assemblyName}.dll", $"{AssetsSaveDllPath}{assemblyName}.dll.bytes", true);
+            File.Copy($"{AssemblyLoader.TempDllPath}{assemblyName}.pdb", $"{AssetsSaveDllPath}{assemblyName}.pdb.bytes", true);
 
             AssetDatabase.Refresh();
 
@@ -82,11 +81,11 @@ namespace ZFramework
                     }
                 }
             }
-            Directory.CreateDirectory(UnityTempDllPath);
+            Directory.CreateDirectory(AssemblyLoader.TempDllPath);
 
             //删除旧的
-            string dllPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.dll");
-            string pdbPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.pdb");
+            string dllPath = Path.Combine(AssemblyLoader.TempDllPath, $"{assemblyName}.dll");
+            string pdbPath = Path.Combine(AssemblyLoader.TempDllPath, $"{assemblyName}.pdb");
             if (File.Exists(dllPath))
             {
                 File.Delete(dllPath);
