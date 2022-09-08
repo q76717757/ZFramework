@@ -6,10 +6,10 @@
 	  <BaseOutputPath>..\bin</BaseOutputPath>
   </PropertyGroup>
 
-	<!--<ItemGroup>
-		<Compile Include="..\..\.Hotfix\Assets\Scripts\Core\**\*.cs">
-			<Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
+	<ItemGroup>
+		<Compile Include="..\..\.Code\Data\**\*.cs">
+			<Link>Model\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
-	</ItemGroup>-->
+	</ItemGroup>
 	
 </Project>

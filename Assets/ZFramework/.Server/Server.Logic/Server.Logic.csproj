@@ -7,10 +7,10 @@
   </PropertyGroup>
 
 
-	<!--<ItemGroup>
-		<Compile Include="..\..\.Hotfix\Assets\Scripts\Core\**\*.cs">
-			<Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
+	<ItemGroup>
+		<Compile Include="..\..\.Code\Logic\**\*.cs">
+			<Link>Logic\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
-	</ItemGroup>-->
+	</ItemGroup>
 	
 </Project>
