@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if VR
+using UnityEngine;
 using Valve.VR;
 using UnityEngine.EventSystems;
 using Valve.VR.Extras;
@@ -213,3 +214,4 @@ namespace KVR_UI
         }
     }
 }
+#endif

@@ -66,7 +66,7 @@ namespace ZFramework
             component.Refs.Get<GameObject>("Btn2").SetActive(true);
             component.Refs.Get<GameObject>("Btn3").SetActive(true);
 
-             
+#if VR
             var followHead = Valve.VR.InteractionSystem.Player.instance.hmdTransform;
             var forw = followHead.forward;
 
@@ -74,7 +74,7 @@ namespace ZFramework
             canvas.position = followHead.transform.position + new Vector3(forw.x, 0, forw.z);
             canvas.LookAt(followHead, Vector3.up);
             canvas.rotation *= Quaternion.Euler(0, 180, 0);
-
+#endif
             //component.Process.GetComponent<VRHelperComponent>().SetUILine(true);
         }
         public static void Hide(this Canvas_MenuComponent component)

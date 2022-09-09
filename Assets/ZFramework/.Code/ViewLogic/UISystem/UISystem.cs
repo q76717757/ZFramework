@@ -93,7 +93,10 @@ namespace ZFramework
             if (uiPre != null && component.types.TryGetValue(uiType,out Type type))
             {
                 var uiInstance = UnityEngine.GameObject.Instantiate<GameObject>(uiPre, component.root);
+
+#if VR
                 uiInstance.AddComponent<KVR_UI.Kvr_UICanvas>();
+#endif
 
                 return null;
                 //var uicanvas = (UICanvasComponent)component.CreateEntity(type);

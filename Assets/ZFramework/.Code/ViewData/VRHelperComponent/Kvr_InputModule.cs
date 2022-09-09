@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if VR
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -314,3 +315,4 @@ namespace KVR_UI
         }
     }
 }
+#endif

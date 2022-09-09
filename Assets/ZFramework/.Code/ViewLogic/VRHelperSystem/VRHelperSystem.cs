@@ -1,4 +1,5 @@
-﻿using KVR_UI;
+﻿#if VR
+using KVR_UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -241,3 +242,4 @@ namespace ZFramework
     }
 
 }
+#endif
