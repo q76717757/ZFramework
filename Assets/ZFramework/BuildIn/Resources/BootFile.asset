@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d6c89552a652374ab6887bb767988ef, type: 3}
   m_Name: BootFile
   m_EditorClassIdentifier: 
+  platform: 0
   useHotfix: 1
   hotfixType: 0

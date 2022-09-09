@@ -18,18 +18,18 @@ namespace ZFramework
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("引导文件", GUILayout.Width(50));
             var obj = serializedObject.FindProperty("boot");
-            obj.objectReferenceValue = EditorGUILayout.ObjectField(obj.objectReferenceValue, typeof(BootFile), false);
+            obj.objectReferenceValue = (BootFile)EditorGUILayout.ObjectField(obj.objectReferenceValue, typeof(BootFile), false);
             EditorGUILayout.EndHorizontal();
 
-            if (obj.objectReferenceValue == null)
-            {
-
-            }
-            else
+            if (obj.objectReferenceValue != null)
             {
                 EditorGUILayout.BeginVertical("Box");
                 BootFileEditor.Draw(new SerializedObject(obj.objectReferenceValue));
                 EditorGUILayout.EndVertical();
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("需要一个引导文件", MessageType.Error);
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -71,35 +71,21 @@ namespace ZFramework
             EditorGUI.BeginDisabledGroup(EditorApplication.isCompiling);
             if (!EditorApplication.isPlaying)
             {
-                if (GUILayout.Button("Compile Model + Logic"))
+                if (GUILayout.Button("Compile Model + Logic",GUILayout.Height(50)))
                 {
                     BuildAssemblieEditor.CompileAssembly_Development();
                 }
-                if (GUILayout.Button("临时编译release"))
-                {
-                    BuildAssemblieEditor.CompileAssembly_Debug("");
-                }
-            }
-            else
-            {
-                if (GUILayout.Button("逻辑热重载"))
-                {
-                    HotReload();
-                }
+
+                //if (GUILayout.Button("临时编译release"))
+                //{
+                //    BuildAssemblieEditor.CompileAssembly_Debug("");
+                //}
+
             }
             EditorGUI.EndDisabledGroup();
 
             EditorGUI.EndDisabledGroup();
 
-        }
-
-        async void HotReload()
-        {
-            var assemblyName = await BuildAssemblieEditor.CompileAssembly_Logic("", "");
-            var dll = File.ReadAllBytes($"{AssemblyLoader.TempDllPath}{assemblyName}.dll");
-            var pdb = File.ReadAllBytes($"{AssemblyLoader.TempDllPath}{assemblyName}.pdb");
-            Assembly logic = Assembly.Load(dll,pdb);
-            //(target as BootStrap).entry.Reload(logic);
         }
 
         void backup()
@@ -151,26 +137,27 @@ namespace ZFramework
         }
         private static void OnHierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
         {
-            var obj = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
-            if (obj == null) return;
-
-            if (obj.GetComponent<BootStrap>() != null)
+            if (EditorUtility.InstanceIDToObject(instanceID) is GameObject obj && obj != null)
             {
-                GUIStyle style = new GUIStyle()
+                var Style = new GUIStyle()
                 {
                     padding =
-                        {
-                            left =EditorStyles.label.padding.left + 17,
-                            top = EditorStyles.label.padding.top
-                        },
+                    {
+                        left =EditorStyles.label.padding.left + 17,
+                        top = EditorStyles.label.padding.top
+                    },
                     normal =
-                        {
-                            textColor = Color.green
-                        }
+                    {
+                        textColor = Color.green
+                    }
                 };
-                if (style != null)
+
+                if (obj.GetComponent<BootStrap>() != null || obj.GetComponent<DriveStrap>() != null)
                 {
-                    GUI.Label(selectionRect, obj.name, style);//重叠的 底层原本的字还在
+                    if (Style != null)
+                    {
+                        GUI.Label(selectionRect, obj.name, Style);//重叠的 底层原本的字还在
+                    }
                 }
             }
         }

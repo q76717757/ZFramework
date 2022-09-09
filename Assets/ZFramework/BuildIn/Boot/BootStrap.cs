@@ -7,16 +7,19 @@ namespace ZFramework
     [DisallowMultipleComponent]
     public class BootStrap : MonoBehaviour
     {
+        public bool codeMod;
         public BootFile boot;
 
-        async void Start()
+        void Start()
+        {
+            Load(boot);
+            Destroy(gameObject);
+        }
+
+        public static async void Load(BootFile boot)
         {
             var entry = await AssemblyLoader.GetEntry(boot);
-            if (entry != null)
-            {
-                gameObject.AddComponent<DriveStrap>().Init(entry);
-                DontDestroyOnLoad(gameObject);
-            }
+            new GameObject("[ZFramework]").AddComponent<DriveStrap>().Init(entry);
         }
     }
 }

@@ -242,10 +242,6 @@ namespace ZFramework
                 }
             }
         }
-        void IEntry.Fouce(bool fouce)
-        { 
-
-        }
         void IEntry.Close() 
         {
 
