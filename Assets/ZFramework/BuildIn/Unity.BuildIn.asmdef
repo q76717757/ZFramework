@@ -1,9 +1,7 @@
 {
     "name": "Unity.BuildIn",
     "rootNamespace": "ZFramework",
-    "references": [
-        "Unity.ThirdParty"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

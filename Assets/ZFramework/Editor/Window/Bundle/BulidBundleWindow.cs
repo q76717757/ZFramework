@@ -26,7 +26,7 @@ namespace ZFramework
 
         private void OnEnable()
         {
-            outPath = Path.Combine(Application.dataPath, "_Bundles").Replace("\\", "/");
+            outPath = Path.Combine(Application.dataPath, "Bundles").Replace("\\", "/");
             target = EditorUserBuildSettings.activeBuildTarget;
             option = BuildAssetBundleOptions.None;
         }

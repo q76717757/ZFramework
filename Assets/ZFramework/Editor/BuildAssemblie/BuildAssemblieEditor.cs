@@ -10,42 +10,63 @@ namespace ZFramework
 {
     public static class BuildAssemblieEditor
     {
-        public const string UnityTempDllPath = "Temp/Bin/Debug/";//编译程序集的输出位置
         public const string AssetsSaveDllPath = "Assets/Bundles/Code/";//程序集的保存位置
+        public const string HideCSPath = "Assets/ZFramework/.Code/";//实际编译脚本的隐藏目录
 
         public static async void CompileAssembly_Development()
         {
-            await BuildAssembly("Model", new[]
+            string projectName = "";
+            string tick = (DateTime.Now.Ticks / 10000).ToString("X2");
+
+            await CompileAssembly("Model", new[]
             {
-                "Assets/ZFramework/.Hotfix/CommonModel/",
-                "Assets/ZFramework/.Hotfix/ClientModel/"
+                $"{HideCSPath}Data/",
+                $"{HideCSPath}ViewData/"
             }, Array.Empty<string>());
-            await CompileAssembly_Logic();
+
+            await CompileAssembly_Logic(projectName, tick);
         }
-        public static async Task<string> CompileAssembly_Logic()//only UnityEditor
+        public static async Task<string> CompileAssembly_Logic(string projectName,string modelTick)
         {
-            string[] logicFiles = Directory.GetFiles(UnityTempDllPath, "Logic_*");
+            string[] logicFiles = Directory.GetFiles(AssemblyLoader.TempDllPath, "Logic_*");
             foreach (string file in logicFiles)
             {
                 File.Delete(file);
             }
             string logicFile = $"Logic_{DateTime.Now.Ticks / 10000:X2}";//不改名重载不了
-            await BuildAssembly(logicFile, new[]
+            await CompileAssembly(logicFile, new[]
             {
-                "Assets/ZFramework/.Hotfix/CommonLogic/",
-                "Assets/ZFramework/.Hotfix/ClientLogic/"
-            }, new[] {Path.Combine(UnityTempDllPath, "Model.dll") });//hotfix引用model
+               $"{HideCSPath}Logic/",
+                $"{HideCSPath}ViewLogic/"
+            }, new[] {Path.Combine(AssemblyLoader.TempDllPath, "Model.dll") });//hotfix引用model
 
             return logicFile;
         }
 
-        public static async void CompileAssembly_Debug()
+        public static async void CompileAssembly_Debug(string projectName)
         {
-            await BuildAssembly("Code", new string[] { "Assets/ZFramework/.Hotfix/" }, Array.Empty<string>(), CodeOptimization.Debug);
+            await CompileAssembly("Code", new string[] { HideCSPath }, Array.Empty<string>(), CodeOptimization.Debug);
             CopyDllToAsssetFromTemp("Code");
         }
 
-        private static async Task BuildAssembly(string assemblyName, string[] codeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization = CodeOptimization.Debug)
+        private static void CopyDllToAsssetFromTemp(string assemblyName)
+        {
+            Directory.CreateDirectory(AssetsSaveDllPath);
+
+            File.Copy($"{AssemblyLoader.TempDllPath}{assemblyName}.dll", $"{AssetsSaveDllPath}{assemblyName}.dll.bytes", true);
+            File.Copy($"{AssemblyLoader.TempDllPath}{assemblyName}.pdb", $"{AssetsSaveDllPath}{assemblyName}.pdb.bytes", true);
+
+            AssetDatabase.Refresh();
+             
+            AssetImporter assetImporter1 = AssetImporter.GetAtPath($"{AssetsSaveDllPath}{assemblyName}.dll.bytes");
+            assetImporter1.assetBundleName = "code";
+            AssetImporter assetImporter2 = AssetImporter.GetAtPath($"{AssetsSaveDllPath}{assemblyName}.pdb.bytes");
+            assetImporter2.assetBundleName = "code";
+
+            AssetDatabase.Refresh();
+        }
+
+        private static async Task CompileAssembly(string assemblyName, string[] codeDirectorys, string[] additionalReferences, CodeOptimization codeOptimization = CodeOptimization.Debug)
         {
             //查找外部CS文件
             List<string> scripts = new List<string>();
@@ -61,11 +82,11 @@ namespace ZFramework
                     }
                 }
             }
-            Directory.CreateDirectory(UnityTempDllPath);
+            Directory.CreateDirectory(AssemblyLoader.TempDllPath);
 
             //删除旧的
-            string dllPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.dll");
-            string pdbPath = Path.Combine(UnityTempDllPath, $"{assemblyName}.pdb");
+            string dllPath = Path.Combine(AssemblyLoader.TempDllPath, $"{assemblyName}.dll");
+            string pdbPath = Path.Combine(AssemblyLoader.TempDllPath, $"{assemblyName}.pdb");
             if (File.Exists(dllPath))
             {
                 File.Delete(dllPath);
@@ -81,7 +102,7 @@ namespace ZFramework
             BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
             assemblyBuilder.buildTarget = EditorUserBuildSettings.activeBuildTarget;
             assemblyBuilder.buildTargetGroup = buildTargetGroup;
-            assemblyBuilder.compilerOptions.CodeOptimization = codeOptimization;//19版本没有这项 20版本有
+            assemblyBuilder.compilerOptions.CodeOptimization = codeOptimization;
             assemblyBuilder.compilerOptions.ApiCompatibilityLevel = PlayerSettings.GetApiCompatibilityLevel(buildTargetGroup);
             //assemblyBuilder.compilerOptions.AllowUnsafeCode = true;
             assemblyBuilder.additionalReferences = additionalReferences;
@@ -113,22 +134,6 @@ namespace ZFramework
                 }
                 Debug.Log($"Compile Success!  <color=green>[{assemblyName}]</color>");
             }
-        }
-        private static void CopyDllToAsssetFromTemp(string assemblyName)
-        {
-            Directory.CreateDirectory(AssetsSaveDllPath);
-
-            File.Copy($"{UnityTempDllPath}{assemblyName}.dll", $"{AssetsSaveDllPath}{assemblyName}.dll.bytes", true);
-            File.Copy($"{UnityTempDllPath}{assemblyName}.pdb", $"{AssetsSaveDllPath}{assemblyName}.pdb.bytes", true);
-
-            AssetDatabase.Refresh();
-
-            AssetImporter assetImporter1 = AssetImporter.GetAtPath($"{AssetsSaveDllPath}{assemblyName}.dll.bytes");
-            assetImporter1.assetBundleName = "code";
-            AssetImporter assetImporter2 = AssetImporter.GetAtPath($"{AssetsSaveDllPath}{assemblyName}.pdb.bytes");
-            assetImporter2.assetBundleName = "code";
-
-            AssetDatabase.Refresh();
         }
 
     }

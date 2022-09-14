@@ -1,0 +1,23 @@
+{
+    "name": "Unity.ZEditor",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.BuildIn",
+        "Unity.Core",
+        "Unity.Mono",
+        "Unity.OnlyPC",
+        "Unity.OnlyPhone",
+        "Unity.OnlyVR"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

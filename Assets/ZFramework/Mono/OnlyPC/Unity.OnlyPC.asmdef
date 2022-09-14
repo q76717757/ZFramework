@@ -1,0 +1,25 @@
+{
+    "name": "Unity.OnlyPC",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.ZPlugIn.Runtime",
+        "Unity.Core",
+        "Unity.Mono"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ONLY_PC"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
