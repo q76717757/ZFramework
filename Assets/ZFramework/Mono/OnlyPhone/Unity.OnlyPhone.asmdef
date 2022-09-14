@@ -1,17 +1,24 @@
 {
-    "name": "Unity.Mono",
-    "rootNamespace": "ZFreamwork",
+    "name": "Unity.OnlyPhone",
+    "rootNamespace": "ZFramework",
     "references": [
         "Unity.ZPlugIn.Runtime",
-        "Unity.Core"
+        "Unity.Core",
+        "Unity.Mono"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "iOS"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "ONLY_PHONE"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

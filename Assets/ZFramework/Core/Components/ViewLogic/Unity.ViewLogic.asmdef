@@ -3,13 +3,15 @@
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.ZPlugIn.Runtime",
+        "Unity.BuildIn",
         "Unity.Core",
         "Unity.Mono",
+        "Unity.OnlyPC",
+        "Unity.OnlyPhone",
+        "Unity.OnlyVR",
         "Unity.Data",
         "Unity.Logic",
         "Unity.ViewData",
-        "SteamVR",
-        "SteamVR_Actions",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [],

@@ -1,5 +1,4 @@
-﻿#if UNITY_VR
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
@@ -157,4 +156,3 @@ namespace ZFramework
 		}
 	}
 }
-#endif

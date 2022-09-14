@@ -1,23 +1,25 @@
 {
-    "name": "Unity.ZEditor",
+    "name": "Unity.OnlyPC",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.BuildIn",
+        "Unity.ZPlugIn.Runtime",
         "Unity.Core",
-        "Unity.Mono",
-        "Unity.OnlyPC",
-        "Unity.OnlyPhone",
-        "Unity.OnlyVR"
+        "Unity.Mono"
     ],
     "includePlatforms": [
-        "Editor"
+        "Editor",
+        "macOSStandalone",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "ONLY_PC"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

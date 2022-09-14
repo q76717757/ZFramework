@@ -1,17 +1,24 @@
 {
-    "name": "Unity.Mono",
-    "rootNamespace": "ZFreamwork",
+    "name": "Unity.OnlyVR",
+    "rootNamespace": "ZFramework",
     "references": [
         "Unity.ZPlugIn.Runtime",
-        "Unity.Core"
+        "Unity.Core",
+        "Unity.Mono"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "ONLY_VR"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
