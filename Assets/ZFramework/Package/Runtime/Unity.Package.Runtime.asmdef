@@ -1,13 +1,10 @@
 {
-    "name": "Unity.Core",
-    "rootNamespace": "ZFramework",
-    "references": [
-        "Unity.Package.Runtime",
-        "Unity.Boot"
-    ],
+    "name": "Unity.Package.Runtime",
+    "rootNamespace": "",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

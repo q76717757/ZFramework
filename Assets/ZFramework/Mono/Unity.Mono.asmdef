@@ -2,7 +2,7 @@
     "name": "Unity.Mono",
     "rootNamespace": "ZFreamwork",
     "references": [
-        "Unity.ZPlugIn.Runtime",
+        "Unity.Package.Runtime",
         "Unity.Core"
     ],
     "includePlatforms": [],

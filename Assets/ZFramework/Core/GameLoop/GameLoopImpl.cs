@@ -41,7 +41,7 @@ namespace ZFramework
         public Type GameLoopType => typeof(IReLoad);
         void IReLoad.OnReload(ComponentData self) => OnReload((T)self);
         public abstract void OnReload(T self);
-    }
+    } 
     [GameLoop]
     public abstract class OnEnableImpl<T> : IEnable where T : ComponentData
     {

@@ -1,24 +1,26 @@
 {
-    "name": "Unity.OnlyPhone",
+    "name": "Unity.Editor",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Package.Runtime",
+        "Unity.Boot",
         "Unity.Core",
-        "Unity.Mono"
+        "Unity.Mono",
+        "Unity.OnlyPC",
+        "Unity.OnlyPhone",
+        "Unity.OnlyVR",
+        "Unity.Data",
+        "Unity.Func",
+        "Unity.View"
     ],
     "includePlatforms": [
-        "Android",
-        "Editor",
-        "iOS"
+        "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [
-        "ONLY_PHONE"
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

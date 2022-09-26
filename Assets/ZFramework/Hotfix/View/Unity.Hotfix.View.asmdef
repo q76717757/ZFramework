@@ -1,24 +1,19 @@
 {
-    "name": "Unity.OnlyPhone",
+    "name": "Unity.Hotfix.View",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.Package.Runtime",
         "Unity.Core",
-        "Unity.Mono"
+        "Unity.Hotfix.Data",
+        "Unity.Hotfix.Func"
     ],
-    "includePlatforms": [
-        "Android",
-        "Editor",
-        "iOS"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [
-        "ONLY_PHONE"
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

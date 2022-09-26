@@ -11,8 +11,6 @@ namespace ZFramework
     {
         public override void OnInspectorGUI()
         {
-            var boot = (target as BootFile);
-
             Draw(serializedObject);
         }
 
@@ -34,63 +32,45 @@ namespace ZFramework
 
             if (serializedObject == null) return;
 
-            //目标平台  win android ios  webgl uwp
-            //         [     热更     ] [ 不热更 ]
-            var targetPlatform = (Platform)serializedObject.FindProperty("platform").enumValueIndex;
-            serializedObject.FindProperty("platform").enumValueIndex = (int)(Platform)EditorGUILayout.EnumPopup(targetPlatform);
+            GUILayout.Label("根据项目实际情况配置选项");
 
-            serializedObject.FindProperty("useHotfix").intValue = EditorGUILayout.Popup(serializedObject.FindProperty("useHotfix").intValue, new string[] { "不应用", "应用" });
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("目标平台:");
+            var platform = serializedObject.FindProperty("platform");
+            platform.enumValueIndex = (int)(Platform)EditorGUILayout.EnumPopup((Platform)platform.enumValueIndex);
+            var selectPlatform = (Platform)platform.enumValueIndex;
+            EditorGUILayout.EndHorizontal();
 
-            if (serializedObject.FindProperty("useHotfix").intValue == 1)
+            switch (selectPlatform)
             {
-                serializedObject.FindProperty("hotfixType").intValue = EditorGUILayout.Popup(serializedObject.FindProperty("hotfixType").intValue, new string[] { "本地", "远程" });
-            }
-            else
-            {
-
-            }
-
-            //临时用
-            if (true)//前瞻子项目 win平台 mono后端  not HyCLY
-            {
-
-            }
-
-            //core层在unity工程内  在win平台下  可以和il2cpp一样的流程  打包剥离core程序集  (需要测试)?
-            //但是在其他平台要剥离core  需要HyCLR的支持
-            //否则Core将跟随工程 并且不能更新
-
-            if (true)//支持热更的平台
-            {
-                if (true)//需要热更新
-                {
-                    if (true)//已经完成HyCLR库配置
-                    {
-                        if (true)//有远程环境
-                        {
-
-                        }
-                        else//没有远程环境 本地更新
-                        {
-
-                        }
-                    }
-                    else//为配置热更环境
-                    {
-
-                    }
-                }
-                else//不需要热更新
-                {
-
-                }
-            }
-            else//不支持的平台
-            {
-
+                case Platform.Win:
+                case Platform.Mac:
+                case Platform.Andorid:
+                case Platform.IOS:
+                    EditorGUILayout.HelpBox("支持热更新的平台", MessageType.None);
+                    break;
+                case Platform.WebGL:
+                case Platform.UWP:
+                    EditorGUILayout.HelpBox("不支持热更新的平台", MessageType.Warning);
+                    break;
             }
 
 
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("更新方式");
+            var network = serializedObject.FindProperty("network");
+            network.enumValueIndex = (int)(Network)EditorGUILayout.EnumPopup((Network)network.enumValueIndex);
+            var selectNetwork = (Network)network.enumValueIndex;
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.HelpBox("仅PC平台有本地模式,直接通过本地读补丁,一些内网PC项目", MessageType.None);//可以在内网部署服务器 那么内网也可以实现 有些小项目时没有服务端的 就需要本地更新
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("允许离线"); //支持离线 = 允许旧版本运行   不支持离线 = 必须保持最新
+            EditorGUILayout.EndHorizontal();
+
+            //支持更新                   不支持更新
+            //本地更新 = 无网络           远程更新 = 有网络
             if (serializedObject.ApplyModifiedProperties())
             {
                 AssetDatabase.SaveAssetIfDirty(serializedObject.targetObject);
@@ -99,6 +79,5 @@ namespace ZFramework
 
 
         protected override bool ShouldHideOpenButton() => true;
-
     }
 }

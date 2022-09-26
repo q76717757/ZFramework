@@ -2,7 +2,7 @@
     "name": "Unity.OnlyVR",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.ZPlugIn.Runtime",
+        "Unity.Package.Runtime",
         "Unity.Core",
         "Unity.Mono"
     ],
