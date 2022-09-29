@@ -17,7 +17,7 @@ namespace ZFramework
             DirectoryInfo dd = new DirectoryInfo("Codes");//hotfix脚本都放在这个文件夹下面 监听这个文件夹 可选自动/手动编译
             if (dd == null || !dd.Exists)
             {
-                Log.Error("热更文件夹Codes不存在");
+                Debug.LogError("热更文件夹Codes不存在");
                 return;
             }
 
@@ -49,7 +49,7 @@ namespace ZFramework
 
         static void RebulidDLL()
         {
-            Log.Info("Rebulid DLL");
+            Debug.Log("Rebulid DLL");
         }
     }
 }

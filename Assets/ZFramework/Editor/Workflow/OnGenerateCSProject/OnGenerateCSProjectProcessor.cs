@@ -1,7 +1,6 @@
 ﻿using UnityEditor;
 using System.Xml;
 using System.IO;
-using UnityEngine;
 
 namespace ZFramework
 {
@@ -9,23 +8,15 @@ namespace ZFramework
     {
         public static string OnGeneratedCSProject(string path, string content)
         {
-            Debug.Log(path);
-            //热更程序集的名称
-            string[] csprojNames = new string[]
+            foreach (var name in Defines.HotfixAssemblyNames)
             {
-                "Data","Func","View",
-            };
-            string emptyCSPath = @"Assets\ZFramework\Hotfix\";
-            foreach (var name in csprojNames)
-            {
-                if (path.EndsWith($"Unity.Hotfix.{name}.csproj"))
+                if (path.EndsWith($"{name}.csproj"))
                 {
-                    //程序集的位置
-                    content = content.Replace($"<Compile Include=\"{emptyCSPath}{name}\\Empty.cs\" />", string.Empty);
-                    content = content.Replace($"<None Include=\"{emptyCSPath}{name}\\Unity.Hotfix.{name}.asmdef\" />", string.Empty);
+                    var folder = Defines.GetFolder(name);
+                    content = content.Replace($"<Compile Include=\"{Defines.EmptyCSPath}{folder}\\Empty.cs\" />", string.Empty);
+                    content = content.Replace($"<None Include=\"{Defines.EmptyCSPath}{folder}\\{name}.asmdef\" />", string.Empty);
 
-                    //实际代码的位置
-                    return IncludeCustom(content, $"Assets\\ZFramework\\.Code\\{name}\\**\\*.cs");
+                    return IncludeCustom(content, $"{Defines.HideCSPath}{folder}\\**\\*.cs");
                 }
             }
             return content;

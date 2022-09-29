@@ -50,7 +50,7 @@ public class MyUnityTextureWindow : EditorWindow
 				{
                     if (GUILayout.Button(EditorGUIUtility.IconContent(m_Icons[index]), GUILayout.Width(width), GUILayout.Height(30)))
                     {
-						Log.Info(m_Icons[index]);
+						Debug.Log(m_Icons[index]);
                     };
 				}
 			}

@@ -8,9 +8,8 @@ namespace ZFramework
     public static class ZFrameworkSettingProvider
     {
         static BootFile bootFile;
-        static GlobalConfig globalConfig;
 
-        [SettingsProvider]
+        //[SettingsProvider]
         public static SettingsProvider RegisterZFramework()
         {
             var provider = new SettingsProvider("Project/ZFramework", SettingsScope.Project);
@@ -22,7 +21,6 @@ namespace ZFramework
         static void OnGUI(string srt)
         {
             EditorGUILayout.BeginHorizontal();
-            globalConfig = (GlobalConfig)EditorGUILayout.ObjectField(globalConfig, typeof(GlobalConfig), false);
 
             bootFile = (BootFile)EditorGUILayout.ObjectField(bootFile, typeof(BootFile), false);
             if (bootFile == null)
@@ -30,7 +28,7 @@ namespace ZFramework
                 if (GUILayout.Button("New",GUILayout.Width(50)))
                 {
                     var s = AssetDatabase.CreateFolder("Assets", "Resources");
-                    AssetDatabase.CreateAsset(new BootFile(), "Assets/Resources/Boot.asset");
+                    AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<BootFile>(), "Assets/Resources/Boot.asset");
                     bootFile = Resources.Load<BootFile>("Boot");
                 }
             }
@@ -41,11 +39,11 @@ namespace ZFramework
 
             }
 
-            var boot = Resources.Load<BootFile>("BootFile");
-            EditorGUILayout.BeginVertical("Box");
-            SerializedObject se = new SerializedObject(boot);
-            BootFileEditor.Draw(se);
-            EditorGUILayout.EndVertical();
+            //var boot = Resources.Load<BootFile>("BootFile");
+            //EditorGUILayout.BeginVertical("Box");
+            //SerializedObject se = new SerializedObject(boot);
+            //BootFileEditor.Draw(se);
+            //EditorGUILayout.EndVertical();
         }
     }
 }

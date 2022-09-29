@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace ZFramework
 {
@@ -16,67 +18,155 @@ namespace ZFramework
 
         public static void Draw(SerializedObject serializedObject)
         {
-            EditorGUILayout.LabelField("PlayerSetting");
-            EditorGUI.BeginDisabledGroup(true);//HyCLRÒªÇó IL2CPPºó¶Ë ¹Ø±ÕÔöÁ¿GC
-            EditorGUILayout.LabelField("±àÒëºó¶Ë");
-            BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-            ScriptingImplementation banckendType = PlayerSettings.GetScriptingBackend(buildTargetGroup);
-            EditorGUILayout.EnumPopup(banckendType);
-            EditorGUILayout.LabelField("C++±àÒëÆ÷ÅäÖÃ");
-            var com = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
-            EditorGUILayout.EnumPopup(com);
-            EditorGUILayout.LabelField("ÔöÁ¿GC");
-            EditorGUILayout.Toggle(PlayerSettings.gcIncremental);
-            EditorGUI.EndDisabledGroup();
-            EditorGUILayout.Space(10);
+            if (serializedObject == null)
+            {
+                return;
+            }
 
-            if (serializedObject == null) return;
+            var titleWidth = GUILayout.Width(80);
 
-            GUILayout.Label("¸ù¾İÏîÄ¿Êµ¼ÊÇé¿öÅäÖÃÑ¡Ïî");
+            EditorGUILayout.BeginVertical("FrameBox");
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Ä¿±êÆ½Ì¨:");
-            var platform = serializedObject.FindProperty("platform");
-            platform.enumValueIndex = (int)(Platform)EditorGUILayout.EnumPopup((Platform)platform.enumValueIndex);
-            var selectPlatform = (Platform)platform.enumValueIndex;
+            var temp = GUI.contentColor;
+            GUI.contentColor = Color.green;
+            var projectCode = serializedObject.FindProperty("ProjectCode");
+            EditorGUILayout.LabelField("é¡¹ç›®ä»£å·:", titleWidth);
+            projectCode.stringValue = GetNumberAlpha(EditorGUILayout.DelayedTextField(projectCode.stringValue));
+            GUI.contentColor = temp;
+            EditorGUILayout.EndHorizontal();
+            bool notCode = string.IsNullOrEmpty(projectCode.stringValue);
+            if (notCode)
+            {
+                EditorGUILayout.HelpBox("éœ€è¦å¡«é¡¹ç›®ä»£å·,é¡¹ç›®ä»£å·å°†ä½œä¸ºDllå‘½åçš„ä¸€éƒ¨åˆ†", MessageType.Error);
+            }
+
+            string GetNumberAlpha(string source)//åªä¿ç•™æ•°å­—å­—å¹•
+            {
+                string pattern = "[A-Za-z0-9]";
+                string strRet = "";
+                MatchCollection results = Regex.Matches(source, pattern);
+                foreach (var v in results)
+                {
+                    strRet += v.ToString();
+                }
+                return strRet;
+            }
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("é¡¹ç›®åç§°:", titleWidth);
+            var ProjectName = serializedObject.FindProperty("ProjectName");
+            ProjectName.stringValue = EditorGUILayout.DelayedTextField(ProjectName.stringValue);
             EditorGUILayout.EndHorizontal();
 
+
+            EditorGUILayout.BeginHorizontal();
+            var version = serializedObject.FindProperty("AssemblyVersion");
+            EditorGUILayout.LabelField("ç¨‹åºç‰ˆæœ¬:", titleWidth);
+            if (VersionInfo.TryParse(version.stringValue,out VersionInfo ver))
+            {
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button(ver.X.ToString()))
+                {
+                    ver.X ++;
+                    ver.Y = 0;
+                    ver.Z = 0;
+                    ver.W = 0;
+                    version.stringValue = ver.ToString();
+                }
+                if (GUILayout.Button(ver.Y.ToString()))
+                {
+                    ver.Y ++;
+                    ver.Z = 0;
+                    ver.W = 0;
+                    version.stringValue = ver.ToString();
+                }
+                if (GUILayout.Button(ver.Z.ToString()))
+                {
+                    ver.Z ++;
+                    ver.W = 0;
+                    version.stringValue = ver.ToString();
+                }
+                GUILayout.Label("ç¼–è¯‘ç‰ˆæœ¬:" + ver.W);
+                if (GUILayout.Button("Reset",GUILayout.Width(50)))
+                {
+                    version.stringValue = new VersionInfo().ToString();
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+            else
+            {
+                version.stringValue = new VersionInfo().ToString();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(10);
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("ç›®æ ‡å¹³å°:", titleWidth);
+            var platform = serializedObject.FindProperty("platform");
+            platform.enumValueIndex = (int)(Platform)EditorGUILayout.EnumPopup((Platform)platform.enumValueIndex);
+            EditorGUILayout.EndHorizontal();
+
+
+            var selectPlatform = (Platform)platform.enumValueIndex;
+            bool supportHotfix = false;
             switch (selectPlatform)
             {
                 case Platform.Win:
                 case Platform.Mac:
                 case Platform.Andorid:
                 case Platform.IOS:
-                    EditorGUILayout.HelpBox("Ö§³ÖÈÈ¸üĞÂµÄÆ½Ì¨", MessageType.None);
+                    supportHotfix = true;
                     break;
                 case Platform.WebGL:
                 case Platform.UWP:
-                    EditorGUILayout.HelpBox("²»Ö§³ÖÈÈ¸üĞÂµÄÆ½Ì¨", MessageType.Warning);
+                    supportHotfix = false;
                     break;
+            }
+            if (!supportHotfix)
+            {
+                EditorGUILayout.HelpBox("ä¸æ”¯æŒçƒ­æ›´æ–°çš„å¹³å°,ç¨‹åºé›†ç¼–è¯‘å®Œå°†è·Ÿå·¥ç¨‹ä¸€èµ·å‘å¸ƒ", MessageType.Warning);
             }
 
 
-
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("¸üĞÂ·½Ê½");
+            GUILayout.Label("æ›´æ–°æ–¹å¼:", titleWidth);
             var network = serializedObject.FindProperty("network");
             network.enumValueIndex = (int)(Network)EditorGUILayout.EnumPopup((Network)network.enumValueIndex);
             var selectNetwork = (Network)network.enumValueIndex;
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.HelpBox("½öPCÆ½Ì¨ÓĞ±¾µØÄ£Ê½,Ö±½ÓÍ¨¹ı±¾µØ¶Á²¹¶¡,Ò»Ğ©ÄÚÍøPCÏîÄ¿", MessageType.None);//¿ÉÒÔÔÚÄÚÍø²¿Êğ·şÎñÆ÷ ÄÇÃ´ÄÚÍøÒ²¿ÉÒÔÊµÏÖ ÓĞĞ©Ğ¡ÏîÄ¿Ê±Ã»ÓĞ·şÎñ¶ËµÄ ¾ÍĞèÒª±¾µØ¸üĞÂ
+            EditorGUILayout.HelpBox("ä»…PCå¹³å°æœ‰æœ¬åœ°æ¨¡å¼,ç›´æ¥é€šè¿‡æœ¬åœ°è¯»è¡¥ä¸,ä¸€äº›å†…ç½‘PCé¡¹ç›®", MessageType.None);
+
+
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("ÔÊĞíÀëÏß"); //Ö§³ÖÀëÏß = ÔÊĞí¾É°æ±¾ÔËĞĞ   ²»Ö§³ÖÀëÏß = ±ØĞë±£³Ö×îĞÂ
+            GUILayout.Label("å…è®¸ç¦»çº¿:", titleWidth);
             EditorGUILayout.EndHorizontal();
 
-            //Ö§³Ö¸üĞÂ                   ²»Ö§³Ö¸üĞÂ
-            //±¾µØ¸üĞÂ = ÎŞÍøÂç           Ô¶³Ì¸üĞÂ = ÓĞÍøÂç
+
+            EditorGUILayout.Space(20);
+           
+            EditorGUI.BeginDisabledGroup(EditorApplication.isCompiling || EditorApplication.isPlaying || notCode);
+            if (GUILayout.Button("é‡æ–°ç¼–è¯‘", GUILayout.Height(50)))
+            {
+                ver.W++;
+                version.stringValue = ver.ToString();
+                var assemblyName = $"{projectCode.stringValue}_{version.stringValue}";
+                Debug.Log($"Compile Start!  <color=green>[{assemblyName}]</color>");
+                BuildAssemblieEditor.CompileAssembly_Development(assemblyName, UnityEditor.Compilation.CodeOptimization.Debug);
+            }
+            EditorGUI.EndDisabledGroup();
+            
+
+
+            EditorGUILayout.EndVertical();
+
             if (serializedObject.ApplyModifiedProperties())
             {
                 AssetDatabase.SaveAssetIfDirty(serializedObject.targetObject);
             }
         }
-
 
         protected override bool ShouldHideOpenButton() => true;
     }

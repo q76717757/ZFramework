@@ -2,12 +2,11 @@
     "name": "Unity.Hotfix.Data",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Package.Runtime",
-        "Unity.Core"
+        "Unity.Hotfix.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

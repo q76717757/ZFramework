@@ -12,30 +12,25 @@ namespace ZFramework
     {
         public override void OnInspectorGUI()
         {
-            //EditorGUI.BeginDisabledGroup(EditorApplication.isPlaying);
-
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("引导文件", GUILayout.Width(50));
             var obj = serializedObject.FindProperty("boot");
             obj.objectReferenceValue = (BootFile)EditorGUILayout.ObjectField(obj.objectReferenceValue, typeof(BootFile), false);
             EditorGUILayout.EndHorizontal();
 
-
             serializedObject.ApplyModifiedProperties();
             serializedObject.UpdateIfRequiredOrScript();
 
-
-            EditorGUI.BeginDisabledGroup(EditorApplication.isCompiling || EditorApplication.isPlaying);
-            if (GUILayout.Button("Compile", GUILayout.Height(50)))
+            if (obj.objectReferenceValue != null)
             {
-                BuildAssemblieEditor.CompileAssembly_Development("ProjectCode", UnityEditor.Compilation.CodeOptimization.Debug);
+                BootFileEditor.Draw(new SerializedObject(obj.objectReferenceValue));
             }
-            EditorGUI.EndDisabledGroup();
-
-            EditorGUI.EndDisabledGroup();
+            else
+            {
+                EditorGUILayout.HelpBox("需要一个引导文件", MessageType.Error);
+            }
         }
     }
-
 
 
 

@@ -51,7 +51,7 @@ class UnityIconView : EditorWindow
                         {
                             if (GUILayout.Button(EditorGUIUtility.IconContent(text[index]), GUILayout.Width(50), GUILayout.Height(30)))
                             {
-                                Log.Info(text[index]);
+                                Debug.Log(text[index]);
                             }
                         }
                     }

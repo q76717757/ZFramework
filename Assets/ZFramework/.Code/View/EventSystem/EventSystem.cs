@@ -24,7 +24,7 @@ namespace ZFramework
         }
     }
 
-    public static class EventSystem
+    public static class EventSystem2
     {
         public static void Call<T>(this EventComponent component, T eventArg) where T : struct
         {

@@ -46,7 +46,7 @@ namespace ZFramework
             }
             if (GUILayout.Button("打开", GUILayout.Width(100)))
             {
-                WindowsEx.OpenFolder(outPath);
+                //WindowsEx.OpenFolder(outPath);
             }
             GUILayout.EndHorizontal();
 
@@ -89,7 +89,8 @@ namespace ZFramework
             StringBuilder sb = new StringBuilder();
             foreach (var file in files)
             {
-                var md5 = MD5Helper.FileMD5(file.FullName);
+                //var md5 = MD5Helper.FileMD5(file.FullName);
+                var md5 = "";
                 sb.AppendLine($"{file.Name}:{md5}");
             }
             File.WriteAllText(Path.Combine(outPath, "md5.ini"), sb.ToString());

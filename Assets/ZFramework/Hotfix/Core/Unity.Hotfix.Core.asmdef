@@ -1,14 +1,12 @@
 {
-    "name": "Unity.Editor",
+    "name": "Unity.Hotfix.Core",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.Boot"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

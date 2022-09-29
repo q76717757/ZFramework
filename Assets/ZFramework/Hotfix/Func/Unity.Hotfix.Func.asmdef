@@ -2,8 +2,7 @@
     "name": "Unity.Hotfix.Func",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Package.Runtime",
-        "Unity.Core",
+        "Unity.Hotfix.Core",
         "Unity.Hotfix.Data"
     ],
     "includePlatforms": [],

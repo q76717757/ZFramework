@@ -3,9 +3,10 @@
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.Package.Runtime",
-        "Unity.Core",
+        "Unity.Hotfix.Core",
         "Unity.Hotfix.Data",
-        "Unity.Hotfix.Func"
+        "Unity.Hotfix.Func",
+        "Unity.Boot"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

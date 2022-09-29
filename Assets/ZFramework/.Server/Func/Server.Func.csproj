@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <RootNamespace>ZFramework</RootNamespace>
+	  <BaseOutputPath>..\bin</BaseOutputPath>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<Compile Include="..\..\.Code\Func\**\*.cs">
+			<Link>Func\%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Compile>
+	</ItemGroup>
+	
+</Project>
