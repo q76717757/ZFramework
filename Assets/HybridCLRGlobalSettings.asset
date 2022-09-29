@@ -16,10 +16,10 @@ MonoBehaviour:
   cloneFromGitee: 1
   hotUpdateAssemblyDefinitions: []
   hotUpdateAssemblies:
-  - Unity.Hoyfix.Core
+  - Unity.Hotfix.Core
   - Unity.Hotfix.Data
   - Unity.Hotfix.Func
-  - Unity.Hoyfix.View
+  - Unity.Hotfix.View
   outputLinkFile: HybridCLR/link.xml
   outputAOTGenericReferenceFile: Main/AOTGenericReferences.cs
   maxGenericReferenceIteration: 4

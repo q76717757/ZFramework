@@ -153,6 +153,7 @@ namespace ZFramework
                 ver.W++;
                 version.stringValue = ver.ToString();
                 var assemblyName = $"{projectCode.stringValue}_{version.stringValue}";
+
                 Debug.Log($"Compile Start!  <color=green>[{assemblyName}]</color>");
                 BuildAssemblieEditor.CompileAssembly_Development(assemblyName, UnityEditor.Compilation.CodeOptimization.Debug);
             }

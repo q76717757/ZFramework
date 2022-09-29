@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ProjectCode: Fuck
   ProjectName: "\u6D4B\u8BD5\u9879\u76EEABCD"
-  AssemblyVersion: 0.0.0.7
+  AssemblyVersion: 0.0.0.1
   platform: 0
   network: 2
   allowOffline: 0

@@ -3,17 +3,16 @@ using System;
 using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ZFramework
 {
     public static class AssemblyLoader
     {
-        public static Dictionary<string, Assembly> Assemblys;//程序集缓存
+        public static Dictionary<string, Assembly> Assemblys = new Dictionary<string, Assembly>();//程序集缓存
         public static async Task<Assembly> LoadCode(BootFile boot)
         {
-            var dllName = boot.ProjectCode;
+            var dllName = $"{boot.ProjectCode}_{boot.AssemblyVersion}";
             if (Assemblys.TryGetValue(dllName,out Assembly assembly))
             {
                 return assembly;
@@ -26,8 +25,9 @@ namespace ZFramework
             byte[] dll = File.ReadAllBytes(Application.streamingAssetsPath + "/Code.dll");
             byte[] pdb = File.ReadAllBytes(Application.streamingAssetsPath + "/Code.pdb");
 #endif
-            var output = Assembly.Load(dll, pdb);
-            Assemblys.Add(dllName, output);
+
+            assembly = Assembly.Load(dll, pdb);
+            Assemblys.Add(dllName, assembly);
             return assembly;
         }
     }

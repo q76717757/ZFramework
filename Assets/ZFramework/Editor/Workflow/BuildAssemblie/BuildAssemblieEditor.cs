@@ -13,12 +13,6 @@ namespace ZFramework
         public static async void CompileAssembly_Development(string assemblyName, CodeOptimization codeOptimization)
         {
             await CompileAssembly(assemblyName, new string[] { Defines.HideCSPath }, Array.Empty<string>(), codeOptimization);
-
-            //await CompileAssembly(assemblyName, new string[] { Defines.HideCSPath }, new string[] { 
-            //    "Unity.Boot",
-            //    "Unity.Package.Runtime"
-            //}, codeOptimization);
-
             CopyDllToAsssetFromTemp(assemblyName);
         }
 

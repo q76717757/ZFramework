@@ -21,9 +21,6 @@ namespace ZFramework
         UWP
     }
 
-    /// <summary>
-    /// 项目特定的属性  
-    /// </summary>
     [CreateAssetMenu(fileName = "BootFile", menuName = "ZFramework/引导文件", order = 0)]
     public class BootFile : ScriptableObject
     {
