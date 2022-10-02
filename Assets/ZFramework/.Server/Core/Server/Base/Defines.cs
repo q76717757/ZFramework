@@ -1,4 +1,4 @@
-using UnityEngine;
+//using UnityEngine;
 
 namespace ZFramework
 {
@@ -22,8 +22,8 @@ namespace ZFramework
         }
 #endif
 
-        public static string StreamAssetsPath => Application.streamingAssetsPath;//只读目录
-        public static string PersistentDataPath => Application.persistentDataPath;//持久化目录
+        //public static string StreamAssetsPath => Application.streamingAssetsPath;//只读目录
+        //public static string PersistentDataPath => Application.persistentDataPath;//持久化目录
 
         public static bool IsEditor
         {

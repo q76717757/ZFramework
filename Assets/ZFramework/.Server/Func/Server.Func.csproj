@@ -8,9 +8,21 @@
 
 
 	<ItemGroup>
-		<Compile Include="..\..\.Code\Func\**\*.cs">
+		<Compile Include="..\..\.Client\Func\**\*.cs">
 			<Link>Func\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Server\" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Core\Server.Core.csproj" />
+	  <ProjectReference Include="..\Data\Server.Data.csproj" />
+	  <ProjectReference Include="..\Package\Server.Package.csproj" />
 	</ItemGroup>
 	
 </Project>

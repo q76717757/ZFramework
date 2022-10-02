@@ -9,12 +9,22 @@ namespace ZFramework
 {
     public static class AssemblyLoader
     {
+        public static string CurrentDll;
         public static Dictionary<string, Assembly> Assemblys = new Dictionary<string, Assembly>();//程序集缓存
         public static async Task<Assembly> LoadCode(BootFile boot)
         {
-            var dllName = $"{boot.ProjectCode}_{boot.AssemblyVersion}";
+            //按照boot的设置  进行程序集加载
+            //如果支持热更新的平台  则走文件对比流程 如果不支持热更新的 那也没必要热更资源了 资源变了 一般脚本也有变动
+
+
+
+
+
+
+            var dllName = $"{boot.ProjectCode}_{boot.Version.ToNumString()}";
             if (Assemblys.TryGetValue(dllName,out Assembly assembly))
             {
+                CurrentDll = dllName;
                 return assembly;
             }
 
@@ -22,13 +32,31 @@ namespace ZFramework
             byte[] dll = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>($"{Defines.AssetsSaveDllPath}{dllName}.dll.bytes").bytes;
             byte[] pdb = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>($"{Defines.AssetsSaveDllPath}{dllName}.pdb.bytes").bytes;
 #else
-            byte[] dll = File.ReadAllBytes(Application.streamingAssetsPath + "/Code.dll");
-            byte[] pdb = File.ReadAllBytes(Application.streamingAssetsPath + "/Code.pdb");
+            byte[] dll = File.ReadAllBytes(Application.streamingAssetsPath + $"/{dllName}.dll");
+            byte[] pdb = File.ReadAllBytes(Application.streamingAssetsPath + $"/{dllName}.pdb");
 #endif
-
             assembly = Assembly.Load(dll, pdb);
             Assemblys.Add(dllName, assembly);
+            CurrentDll = dllName;
             return assembly;
+
+            //Pass 1
+            //如果不支持更新的平台,则是以插件程序集的方式包进来的,
+            //遍历appdomain 找到这个程序集 不再需要加载了 直接返回去给Drive去反射IEntry??
+            //var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            //foreach (var item in assemblies)
+            //{
+            //    if (item.GetName().Name == dllName)
+            //    {
+            //        CurrentDll = dllName;
+            //        Assemblys.Add(dllName, assembly);
+            //        return item;
+            //    }
+            //}
+            //Pass 2
+            //放进来被引用了  直接调??
+            //return typeof(GameObject).Assembly
+
         }
     }
 

@@ -687,6 +687,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Compile Include="Assets\ZFramework\.Code\Core\**\*.cs" />
+    <Compile Include="Assets\ZFramework\.Client\Core\**\*.cs" />
   </ItemGroup>
 </Project>

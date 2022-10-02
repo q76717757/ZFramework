@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ZFramework
@@ -42,7 +41,6 @@ namespace ZFramework
                 instance.drive.StartGame(assembly);
             }
         }
-
         public static void CloseGame()
         {
             if (instance != null)
@@ -52,5 +50,6 @@ namespace ZFramework
                 instance = null;
             }
         }
+
     }
 }

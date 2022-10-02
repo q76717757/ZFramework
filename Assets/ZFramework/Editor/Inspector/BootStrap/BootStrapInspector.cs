@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
-using System.IO;
 
 namespace ZFramework
 {
@@ -12,11 +8,13 @@ namespace ZFramework
     {
         public override void OnInspectorGUI()
         {
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("引导文件", GUILayout.Width(50));
             var obj = serializedObject.FindProperty("boot");
             obj.objectReferenceValue = (BootFile)EditorGUILayout.ObjectField(obj.objectReferenceValue, typeof(BootFile), false);
             EditorGUILayout.EndHorizontal();
+            EditorGUI.EndDisabledGroup();
 
             serializedObject.ApplyModifiedProperties();
             serializedObject.UpdateIfRequiredOrScript();
@@ -40,10 +38,10 @@ namespace ZFramework
     {
         static BootStrapHierarchyColor()
         {
-            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyWindowItemOnGUI;
+            EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
         }
 
-        private static void OnHierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
+        private static void HierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
         {
             if (EditorUtility.InstanceIDToObject(instanceID) is GameObject obj && obj != null)
             {

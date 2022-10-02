@@ -7,9 +7,18 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\..\.Code\Data\**\*.cs">
+		<Compile Include="..\..\.Client\Data\**\*.cs">
 			<Link>Data\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Server\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Core\Server.Core.csproj" />
+	  <ProjectReference Include="..\Package\Server.Package.csproj" />
 	</ItemGroup>
 	
 </Project>

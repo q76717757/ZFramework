@@ -1,16 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
- 
+
 namespace ZFramework
 {
-    public enum Network
-    {
-        None,
-        Exist,
-        Unknow,
-    }
     public enum Platform
     {
         Win,
@@ -22,14 +15,16 @@ namespace ZFramework
     }
 
     [CreateAssetMenu(fileName = "BootFile", menuName = "ZFramework/引导文件", order = 0)]
-    public class BootFile : ScriptableObject
+    public class BootFile : ScriptableObject, ISerializationCallbackReceiver
     {
-        public string ProjectCode;//项目代号
-        public string ProjectName;//项目名称
-        public string AssemblyVersion = new VersionInfo().ToString();//程序集版本号
+        //私有序列化字段
+        [SerializeField] private string projectCode;
+        [SerializeField] private string projectName;
+        [SerializeField] private string projectVersion;
+        private VersionInfo versionInfo;
+
 
         public Platform platform;//目标平台
-        public Network network;//网络环境
         public bool allowOffline;//允许离线
 
         public string buildInPath;
@@ -39,7 +34,27 @@ namespace ZFramework
 
 
 
+        //公开属性
+        public string ProjectCode => projectCode;
+        public string ProjectName=> projectName;
+        public VersionInfo Version => versionInfo;
 
-        public RenderPipelineAsset renderPipelineAsset;
+
+
+
+
+
+
+
+
+
+        public void OnBeforeSerialize() { }
+        public void OnAfterDeserialize()
+        {
+            if (!VersionInfo.TryParse(projectVersion, out versionInfo))
+            {
+                projectVersion = Version.ToString();
+            }
+        }
     }
 }

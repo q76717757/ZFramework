@@ -7,4 +7,8 @@
 	<BaseOutputPath>..\bin</BaseOutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Server.Core.csproj" />
+  </ItemGroup>
+
 </Project>

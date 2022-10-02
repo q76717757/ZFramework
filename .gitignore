@@ -18,13 +18,11 @@ ProjectSettings/TimelineSettings.asset
 UserSettings/EditorUserSettings.asset
 Assets/Bundles/
 Unity.Boot.csproj
-Unity.Core.csproj
+Unity.Hotfix.Core.csproj
 Unity.Editor.csproj
 Unity.Hotfix.Data.csproj
 Unity.Hotfix.Func.csproj
 Unity.Hotfix.View.csproj
-Unity.Mono.csproj
 Unity.Package.Editor.csproj
 Unity.Package.Runtime.csproj
-
 HybridCLRData/
