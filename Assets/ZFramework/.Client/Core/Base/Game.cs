@@ -7,9 +7,10 @@ namespace ZFramework
     public sealed class Game : IGameInstance
     {
         internal static Game instance;
-        internal GameLoopSystem GameLoopSystem;
-        internal EventSystem EventSystem;
-        private Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();//特性-类型映射表
+        internal GameLoopSystem GameLoopSystem = new GameLoopSystem();
+        internal EventSystem EventSystem = new EventSystem();
+
+        private readonly Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();//特性-类型映射表
 
         private Game() { }//封闭构造
         static IGameInstance CreateInstance()
@@ -17,9 +18,9 @@ namespace ZFramework
             instance = new Game();
             return instance;
         }
-
-        void LoadAttribute(Type[] allTypes)
+        void Load(Type[] allTypes)
         {
+            //特性扫描
             attributeMap.Clear();
             foreach (Type classType in allTypes)
             {
@@ -37,39 +38,21 @@ namespace ZFramework
                     list.Add(classType);
                 }
             }
-        }
-        void Start()
-        {
-            //载入生命周期系统
-            GameLoopSystem = new GameLoopSystem();
             GameLoopSystem.Load(GetTypesByAttribute(typeof(GameLoopAttribute)));
-
-            //载入事件系统
-            EventSystem = new EventSystem();
             EventSystem.Load(GetTypesByAttribute(typeof(EventAttribute)));
+        }
 
-            //装载完成  派事件出去  View层自己去订阅 自己处理
+        void IGameInstance.Start(Type[] allTypes)
+        {
+            Load(allTypes);
             EventSystem.Call(new EventType.OnGameStart());
         }
-
-        void IGameInstance.Load(Assembly code)
+        void IGameInstance.Reload(Type[] allTypes)
         {
-            LoadAttribute(code.GetTypes());
-            Start();
+            Load(allTypes);
+            GameLoopSystem.Reload();
+            Log.Info("热重载");
         }
-        void IGameInstance.Load(Assembly data, Assembly func)
-        {
-            List<Type> types = new List<Type>();
-            types.AddRange(data.GetTypes());
-            types.AddRange(func.GetTypes());
-            LoadAttribute(types.ToArray());
-            Start();
-        }
-        void IGameInstance.Reload(Assembly func)
-        {
-            //GameLoop.Reload(func);
-        }
-
         void IGameInstance.Update()
         {
             GameLoopSystem.Update();
@@ -84,8 +67,6 @@ namespace ZFramework
         {
             GameLoopSystem.Close();
             EventSystem.Close();
-            GameLoopSystem = null;
-            EventSystem = null;
         }
 
         //公开方法

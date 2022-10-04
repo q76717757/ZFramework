@@ -23,7 +23,6 @@ namespace ZFramework
         [SerializeField] private string projectVersion;
         private VersionInfo versionInfo;
 
-
         public Platform platform;//目标平台
         public bool allowOffline;//允许离线
 
@@ -32,24 +31,14 @@ namespace ZFramework
         public string downloadPath;
 
 
-
-
         //公开属性
         public string ProjectCode => projectCode;
         public string ProjectName=> projectName;
         public VersionInfo Version => versionInfo;
+        public string GetDllName() => $"{ProjectCode}_{Version.ToNumString()}";
 
-
-
-
-
-
-
-
-
-
-        public void OnBeforeSerialize() { }
-        public void OnAfterDeserialize()
+        void ISerializationCallbackReceiver.OnBeforeSerialize() { }
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (!VersionInfo.TryParse(projectVersion, out versionInfo))
             {

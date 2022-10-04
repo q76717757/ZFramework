@@ -13,7 +13,7 @@ namespace ZFramework
             game = assembly.GetType("ZFramework.Game")
                 .GetMethod("CreateInstance", BindingFlags.Static | BindingFlags.NonPublic)
                 .Invoke(null, Array.Empty<object>()) as IGameInstance;
-            game.Load(assembly);
+            game.Start(assembly.GetTypes());
         }
         public void CloseGame()
         {

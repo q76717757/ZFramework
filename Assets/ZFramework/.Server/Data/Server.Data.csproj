@@ -17,8 +17,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\.Packages\UnityEngine\UnityEngine.csproj" />
 	  <ProjectReference Include="..\Core\Server.Core.csproj" />
-	  <ProjectReference Include="..\Package\Server.Package.csproj" />
 	</ItemGroup>
 	
 </Project>

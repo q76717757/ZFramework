@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace ZFramework
 {
@@ -21,7 +22,7 @@ namespace ZFramework
                 return;
             }
             var titleWidth = GUILayout.Width(80);
-            BootFile boot = serializedObject.targetObject as BootFile;
+          
             EditorGUILayout.BeginVertical("FrameBox");
 
 
@@ -143,24 +144,25 @@ namespace ZFramework
             EditorGUILayout.Space(20);
            
             EditorGUI.BeginDisabledGroup(EditorApplication.isCompiling || EditorApplication.isPlaying || notCode);
-            if (GUILayout.Button("重新编译", GUILayout.Height(50)))
+            bool ReCompile = GUILayout.Button("重新编译", GUILayout.Height(50));
+            if (ReCompile)
             {
                 ver.W++;
                 versionString.stringValue = ver.ToString();
-                var assemblyName = $"{projectCode.stringValue}_{ver.ToNumString()}";
-
-                Debug.Log($"Compile Start!  <color=green>[{assemblyName}]</color>");
-                BuildAssemblieEditor.CompileAssembly_Development(assemblyName, UnityEditor.Compilation.CodeOptimization.Debug);
             }
             EditorGUI.EndDisabledGroup();
-            
-
 
             EditorGUILayout.EndVertical();
 
             if (serializedObject.ApplyModifiedProperties())
             {
                 AssetDatabase.SaveAssetIfDirty(serializedObject.targetObject);
+            }
+
+            if (ReCompile)
+            {
+                string assemblyName = (serializedObject.targetObject as BootFile).GetDllName();
+                BuildAssemblieEditor.CompileAssembly_Development(assemblyName, UnityEditor.Compilation.CodeOptimization.Debug);
             }
         }
 

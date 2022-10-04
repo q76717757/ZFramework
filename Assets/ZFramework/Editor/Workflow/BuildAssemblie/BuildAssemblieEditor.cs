@@ -69,7 +69,6 @@ namespace ZFramework
             assemblyBuilder.buildTargetGroup = buildTargetGroup;
             assemblyBuilder.compilerOptions.CodeOptimization = codeOptimization;
             assemblyBuilder.compilerOptions.ApiCompatibilityLevel = PlayerSettings.GetApiCompatibilityLevel(buildTargetGroup);
-            //assemblyBuilder.compilerOptions.ApiCompatibilityLevel = ApiCompatibilityLevel.NET_4_6;
             //assemblyBuilder.compilerOptions.AllowUnsafeCode = true;
             assemblyBuilder.additionalReferences = additionalReferences;
             assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;

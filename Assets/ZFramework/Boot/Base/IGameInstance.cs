@@ -1,16 +1,14 @@
-using System.Reflection;
+using System;
 
 namespace ZFramework
 {
     public interface IGameInstance
     {
-        void Load(Assembly code);
-        void Load(Assembly data, Assembly func);
-        void Reload(Assembly func);
+        void Start(Type[] allTypes);
+        void Reload(Type[] allTypes);
 
         void Update();
         void LateUpdate();
         void Close();
     }
-
 }

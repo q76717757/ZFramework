@@ -13,7 +13,7 @@ namespace ZFramework
         {
             "Unity.Hotfix.Core",//框架层
             "Unity.Hotfix.Data",//公共数据层   
-            "Unity.Hotfix.Func",//公共逻辑层  用data+function的方式 重复加载程序集 重定向函数指针 实现服务端热重载
+            "Unity.Hotfix.Func",//公共逻辑层  用data+function的方式 服务端重复加载程序集 重定向函数指针 实现服务端逻辑热重载
             "Unity.Hotfix.View",//客户端视图层
         };
         public static string GetFolder(string assemblyName)//Unity.Hotfix.Core ->  Core 取最后一段为文件名

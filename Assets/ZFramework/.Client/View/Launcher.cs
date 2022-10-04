@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
+
 using System.Threading.Tasks;
 using ZFramework.EventType;
 
@@ -11,28 +11,31 @@ namespace ZFramework
 {
     public class Launcher : EventCallback<EventType.OnGameStart>
     {
-        public override void Run(OnGameStart arg)
+        public override void Callback(OnGameStart arg)
         {
             Log.ILog = new UnityLogger();
 
 
-
-
-
-
-
-            Debug.Log(AssemblyLoader.CurrentDll);
+            Debug.Log(AssemblyLoader.CurrentBoot.GetDllName());
             Log.Info("<color=green>Game Start!</color>");
         }
+    }
+    public class TestEventAsync : EventCallbackAsync<EventType.OnGameStart>
+    {
+        public override async ZTask Callback(OnGameStart agg)
+        {
+            await Task.Delay(1000);
 
+
+        }
 
     }
 
+}
 
-
-
-
-
+namespace Test
+{
+    using Cysharp.Threading.Tasks;
 
     public class UniTaskDemo : MonoBehaviour
     {

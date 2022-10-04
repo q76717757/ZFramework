@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace ZFramework
 {
@@ -8,8 +7,8 @@ namespace ZFramework
     {
         internal static GameLoopSystem Instance => Game.instance.GameLoopSystem;
 
-        private readonly Dictionary<Type, Dictionary<Type, IGameLoop>> gameloopMaps = new Dictionary<Type, Dictionary<Type, IGameLoop>>();//生命周期辅助对象映射表 //componentType - loopType - loopSystemObject
-        private readonly Dictionary<long, Component> allComponents = new Dictionary<long, Component>();//所有组件(实体数据)集合
+        private readonly Dictionary<Type, Dictionary<Type, IGameLoop>> gameloopMaps = new Dictionary<Type, Dictionary<Type, IGameLoop>>();
+        private readonly Dictionary<long, Component> allComponents = new Dictionary<long, Component>();
 
         private Queue<long> updates = new Queue<long>();
         private Queue<long> updates2 = new Queue<long>();
@@ -19,7 +18,6 @@ namespace ZFramework
 
         internal void Load(Type[] allTypes)
         {
-            //扫描到的类型  加载到生命周期系统中
             gameloopMaps.Clear();
             foreach (Type type in allTypes)
             {
@@ -38,27 +36,21 @@ namespace ZFramework
                     }
                     else
                     {
-                        //gameloop唯一?
+                        //gameloop唯一?//可以写多个脚本  保证不了唯一
                     }
                 }
             }
         }
-        internal void Reload(Assembly logicAssembly)
+        internal void Reload()
         {
-            //var types = new List<Type>();
-            //types.AddRange(componentTypeCache);
-            //types.AddRange(logicAssembly.GetTypes());
-
-            //LoadAssembly(types.ToArray());
-
             //重建UpdateQueue 仅热重载需要 无中生有Update等延迟生命周期时 他们的id在Awake的时候没有入列(不应该在awake入列?) 会导致Update遍历不到
             // 取消在awake上入列  改成全局扫描??  还是遍历所有entity 实时判断是否有update周期?
-
             updates.Clear();
             updates2.Clear();
             lateUpdates.Clear();
             lateUpdates2.Clear();
             destory.Clear();
+
             foreach (var item in allComponents)
             {
                 var instanceId = item.Key;
@@ -176,7 +168,6 @@ namespace ZFramework
                             try
                             {
                                 system.OnDestory(component);
-                                //entity.Dispose();
                                 allComponents.Remove(instanceId);
                             }
                             catch (Exception e)
@@ -194,7 +185,7 @@ namespace ZFramework
         }
 
 
-        internal bool Register(Component component, out Dictionary<Type, IGameLoop> gameLoop)
+        private bool Register(Component component, out Dictionary<Type, IGameLoop> gameLoop)
         {
             if (component == null || allComponents.ContainsKey(component.InstanceID))
             {

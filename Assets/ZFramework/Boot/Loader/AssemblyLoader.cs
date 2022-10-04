@@ -9,8 +9,11 @@ namespace ZFramework
 {
     public static class AssemblyLoader
     {
-        public static string CurrentDll;
-        public static Dictionary<string, Assembly> Assemblys = new Dictionary<string, Assembly>();//程序集缓存
+        private static Dictionary<string, Assembly> Assemblys = new Dictionary<string, Assembly>();//程序集缓存
+        private static BootFile currentBoot;
+
+        public static BootFile CurrentBoot => currentBoot;
+
         public static async Task<Assembly> LoadCode(BootFile boot)
         {
             //按照boot的设置  进行程序集加载
@@ -21,10 +24,10 @@ namespace ZFramework
 
 
 
-            var dllName = $"{boot.ProjectCode}_{boot.Version.ToNumString()}";
-            if (Assemblys.TryGetValue(dllName,out Assembly assembly))
+            var dllName = boot.GetDllName();
+            if (Assemblys.TryGetValue(dllName, out Assembly assembly))
             {
-                CurrentDll = dllName;
+                currentBoot = boot;
                 return assembly;
             }
 
@@ -37,7 +40,7 @@ namespace ZFramework
 #endif
             assembly = Assembly.Load(dll, pdb);
             Assemblys.Add(dllName, assembly);
-            CurrentDll = dllName;
+            currentBoot = boot;
             return assembly;
 
             //Pass 1
