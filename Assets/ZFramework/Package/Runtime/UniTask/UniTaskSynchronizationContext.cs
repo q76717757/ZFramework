@@ -85,6 +85,7 @@ namespace Cysharp.Threading.Tasks
         }
 
         // delegate entrypoint.
+        //委托入口点。
         internal static void Run()
         {
             {

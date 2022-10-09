@@ -59,10 +59,10 @@ namespace ZFramework
                 }
             }
         }
-        public static async ZTask WaitAnyAsync<T>(T eventArg)
+        public static async AsyncTask WaitAnyAsync<T>(T eventArg)
         {
         }
-        public static async ZTask WaitAllAsync<T>(T eventArg)
+        public static async AsyncTask WaitAllAsync<T>(T eventArg)
         {
             if (!Instance.allEvents.TryGetValue(typeof(IEventCallbackAsync<T>), out List<IEvent> iEvents))
             {
@@ -104,19 +104,19 @@ namespace ZFramework
         {
             return default;
         }
-        public static async ZTask<T> GetAsync<T>()
+        public static async AsyncTask<T> GetAsync<T>()
         {
             return default;
         }
-        public static async ZTask<T> GetAsync<T, A>(A a)
+        public static async AsyncTask<T> GetAsync<T, A>(A a)
         {
             return default;
         }
-        public static async ZTask<T> GetAsync<T, A, B>(A a, B b)
+        public static async AsyncTask<T> GetAsync<T, A, B>(A a, B b)
         {
             return default;
         }
-        public static async ZTask<T> GetAsync<T, A, B, C>(A a, B b, C c)
+        public static async AsyncTask<T> GetAsync<T, A, B, C>(A a, B b, C c)
         {
             return default;
         }

@@ -114,7 +114,6 @@ namespace Cysharp.Threading.Tasks.Triggers
                 {
                     called = true;
 
-                    TaskTracker.TrackActiveTask(this, 3);
                     parent.AddHandler(this);
                     if (cancellationToken.CanBeCanceled)
                     {
@@ -130,7 +129,6 @@ namespace Cysharp.Threading.Tasks.Triggers
                 if (!isDisposed)
                 {
                     isDisposed = true;
-                    TaskTracker.RemoveTracking(this);
                     registration.Dispose();
                     parent.RemoveHandler(this);
                 }
@@ -208,7 +206,6 @@ namespace Cysharp.Threading.Tasks.Triggers
 
             trigger.AddHandler(this);
 
-            TaskTracker.TrackActiveTask(this, 3);
         }
 
         internal AsyncTriggerHandler(AsyncTriggerBase<T> trigger, CancellationToken cancellationToken, bool callOnce)
@@ -230,7 +227,6 @@ namespace Cysharp.Threading.Tasks.Triggers
                 registration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallback, this);
             }
 
-            TaskTracker.TrackActiveTask(this, 3);
         }
 
         static void CancellationCallback(object state)
@@ -246,7 +242,6 @@ namespace Cysharp.Threading.Tasks.Triggers
             if (!isDisposed)
             {
                 isDisposed = true;
-                TaskTracker.RemoveTracking(this);
                 registration.Dispose();
                 trigger.RemoveHandler(this);
             }
@@ -296,12 +291,6 @@ namespace Cysharp.Threading.Tasks.Triggers
         {
             return core.GetStatus(token);
         }
-
-        UniTaskStatus IUniTaskSource.UnsafeGetStatus()
-        {
-            return core.UnsafeGetStatus();
-        }
-
         void IUniTaskSource.OnCompleted(Action<object> continuation, object state, short token)
         {
             core.OnCompleted(continuation, state, token);

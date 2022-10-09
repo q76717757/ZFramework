@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ET
+namespace ZFramework
 {
-    public class ETCancellationToken
+    public class TaskCancelToken
     {
         private HashSet<Action> actions = new HashSet<Action>();
 
@@ -12,7 +15,7 @@ namespace ET
             // 如果action是null，绝对不能添加,要抛异常，说明有协程泄漏
             this.actions.Add(callback);
         }
-        
+
         public void Remove(Action callback)
         {
             this.actions?.Remove(callback);
@@ -46,7 +49,7 @@ namespace ET
             }
             catch (Exception e)
             {
-                ETTask.ExceptionHandler.Invoke(e);
+                Log.Error(e);
             }
         }
     }

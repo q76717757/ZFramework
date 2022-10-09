@@ -30,14 +30,6 @@ namespace Cysharp.Threading.Tasks
 
         public static PlayerLoopTimer Create(TimeSpan interval, bool periodic, DelayType delayType, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
         {
-#if UNITY_EDITOR
-            // force use Realtime.
-            if (PlayerLoopHelper.IsMainThread && !UnityEditor.EditorApplication.isPlaying)
-            {
-                delayType = DelayType.Realtime;
-            }
-#endif
-
             switch (delayType)
             {
                 case DelayType.UnscaledDeltaTime:
@@ -59,6 +51,7 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>
         /// Restart(Reset and Start) timer.
+        /// 重启(重置和启动)定时器。
         /// </summary>
         public void Restart()
         {
@@ -75,6 +68,7 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>
         /// Restart(Reset and Start) and change interval.
+        /// 重启(复位和启动)和更改间隔。
         /// </summary>
         public void Restart(TimeSpan interval)
         {
@@ -91,6 +85,7 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>
         /// Stop timer.
+        /// 停止计时器。
         /// </summary>
         public void Stop()
         {

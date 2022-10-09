@@ -62,7 +62,6 @@ namespace Cysharp.Threading.Tasks
                 result.asyncOperation = asyncOperation;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -127,7 +126,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 asyncOperation = default;
                 cancellationToken = default;

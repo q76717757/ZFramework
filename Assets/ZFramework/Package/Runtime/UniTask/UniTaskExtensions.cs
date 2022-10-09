@@ -191,6 +191,7 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>
         /// Ignore task result when cancel raised first.
+        /// 当cancel首先被触发时，忽略任务结果。
         /// </summary>
         public static UniTask AttachExternalCancellation(this UniTask task, CancellationToken cancellationToken)
         {
@@ -214,6 +215,7 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>
         /// Ignore task result when cancel raised first.
+        /// 当cancel首先被触发时，忽略任务结果。
         /// </summary>
         public static UniTask<T> AttachExternalCancellation<T>(this UniTask<T> task, CancellationToken cancellationToken)
         {
@@ -356,8 +358,6 @@ namespace Cysharp.Threading.Tasks
                 return core.UnsafeGetStatus();
             }
         }
-
-#if UNITY_2018_3_OR_NEWER
 
         public static IEnumerator ToCoroutine<T>(this UniTask<T> task, Action<T> resultHandler = null, Action<Exception> exceptionHandler = null)
         {
@@ -545,8 +545,6 @@ namespace Cysharp.Threading.Tasks
             return (false, taskResult.Result);
         }
 
-#endif
-
         public static void Forget(this UniTask task)
         {
             var awaiter = task.GetAwaiter();
@@ -604,9 +602,7 @@ namespace Cysharp.Threading.Tasks
                 {
                     if (handleExceptionOnMainThread)
                     {
-#if UNITY_2018_3_OR_NEWER
                         await UniTask.SwitchToMainThread();
-#endif
                     }
                     exceptionHandler(ex);
                 }
@@ -674,9 +670,7 @@ namespace Cysharp.Threading.Tasks
                 {
                     if (handleExceptionOnMainThread)
                     {
-#if UNITY_2018_3_OR_NEWER
                         await UniTask.SwitchToMainThread();
-#endif
                     }
                     exceptionHandler(ex);
                 }
@@ -781,7 +775,6 @@ namespace Cysharp.Threading.Tasks
             await (await task).ConfigureAwait(continueOnCapturedContext);
         }
 
-#if UNITY_2018_3_OR_NEWER
 
         sealed class ToCoroutineEnumerator : IEnumerator
         {
@@ -915,7 +908,6 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-#endif
     }
 }
 

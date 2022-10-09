@@ -126,7 +126,6 @@ namespace Cysharp.Threading.Tasks
 
                 result.parent.triggerEvent.Add(result);
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 token = result.core.Version;
                 return result;
@@ -134,7 +133,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationTokenRegistration.Dispose();
                 cancellationTokenRegistration = default;
@@ -244,7 +242,6 @@ namespace Cysharp.Threading.Tasks
                 this.firstCall = publishCurrentValue;
 
                 parent.triggerEvent.Add(this);
-                TaskTracker.TrackActiveTask(this, 3);
 
                 if (cancellationToken.CanBeCanceled)
                 {
@@ -276,7 +273,6 @@ namespace Cysharp.Threading.Tasks
                 if (!isDisposed)
                 {
                     isDisposed = true;
-                    TaskTracker.RemoveTracking(this);
                     completionSource.TrySetCanceled(cancellationToken);
                     parent.triggerEvent.Remove(this);
                 }
@@ -444,7 +440,6 @@ namespace Cysharp.Threading.Tasks
 
                 result.parent.triggerEvent.Add(result);
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 token = result.core.Version;
                 return result;
@@ -452,7 +447,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationTokenRegistration.Dispose();
                 cancellationTokenRegistration = default;
@@ -562,7 +556,6 @@ namespace Cysharp.Threading.Tasks
                 this.firstCall = publishCurrentValue;
 
                 parent.triggerEvent.Add(this);
-                TaskTracker.TrackActiveTask(this, 3);
 
                 if (cancellationToken.CanBeCanceled)
                 {
@@ -593,7 +586,6 @@ namespace Cysharp.Threading.Tasks
                 if (!isDisposed)
                 {
                     isDisposed = true;
-                    TaskTracker.RemoveTracking(this);
                     completionSource.TrySetCanceled(cancellationToken);
                     parent.triggerEvent.Remove(this);
                 }

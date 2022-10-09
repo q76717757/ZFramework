@@ -112,7 +112,6 @@ namespace Cysharp.Threading.Tasks
                 result.progress = progress;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -172,7 +171,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 asyncOperation = default;
                 progress = default;
@@ -286,7 +284,6 @@ namespace Cysharp.Threading.Tasks
                 result.progress = progress;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -350,7 +347,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 asyncOperation = default;
                 progress = default;
@@ -840,7 +836,6 @@ namespace Cysharp.Threading.Tasks
                 result.progress = progress;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -912,7 +907,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 asyncOperation = default;
                 progress = default;

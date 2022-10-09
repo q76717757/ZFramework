@@ -30,6 +30,7 @@ namespace Cysharp.Threading.Tasks.Internal
 
         /// <summary>
         /// Optimizing utility to avoid .ToArray() that creates buffer copy(cut to just size).
+        /// 优化工具，避免使用.toarray()创建缓冲区副本(切成大小)。
         /// </summary>
         public static (T[] array, int length) Materialize<T>(IEnumerable<T> source)
         {

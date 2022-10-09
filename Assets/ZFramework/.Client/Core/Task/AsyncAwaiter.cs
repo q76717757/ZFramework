@@ -4,20 +4,20 @@ using System.Runtime.CompilerServices;
 namespace ZFramework
 {
     [AsyncMethodBuilder(typeof(AsyncTaskMethodBuilder))]
-    public class ZTask : ICriticalNotifyCompletion
+    public sealed class AsyncTask : ICriticalNotifyCompletion
     {
         internal AwaiterStatus status;
-        private Action parentTaskMoveNextDelegate;//由父task的状态机注册进来的MoveNext委托  在本task完成之后就会执行父Task状态机MoveNext
+        private Action moveNext;//由父task的状态机注册进来的MoveNext委托  在本task完成之后就会执行父Task状态机MoveNext
 
-        private ZTask() { }
-        internal static ZTask CreateInstance()
+        private AsyncTask() { }
+        internal static AsyncTask CreateInstance()
         {
-            var task = new ZTask();
+            var task = new AsyncTask();
             task.status = AwaiterStatus.Doing;
             return task;
         }
 
-        public ZTask GetAwaiter()
+        public AsyncTask GetAwaiter()
         {
             return this;
         }
@@ -38,7 +38,7 @@ namespace ZFramework
             }
             else
             {
-                parentTaskMoveNextDelegate = continuation;
+                moveNext = continuation;
             }
         }
         public void UnsafeOnCompleted(Action continuation)
@@ -49,7 +49,7 @@ namespace ZFramework
             }
             else
             {
-                parentTaskMoveNextDelegate = continuation;
+                moveNext = continuation;
             }
         }
 
@@ -58,8 +58,8 @@ namespace ZFramework
         public void SetResult()
         {
             status = AwaiterStatus.Finish;
-            var moveNext = parentTaskMoveNextDelegate;
-            parentTaskMoveNextDelegate = null;
+            var moveNext = this.moveNext;
+            this.moveNext = null;
             moveNext?.Invoke();
         }
         public void GetResult()
@@ -68,22 +68,23 @@ namespace ZFramework
 
     }
 
+
     [AsyncMethodBuilder(typeof(AsyncTaskMethodBuilder<>))]
-    public class ZTask<T> : ICriticalNotifyCompletion
+    public class AsyncTask<T> : ICriticalNotifyCompletion
     {
         private AwaiterStatus status;
-        private Action parentTaskMoveNextDelegate;
+        private Action moveNext;
         private T value;
 
-        private ZTask() { }
-        internal static ZTask<T> CreateInstance()
+        private AsyncTask() { }
+        internal static AsyncTask<T> CreateInstance()
         {
-            var task = new ZTask<T>();
+            var task = new AsyncTask<T>();
             task.status = AwaiterStatus.Doing;
             return task;
         }
 
-        public ZTask<T> GetAwaiter()
+        public AsyncTask<T> GetAwaiter()
         {
             return this;
         }
@@ -103,7 +104,7 @@ namespace ZFramework
             }
             else
             {
-                parentTaskMoveNextDelegate = continuation;
+                moveNext = continuation;
             }
         }
         public void UnsafeOnCompleted(Action continuation)
@@ -114,7 +115,7 @@ namespace ZFramework
             }
             else
             {
-                parentTaskMoveNextDelegate = continuation;
+                moveNext = continuation;
             }
         }
 
@@ -122,8 +123,8 @@ namespace ZFramework
         {
             this.value = value;
             status = AwaiterStatus.Finish;
-            var moveNext = parentTaskMoveNextDelegate;
-            parentTaskMoveNextDelegate = null;
+            var moveNext = this.moveNext;
+            this.moveNext = null;
             moveNext?.Invoke();
         }
         public T GetResult()
@@ -131,5 +132,14 @@ namespace ZFramework
             return value;
         }
 
+    }
+
+
+    [AsyncMethodBuilder(typeof(AsyncVoidMethodBuilder))]
+    public struct AsyncVoid
+    {
+        public void Coroutine()
+        {
+        }
     }
 }

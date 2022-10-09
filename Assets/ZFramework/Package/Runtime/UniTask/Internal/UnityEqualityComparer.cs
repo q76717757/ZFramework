@@ -24,7 +24,6 @@ namespace Cysharp.Threading.Tasks.Internal
         static readonly RuntimeTypeHandle boundsType = typeof(Bounds).TypeHandle;
         static readonly RuntimeTypeHandle quaternionType = typeof(Quaternion).TypeHandle;
 
-#if UNITY_2017_2_OR_NEWER
 
         public static readonly IEqualityComparer<Vector2Int> Vector2Int = new Vector2IntEqualityComparer();
         public static readonly IEqualityComparer<Vector3Int> Vector3Int = new Vector3IntEqualityComparer();
@@ -38,7 +37,6 @@ namespace Cysharp.Threading.Tasks.Internal
         static readonly RuntimeTypeHandle rectIntType = typeof(RectInt).TypeHandle;
         static readonly RuntimeTypeHandle boundsIntType = typeof(BoundsInt).TypeHandle;
 
-#endif
 
         static class Cache<T>
         {
@@ -76,14 +74,12 @@ namespace Cysharp.Threading.Tasks.Internal
             if (t.Equals(boundsType)) return (object)UnityEqualityComparer.Bounds;
             if (t.Equals(quaternionType)) return (object)UnityEqualityComparer.Quaternion;
 
-#if UNITY_2017_2_OR_NEWER
 
             if (t.Equals(vector2IntType)) return (object)UnityEqualityComparer.Vector2Int;
             if (t.Equals(vector3IntType)) return (object)UnityEqualityComparer.Vector3Int;
             if (t.Equals(rangeIntType)) return (object)UnityEqualityComparer.RangeInt;
             if (t.Equals(rectIntType)) return (object)UnityEqualityComparer.RectInt;
             if (t.Equals(boundsIntType)) return (object)UnityEqualityComparer.BoundsInt;
-#endif
 
             return null;
         }
@@ -192,7 +188,6 @@ namespace Cysharp.Threading.Tasks.Internal
             }
         }
 
-#if UNITY_2017_2_OR_NEWER
 
         sealed class Vector2IntEqualityComparer : IEqualityComparer<Vector2Int>
         {
@@ -262,6 +257,5 @@ namespace Cysharp.Threading.Tasks.Internal
             }
         }
 
-#endif
     }
 }

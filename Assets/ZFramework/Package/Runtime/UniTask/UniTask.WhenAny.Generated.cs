@@ -21,7 +21,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -103,7 +102,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -141,7 +139,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -260,7 +257,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -298,7 +294,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -454,7 +449,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -492,7 +486,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -685,7 +678,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -723,7 +715,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -953,7 +944,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -991,7 +981,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -1258,7 +1247,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -1296,7 +1284,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7, UniTask<T8> task8)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -1600,7 +1587,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -1638,7 +1624,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7, UniTask<T8> task8, UniTask<T9> task9)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -1979,7 +1964,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -2017,7 +2001,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7, UniTask<T8> task8, UniTask<T9> task9, UniTask<T10> task10)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -2395,7 +2378,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -2433,7 +2415,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7, UniTask<T8> task8, UniTask<T9> task9, UniTask<T10> task10, UniTask<T11> task11)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -2848,7 +2829,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -2886,7 +2866,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7, UniTask<T8> task8, UniTask<T9> task9, UniTask<T10> task10, UniTask<T11> task11, UniTask<T12> task12)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -3338,7 +3317,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -3376,7 +3354,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7, UniTask<T8> task8, UniTask<T9> task9, UniTask<T10> task10, UniTask<T11> task11, UniTask<T12> task12, UniTask<T13> task13)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -3865,7 +3842,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -3903,7 +3879,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7, UniTask<T8> task8, UniTask<T9> task9, UniTask<T10> task10, UniTask<T11> task11, UniTask<T12> task12, UniTask<T13> task13, UniTask<T14> task14)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -4429,7 +4404,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -4467,7 +4441,6 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyPromise(UniTask<T1> task1, UniTask<T2> task2, UniTask<T3> task3, UniTask<T4> task4, UniTask<T5> task5, UniTask<T6> task6, UniTask<T7> task7, UniTask<T8> task8, UniTask<T9> task9, UniTask<T10> task10, UniTask<T11> task11, UniTask<T12> task12, UniTask<T13> task13, UniTask<T14> task14, UniTask<T15> task15)
             {
-                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completedCount = 0;
                 {
@@ -5030,7 +5003,6 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15) GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }

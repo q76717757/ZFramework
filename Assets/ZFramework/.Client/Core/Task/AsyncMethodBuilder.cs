@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable IDE0060 // 删除未使用的参数
+using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security;
 
@@ -6,96 +8,133 @@ namespace ZFramework
 {
     public struct AsyncTaskMethodBuilder
     {
-        private ZTask task;
-        public ZTask Task => task;
-
-        //遇到本await关键字 生成本task对应的状态机
+        private AsyncTask task;
+        [DebuggerHidden]
+        public AsyncTask Task => task;
+        [DebuggerHidden]
         public static AsyncTaskMethodBuilder Create()
         {
             AsyncTaskMethodBuilder builder = new AsyncTaskMethodBuilder()
             {
-                task = ZTask.CreateInstance()
+                task = AsyncTask.CreateInstance()
             };
             return builder;
         }
+        [DebuggerHidden]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
             stateMachine.MoveNext();
         }
-
-        //遇到子awaiter 绑定子awaiter的完成回调
+        [DebuggerHidden]
         public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : INotifyCompletion where TStateMachine : IAsyncStateMachine
         {
             awaiter.OnCompleted(stateMachine.MoveNext);
         }
+        [DebuggerHidden]
         [SecuritySafeCritical]
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : ICriticalNotifyCompletion where TStateMachine : IAsyncStateMachine
         {
             awaiter.UnsafeOnCompleted(stateMachine.MoveNext);
         }
-
-        //本状态机结束 给task设置返回值
+        [DebuggerHidden]
         public void SetResult()
         {
             task.SetResult();
         }
-
-        //没执行过 不知道干嘛的
+        [DebuggerHidden]
         public void SetException(Exception exception)
         {
-            Log.Info("AsyncTaskMethodBuilder.SetException-->" + exception.Message);
+            Log.Error(exception);
         }
+        [DebuggerHidden]
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
-            Log.Info("AsyncTaskMethodBuilder.SetStateMachine" + stateMachine.ToString());
         }
     }
 
-
     public struct AsyncTaskMethodBuilder<T>
     {
-        private ZTask<T> task;
-        public ZTask<T> Task => task;
-
-        //遇到本await关键字 生成本task对应的状态机
+        private AsyncTask<T> task;
+        [DebuggerHidden]
+        public AsyncTask<T> Task => task;
+        [DebuggerHidden]
         public static AsyncTaskMethodBuilder<T> Create()
         {
             AsyncTaskMethodBuilder<T> builder = new AsyncTaskMethodBuilder<T>()
             {
-                task = ZTask<T>.CreateInstance()
+                task = AsyncTask<T>.CreateInstance()
             };
             return builder;
         }
+        [DebuggerHidden]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
             stateMachine.MoveNext();
         }
-
-        //遇到子awaiter 绑定子awaiter的完成回调
+        [DebuggerHidden]
         public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : INotifyCompletion where TStateMachine : IAsyncStateMachine
         {
             awaiter.OnCompleted(stateMachine.MoveNext);
         }
+        [DebuggerHidden]
         [SecuritySafeCritical]
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : ICriticalNotifyCompletion where TStateMachine : IAsyncStateMachine
         {
             awaiter.UnsafeOnCompleted(stateMachine.MoveNext);
         }
-
-        //本状态机结束 给task设置返回值
+        [DebuggerHidden]
         public void SetResult(T value)
         {
             task.SetResult(value);
         }
-
-        //没执行过 不知道干嘛的
+        [DebuggerHidden]
         public void SetException(Exception exception)
         {
-            Log.Info("AsyncTaskMethodBuilder.SetException-->" + exception.Message);
+            Log.Error(exception);
         }
+        [DebuggerHidden]
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
-            Log.Info("AsyncTaskMethodBuilder.SetStateMachine" + stateMachine.ToString());
+        }
+    }
+
+    public struct AsyncVoidMethodBuilder
+    {
+        [DebuggerHidden]
+        public AsyncVoid Task => default;
+        [DebuggerHidden]
+        public static AsyncVoidMethodBuilder Create()
+        {
+            return default;
+        }
+        [DebuggerHidden]
+        public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
+        {
+            stateMachine.MoveNext();
+        }
+        [DebuggerHidden]
+        public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : INotifyCompletion where TStateMachine : IAsyncStateMachine
+        {
+            awaiter.OnCompleted(stateMachine.MoveNext);
+        }
+        [DebuggerHidden]
+        [SecuritySafeCritical]
+        public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : ICriticalNotifyCompletion where TStateMachine : IAsyncStateMachine
+        {
+            awaiter.UnsafeOnCompleted(stateMachine.MoveNext);
+        }
+        [DebuggerHidden]
+        public void SetResult()
+        {
+        }
+        [DebuggerHidden]
+        public void SetException(Exception exception)
+        {
+            Log.Error(exception);
+        }
+        [DebuggerHidden]
+        public void SetStateMachine(IAsyncStateMachine stateMachine)
+        {
         }
     }
 }

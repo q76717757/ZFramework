@@ -70,7 +70,6 @@ namespace Cysharp.Threading.Tasks
                 result.predicate = predicate;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -132,7 +131,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 predicate = default;
                 cancellationToken = default;
@@ -175,7 +173,6 @@ namespace Cysharp.Threading.Tasks
                 result.predicate = predicate;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -237,7 +234,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 predicate = default;
                 cancellationToken = default;
@@ -278,7 +274,6 @@ namespace Cysharp.Threading.Tasks
 
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -326,7 +321,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
                 return pool.TryPush(this);
@@ -377,7 +371,6 @@ namespace Cysharp.Threading.Tasks
                 result.equalityComparer = equalityComparer ?? UnityEqualityComparer.GetDefault<U>();
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -446,7 +439,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 target = default;
                 currentValue = default;
@@ -499,7 +491,6 @@ namespace Cysharp.Threading.Tasks
                 result.equalityComparer = equalityComparer ?? UnityEqualityComparer.GetDefault<U>();
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -568,7 +559,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 target = default;
                 currentValue = default;

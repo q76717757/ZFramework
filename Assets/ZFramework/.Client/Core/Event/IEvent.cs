@@ -15,7 +15,7 @@ namespace ZFramework
     }
     internal interface IEventCallbackAsync<T> : IEvent
     {
-        ZTask Callback(T arg);
+        AsyncTask Callback(T arg);
     }
 
     //请求响应模型
@@ -29,11 +29,11 @@ namespace ZFramework
     }
     internal interface IEventReqAsync<T> : IEvent
     {
-        ZTask<T> GetValueAsync();
+        AsyncTask<T> GetValueAsync();
     }
     internal interface IEventReqAsync<T, A> : IEvent
     {
-        ZTask<T> GetValueAsync(A a);
+        AsyncTask<T> GetValueAsync(A a);
     }
     internal interface IEventReqAll<T> : IEvent
     {
@@ -41,6 +41,6 @@ namespace ZFramework
     }
     internal interface IEventReqAllAsync<T> : IEvent
     {
-        ZTask<List<T>> GetValues();
+        AsyncTask<List<T>> GetValues();
     }
 }

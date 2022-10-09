@@ -44,14 +44,12 @@ namespace Cysharp.Threading.Tasks.Linq
             {
                 this.create = create;
                 this.cancellationToken = cancellationToken;
-                TaskTracker.TrackActiveTask(this, 3);
             }
 
             public T Current { get; private set; }
 
             public UniTask DisposeAsync()
             {
-                TaskTracker.RemoveTracking(this);
                 return default;
             }
 

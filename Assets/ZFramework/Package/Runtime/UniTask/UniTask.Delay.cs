@@ -203,7 +203,6 @@ namespace Cysharp.Threading.Tasks
 
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -252,7 +251,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
                 return pool.TryPush(this);
@@ -293,7 +291,6 @@ namespace Cysharp.Threading.Tasks
                 result.frameCount = PlayerLoopHelper.IsMainThread ? Time.frameCount : -1;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -347,7 +344,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 cancellationToken = default;
                 return pool.TryPush(this);
@@ -386,7 +382,6 @@ namespace Cysharp.Threading.Tasks
 
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 coroutineRunner.StartCoroutine(result);
 
@@ -423,7 +418,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 Reset(); // Reset Enumerator
                 cancellationToken = default;
@@ -498,8 +492,6 @@ namespace Cysharp.Threading.Tasks
                 result.delayFrameCount = delayFrameCount;
                 result.cancellationToken = cancellationToken;
                 result.initialFrame = PlayerLoopHelper.IsMainThread ? Time.frameCount : -1;
-
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -580,7 +572,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 currentFrameCount = default;
                 delayFrameCount = default;
@@ -628,7 +619,6 @@ namespace Cysharp.Threading.Tasks
                 result.cancellationToken = cancellationToken;
                 result.initialFrame = PlayerLoopHelper.IsMainThread ? Time.frameCount : -1;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -691,7 +681,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 delayTimeSpan = default;
                 elapsed = default;
@@ -739,7 +728,6 @@ namespace Cysharp.Threading.Tasks
                 result.initialFrame = PlayerLoopHelper.IsMainThread ? Time.frameCount : -1;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -802,7 +790,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 delayFrameTimeSpan = default;
                 elapsed = default;
@@ -848,7 +835,6 @@ namespace Cysharp.Threading.Tasks
                 result.delayTimeSpanTicks = delayTimeSpan.Ticks;
                 result.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 PlayerLoopHelper.AddAction(timing, result);
 
@@ -908,7 +894,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 stopwatch = default;
                 cancellationToken = default;

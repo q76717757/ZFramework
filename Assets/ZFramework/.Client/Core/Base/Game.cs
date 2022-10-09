@@ -45,6 +45,8 @@ namespace ZFramework
         void IGameInstance.Start(Type[] allTypes)
         {
             Load(allTypes);
+           
+
             EventSystem.Call(new EventType.OnGameStart());
         }
         void IGameInstance.Reload(Type[] allTypes)

@@ -76,7 +76,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             {
                 result = new AsyncUniTaskVoid<TStateMachine>();
             }
-            TaskTracker.TrackActiveTask(result, 3);
 
             runnerFieldRef = result; // set runner before copied.
             result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
@@ -92,7 +91,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         public void Return()
         {
-            TaskTracker.RemoveTracking(this);
             stateMachine = default;
             pool.TryPush(this);
         }
@@ -107,11 +105,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         // dummy interface implementation for TaskTracker.
 
         UniTaskStatus IUniTaskSource.GetStatus(short token)
-        {
-            return UniTaskStatus.Pending;
-        }
-
-        UniTaskStatus IUniTaskSource.UnsafeGetStatus()
         {
             return UniTaskStatus.Pending;
         }
@@ -152,7 +145,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             {
                 result = new AsyncUniTask<TStateMachine>();
             }
-            TaskTracker.TrackActiveTask(result, 3);
 
             runnerPromiseFieldRef = result; // set runner before copied.
             result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
@@ -168,7 +160,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         void Return()
         {
-            TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
             pool.TryPush(this);
@@ -176,7 +167,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         bool TryReturn()
         {
-            TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
             return pool.TryPush(this);
@@ -275,7 +265,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             {
                 result = new AsyncUniTask<TStateMachine, T>();
             }
-            TaskTracker.TrackActiveTask(result, 3);
 
             runnerPromiseFieldRef = result; // set runner before copied.
             result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
@@ -291,7 +280,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         void Return()
         {
-            TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
             pool.TryPush(this);
@@ -299,7 +287,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         bool TryReturn()
         {
-            TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
             return pool.TryPush(this);

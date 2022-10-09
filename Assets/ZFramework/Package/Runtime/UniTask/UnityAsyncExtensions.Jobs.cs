@@ -57,7 +57,6 @@ namespace Cysharp.Threading.Tasks
 
                 result.jobHandle = jobHandle;
 
-                TaskTracker.TrackActiveTask(result, 3);
 
                 token = result.core.Version;
                 return result;
@@ -65,7 +64,6 @@ namespace Cysharp.Threading.Tasks
 
             public void GetResult(short token)
             {
-                TaskTracker.RemoveTracking(this);
                 core.GetResult(token);
             }
 

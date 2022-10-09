@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-
 using System.Threading.Tasks;
 using ZFramework.EventType;
 
@@ -22,7 +18,7 @@ namespace ZFramework
     }
     public class TestEventAsync : EventCallbackAsync<EventType.OnGameStart>
     {
-        public override async ZTask Callback(OnGameStart agg)
+        public override async AsyncTask Callback(OnGameStart agg)
         {
             await Task.Delay(1000);
 
@@ -36,6 +32,7 @@ namespace ZFramework
 namespace Test
 {
     using Cysharp.Threading.Tasks;
+    using System.Collections;
 
     public class UniTaskDemo : MonoBehaviour
     {
@@ -79,7 +76,11 @@ namespace Test
             await UniTask.WaitUntilValueChanged(this, x => x.isActive);
 
             // You can await IEnumerator coroutines
-            //await FooCoroutineEnumerator();
+            await FooCoroutineEnumerator();
+            IEnumerator FooCoroutineEnumerator()
+            {
+                yield return null;
+            }
 
             // You can await a standard task
             await Task.Run(() => 100);
@@ -112,6 +113,7 @@ namespace Test
             // return async-value.(or you can use `UniTask`(no result), `UniTaskVoid`(fire and forget)).
             return (asset as TextAsset)?.text ?? throw new InvalidOperationException("Asset not found");
         }
+
     }
 
 }

@@ -91,11 +91,9 @@ namespace Cysharp.Threading.Tasks
         PostLateUpdate = 12,
         LastPostLateUpdate = 13,
 
-#if UNITY_2020_2_OR_NEWER
         // Unity 2020.2 added TimeUpdate https://docs.unity3d.com/2020.2/Documentation/ScriptReference/PlayerLoop.TimeUpdate.html
         TimeUpdate = 14,
         LastTimeUpdate = 15,
-#endif
     }
 
     [Flags]
@@ -112,11 +110,7 @@ namespace Cysharp.Threading.Tasks
             Update | LastUpdate |
             PreLateUpdate | LastPreLateUpdate |
             PostLateUpdate | LastPostLateUpdate
-#if UNITY_2020_2_OR_NEWER
             | TimeUpdate | LastTimeUpdate,
-#else
-            ,
-#endif
 
         /// <summary>
         /// Preset: All without last except LastPostLateUpdate.
@@ -129,9 +123,7 @@ namespace Cysharp.Threading.Tasks
             Update |
             PreLateUpdate |
             PostLateUpdate | LastPostLateUpdate
-#if UNITY_2020_2_OR_NEWER
             | TimeUpdate
-#endif
             ,
 
         /// <summary>
@@ -163,12 +155,10 @@ namespace Cysharp.Threading.Tasks
         PostLateUpdate = 4096,
         LastPostLateUpdate = 8192
 
-#if UNITY_2020_2_OR_NEWER
         ,
         // Unity 2020.2 added TimeUpdate https://docs.unity3d.com/2020.2/Documentation/ScriptReference/PlayerLoop.TimeUpdate.html
         TimeUpdate = 16384,
         LastTimeUpdate = 32768
-#endif
     }
 
     public interface IPlayerLoopItem
@@ -199,27 +189,6 @@ namespace Cysharp.Threading.Tasks
             Type loopRunnerType, PlayerLoopRunner runner)
         {
 
-#if UNITY_EDITOR
-            EditorApplication.playModeStateChanged += (state) =>
-            {
-                if (state == PlayModeStateChange.EnteredEditMode || state == PlayModeStateChange.ExitingEditMode)
-                {
-                    IsEditorApplicationQuitting = true;
-                    // run rest action before clear.
-                    if (runner != null)
-                    {
-                        runner.Run();
-                        runner.Clear();
-                    }
-                    if (cq != null)
-                    {
-                        cq.Run();
-                        cq.Clear();
-                    }
-                    IsEditorApplicationQuitting = false;
-                }
-            };
-#endif
 
             var yieldLoop = new PlayerLoopSystem
             {
@@ -297,70 +266,12 @@ namespace Cysharp.Threading.Tasks
             }
             catch { }
 
-#if UNITY_EDITOR && UNITY_2019_3_OR_NEWER
-            // When domain reload is disabled, re-initialization is required when entering play mode; 
-            // otherwise, pending tasks will leak between play mode sessions.
-            var domainReloadDisabled = UnityEditor.EditorSettings.enterPlayModeOptionsEnabled &&
-                UnityEditor.EditorSettings.enterPlayModeOptions.HasFlag(UnityEditor.EnterPlayModeOptions.DisableDomainReload);
-            if (!domainReloadDisabled && runners != null) return;
-#else
             if (runners != null) return; // already initialized
-#endif
 
-            var playerLoop =
-#if UNITY_2019_3_OR_NEWER
-                PlayerLoop.GetCurrentPlayerLoop();
-#else
-                PlayerLoop.GetDefaultPlayerLoop();
-#endif
+            var playerLoop = PlayerLoop.GetCurrentPlayerLoop();
 
             Initialize(ref playerLoop);
         }
-
-
-#if UNITY_EDITOR
-
-        [InitializeOnLoadMethod]
-        static void InitOnEditor()
-        {
-            // Execute the play mode init method
-            Init();
-
-            // register an Editor update delegate, used to forcing playerLoop update
-            EditorApplication.update += ForceEditorPlayerLoopUpdate;
-        }
-
-        private static void ForceEditorPlayerLoopUpdate()
-        {
-            if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating)
-            {
-                // Not in Edit mode, don't interfere
-                return;
-            }
-
-            // EditorApplication.QueuePlayerLoopUpdate causes performance issue, don't call directly.
-            // EditorApplication.QueuePlayerLoopUpdate();
-
-            if (yielders != null)
-            {
-                foreach (var item in yielders)
-                {
-                    if (item != null) item.Run();
-                }
-            }
-
-            if (runners != null)
-            {
-                foreach (var item in runners)
-                {
-                    if (item != null) item.Run();
-                }
-            }
-
-            UniTaskSynchronizationContext.Run();
-        }
-
-#endif
 
         private static int FindLoopSystemIndex(PlayerLoopSystem[] playerLoopList, Type systemType)
         {
@@ -393,13 +304,8 @@ namespace Cysharp.Threading.Tasks
 
         public static void Initialize(ref PlayerLoopSystem playerLoop, InjectPlayerLoopTimings injectTimings = InjectPlayerLoopTimings.All)
         {
-#if UNITY_2020_2_OR_NEWER
             yielders = new ContinuationQueue[16];
             runners = new PlayerLoopRunner[16];
-#else
-            yielders = new ContinuationQueue[14];
-            runners = new PlayerLoopRunner[14];
-#endif
 
             var copyList = playerLoop.subSystemList.ToArray();
 
@@ -466,7 +372,6 @@ namespace Cysharp.Threading.Tasks
                 InjectPlayerLoopTimings.LastPostLateUpdate, 13, false,
                 typeof(UniTaskLoopRunners.UniTaskLoopRunnerLastYieldPostLateUpdate), typeof(UniTaskLoopRunners.UniTaskLoopRunnerLastPostLateUpdate), PlayerLoopTiming.LastPostLateUpdate);
 
-#if UNITY_2020_2_OR_NEWER
             // TimeUpdate
             InsertLoop(copyList, injectTimings, typeof(PlayerLoopType.TimeUpdate),
                 InjectPlayerLoopTimings.TimeUpdate, 14, true,
@@ -475,7 +380,6 @@ namespace Cysharp.Threading.Tasks
             InsertLoop(copyList, injectTimings, typeof(PlayerLoopType.TimeUpdate),
                 InjectPlayerLoopTimings.LastTimeUpdate, 15, false,
                 typeof(UniTaskLoopRunners.UniTaskLoopRunnerLastYieldTimeUpdate), typeof(UniTaskLoopRunners.UniTaskLoopRunnerLastTimeUpdate), PlayerLoopTiming.LastTimeUpdate);
-#endif
 
             // Insert UniTaskSynchronizationContext to Update loop
             var i = FindLoopSystemIndex(copyList, typeof(PlayerLoopType.Update));
@@ -511,8 +415,6 @@ namespace Cysharp.Threading.Tasks
         }
 
         // Diagnostics helper
-
-#if UNITY_2019_3_OR_NEWER
 
         public static void DumpCurrentPlayerLoop()
         {
@@ -557,7 +459,6 @@ namespace Cysharp.Threading.Tasks
             return false;
         }
 
-#endif
 
     }
 }

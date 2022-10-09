@@ -79,7 +79,6 @@ namespace Cysharp.Threading.Tasks
                 {
                     result = new EnumeratorPromise();
                 }
-                TaskTracker.TrackActiveTask(result, 3);
 
                 result.innerEnumerator = ConsumeEnumerator(innerEnumerator);
                 result.cancellationToken = cancellationToken;
@@ -184,7 +183,6 @@ namespace Cysharp.Threading.Tasks
 
             bool TryReturn()
             {
-                TaskTracker.RemoveTracking(this);
                 core.Reset();
                 innerEnumerator = default;
                 cancellationToken = default;

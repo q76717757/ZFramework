@@ -8,12 +8,13 @@ using System.Threading;
 namespace Cysharp.Threading.Tasks
 {
     // internaly used but public, allow to user create custom operator with pooling.
-
+    //内部使用但公开，允许用户创建自定义操作符池。
     public static class TaskPool
     {
         internal static int MaxPoolSize;
 
         // avoid to use ConcurrentDictionary for safety of WebGL build.
+        //为了WebGL构建的安全，请避免使用ConcurrentDictionary。
         static Dictionary<Type, Func<int>> sizes = new Dictionary<Type, Func<int>>();
 
         static TaskPool()
@@ -66,6 +67,7 @@ namespace Cysharp.Threading.Tasks
     }
 
     // mutable struct, don't mark readonly.
+    //可变的结构体，不要标记为只读。
     [StructLayout(LayoutKind.Auto)]
     public struct TaskPool<T>
         where T : class, ITaskPoolNode<T>

@@ -52,7 +52,7 @@ namespace ZFramework
             }
 		}
 
-        static async ZTask ReadLine()
+        static async AsyncTask ReadLine()
         {
             while (true)
             {

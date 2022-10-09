@@ -69,30 +69,6 @@ namespace Cysharp.Threading.Tasks
             return new UniTask<bool>(new IsCanceledSource(source), token);
         }
 
-#if !UNITY_2018_3_OR_NEWER
-
-        public static implicit operator System.Threading.Tasks.ValueTask(in UniTask self)
-        {
-            if (self.source == null)
-            {
-                return default;
-            }
-
-#if NETSTANDARD2_0
-            return self.AsValueTask();
-#else
-            return new System.Threading.Tasks.ValueTask(self.source, self.token);
-#endif
-        }
-
-#endif
-
-        public override string ToString()
-        {
-            if (source == null) return "()";
-            return "(" + source.UnsafeGetStatus() + ")";
-        }
-
         /// <summary>
         /// Memoizing inner IValueTaskSource. The result UniTask can await multiple.
         /// </summary>
@@ -151,11 +127,6 @@ namespace Cysharp.Threading.Tasks
                 source.OnCompleted(continuation, state, token);
             }
 
-            public UniTaskStatus UnsafeGetStatus()
-            {
-                return source.UnsafeGetStatus();
-            }
-
             void IUniTaskSource.GetResult(short token)
             {
                 GetResult(token);
@@ -192,10 +163,6 @@ namespace Cysharp.Threading.Tasks
                 return source.GetStatus(token);
             }
 
-            public UniTaskStatus UnsafeGetStatus()
-            {
-                return source.UnsafeGetStatus();
-            }
 
             public void OnCompleted(Action<object> continuation, object state, short token)
             {
@@ -272,15 +239,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            public UniTaskStatus UnsafeGetStatus()
-            {
-                if (source == null)
-                {
-                    return status;
-                }
 
-                return source.UnsafeGetStatus();
-            }
         }
 
         public readonly struct Awaiter : ICriticalNotifyCompletion
@@ -440,24 +399,6 @@ namespace Cysharp.Threading.Tasks
             return self.AsUniTask();
         }
 
-#if !UNITY_2018_3_OR_NEWER
-
-        public static implicit operator System.Threading.Tasks.ValueTask<T>(in UniTask<T> self)
-        {
-            if (self.source == null)
-            {
-                return new System.Threading.Tasks.ValueTask<T>(self.result);
-            }
-
-#if NETSTANDARD2_0
-            return self.AsValueTask();
-#else
-            return new System.Threading.Tasks.ValueTask<T>(self.source, self.token);
-#endif
-        }
-
-#endif
-
         /// <summary>
         /// returns (bool IsCanceled, T Result) instead of throws OperationCanceledException.
         /// </summary>
@@ -471,11 +412,7 @@ namespace Cysharp.Threading.Tasks
             return new UniTask<(bool, T)>(new IsCanceledSource(source), token);
         }
 
-        public override string ToString()
-        {
-            return (this.source == null) ? result?.ToString()
-                 : "(" + this.source.UnsafeGetStatus() + ")";
-        }
+
 
         sealed class IsCanceledSource : IUniTaskSource<(bool, T)>
         {
@@ -513,13 +450,6 @@ namespace Cysharp.Threading.Tasks
             public UniTaskStatus GetStatus(short token)
             {
                 return source.GetStatus(token);
-            }
-
-            [DebuggerHidden]
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public UniTaskStatus UnsafeGetStatus()
-            {
-                return source.UnsafeGetStatus();
             }
 
             [DebuggerHidden]
@@ -607,15 +537,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            public UniTaskStatus UnsafeGetStatus()
-            {
-                if (source == null)
-                {
-                    return status;
-                }
 
-                return source.UnsafeGetStatus();
-            }
         }
 
         public readonly struct Awaiter : ICriticalNotifyCompletion

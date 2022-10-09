@@ -64,7 +64,6 @@ namespace Cysharp.Threading.Tasks.Linq
                 this.equalityComparer = equalityComparer;
                 this.cancellationToken = cancellationToken;
                 this.first = true;
-                TaskTracker.TrackActiveTask(this, 2);
                 PlayerLoopHelper.AddAction(monitorTiming, this);
             }
 
@@ -95,7 +94,6 @@ namespace Cysharp.Threading.Tasks.Linq
                 if (!disposed)
                 {
                     disposed = true;
-                    TaskTracker.RemoveTracking(this);
                 }
                 return default;
             }
@@ -171,7 +169,6 @@ namespace Cysharp.Threading.Tasks.Linq
                 this.equalityComparer = equalityComparer;
                 this.cancellationToken = cancellationToken;
                 this.first = true;
-                TaskTracker.TrackActiveTask(this, 2);
                 PlayerLoopHelper.AddAction(monitorTiming, this);
             }
 
@@ -201,7 +198,6 @@ namespace Cysharp.Threading.Tasks.Linq
                 if (!disposed)
                 {
                     disposed = true;
-                    TaskTracker.RemoveTracking(this);
                 }
                 return default;
             }

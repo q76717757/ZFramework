@@ -15,7 +15,7 @@
 	<ItemGroup>
 	  <Compile Remove="..\..\.Client\Core\Task\Unity\**" />
 	</ItemGroup>
-
+	
 	<ItemGroup>
 		<Compile Include="..\..\Boot\Base\VersionInfo.cs">
 			<Link>Server\Base\VersionInfo.cs</Link>

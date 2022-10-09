@@ -36,7 +36,6 @@ namespace Cysharp.Threading.Tasks.Linq
                 this.updateTiming = updateTiming;
                 this.cancellationToken = cancellationToken;
 
-                TaskTracker.TrackActiveTask(this, 2);
                 PlayerLoopHelper.AddAction(updateTiming, this);
             }
 
@@ -56,7 +55,6 @@ namespace Cysharp.Threading.Tasks.Linq
                 if (!disposed)
                 {
                     disposed = true;
-                    TaskTracker.RemoveTracking(this);
                 }
                 return default;
             }

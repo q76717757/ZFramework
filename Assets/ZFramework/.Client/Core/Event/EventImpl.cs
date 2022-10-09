@@ -13,8 +13,8 @@ namespace ZFramework
     public abstract class EventCallbackAsync<T> : IEventCallbackAsync<T>
     {
         public Type EventType => typeof(IEventCallbackAsync<T>);
-        ZTask IEventCallbackAsync<T>.Callback(T arg) => Callback(arg);
-        public abstract ZTask Callback(T agg);
+        AsyncTask IEventCallbackAsync<T>.Callback(T arg) => Callback(arg);
+        public abstract AsyncTask Callback(T agg);
     }
 
 
