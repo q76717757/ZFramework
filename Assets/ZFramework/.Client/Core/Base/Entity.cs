@@ -4,41 +4,65 @@ using System;
 
 namespace ZFramework
 {
-    public sealed class Entity : Object
+    public sealed class Entity : Object //可以类比Unity的Gameboject合并Tranform 除去空间坐标系的相关内容 主要负责管理层级关系和组件挂载
     {
-        private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//当前entity下挂的子entity
-        private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();//当前entity上的组件 唯一
-
+        private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//子物体
+        private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();//组件
         private Entity parent;
 
-        public Entity() : base(IdGenerater.Instance.GenerateInstanceId())
+        private Entity() : base(Game.instance.IdGenerater.GenerateInstanceId())
         {
         }
-
-        public VirtualProcess Process
+        public Entity(Entity parent) : base(Game.instance.IdGenerater.GenerateInstanceId())
         {
-            get;
-            private set;
+            Parent = parent;
+            Process = parent.Process;
         }
 
+        public VirtualProcess Process { get; }
         public Entity Parent
         {
             get => parent;
             set
             {
+                if (value == null)//parent dont null
+                {
+                    throw new Exception("parent can not be null");
+                }
+                if (parent == null)// is RootEntity
+                {
+                    throw new Exception("dont set root.Parent");
+                }
+                if (parent == value)//is this
+                {
+                    return;
+                }
+                //normal entity
+                parent.childrens.Remove(this.InstanceID);
+                value.childrens.Add(this.InstanceID, this);
                 parent = value;
             }
         }
+        public bool IsActive { get; set; } = true;
 
-        public Component CreateEntity(Type type)
+
+        //CREATE
+        internal static Entity CreateRoot()
+        { 
+            Entity entity = new Entity();
+            return entity;
+        }
+        private Component CreateEntity(Type type)
         {
-            Component com = (Component)Activator.CreateInstance(type,this);
+            Component com = (Component)Activator.CreateInstance(type);
             return com;
         }
-        public T CreateEntity<T>() where T : Component
+        private T CreateEntity<T>() where T : Component
         {
-            return (T)CreateEntity(typeof(T));
+            return Activator.CreateInstance<T>();
         }
+
+        //ADD
         public Component AddComponent(Type type)
         {
             if (components.ContainsKey(type))
@@ -48,13 +72,20 @@ namespace ZFramework
             }
             var component = CreateEntity(type);
             components.Add(component.GetType(), component);
-            GameLoopSystem.Instance.CallAwake(component);
+            Game.instance.GameLoopSystem.CallAwake(component);
             return component;
         }
-
         public T AddComponent<T>() where T : Component
         {
-            return (T)AddComponent(typeof(T));
+            if (components.ContainsKey(typeof(T)))
+            {
+                Log.Error("一个entity下 每种component只能挂一个");
+                return null;
+            }
+            var component = CreateEntity<T>();
+            components.Add(component.GetType(), component);
+            Game.instance.GameLoopSystem.CallAwake(component);
+            return component;
         }
         public T AddComponent<T, A>(A a) where T : Component
         {
@@ -65,7 +96,7 @@ namespace ZFramework
             }
             var component = CreateEntity<T>();
             components.Add(component.GetType(), component);
-            GameLoopSystem.Instance.CallAwake(component, a);
+            Game.instance.GameLoopSystem.CallAwake(component, a);
             return component;
         }
         public T AddComponent<T, A, B>(A a, B b) where T : Component
@@ -77,7 +108,19 @@ namespace ZFramework
             }
             var component = CreateEntity<T>();
             components.Add(component.GetType(), component);
-            GameLoopSystem.Instance.CallAwake(component, a, b);
+            Game.instance.GameLoopSystem.CallAwake(component, a, b);
+            return component;
+        }
+        public T AddComponent<T, A, B, C>(A a, B b, C c) where T : Component
+        {
+            if (components.ContainsKey(typeof(T)))
+            {
+                Log.Error("一个entity下 每种component只能挂一个");
+                return null;
+            }
+            var component = CreateEntity<T>();
+            components.Add(component.GetType(), component);
+            Game.instance.GameLoopSystem.CallAwake(component, a, b, c);
             return component;
         }
         public T AddComponentWithNewChild<T>()
@@ -85,6 +128,7 @@ namespace ZFramework
             return default;
         }
 
+        //GET
         public Component GetComponent(Type type)
         {
             if (components.TryGetValue(type, out Component component))
@@ -117,6 +161,10 @@ namespace ZFramework
                 return parent.GetComponentInParent<T>(true);
             }
             return null;
+        }
+        public T[] GetComponentsInParent<T>(bool includSelf = true)
+        {
+            return default;
         }
         public T GetComponentInChildren<T>(bool includSelf = true) where T : Component
         {
@@ -167,21 +215,22 @@ namespace ZFramework
                 item.GetComponentsInChildren_private(list, true);
             }
         }
+
+        //REMOVE
         public void RemoveComponent(Component component)
         {
             if (components.TryGetValue(component.GetType(), out Component target))
             {
-                GameLoopSystem.Instance.CallDestory(target);
+                Game.instance.GameLoopSystem.CallDestory(target);
             }
         }
         public void RemoveComponent<T>() where T : Component
         {
             if (components.TryGetValue(typeof(T),out Component component))
             {
-                GameLoopSystem.Instance.CallDestory(component);
+                Game.instance.GameLoopSystem.CallDestory(component);
             }
         }
-
         public override void Dispose()
         {
             if (IsDisposed)
@@ -203,8 +252,8 @@ namespace ZFramework
                     component.Dispose();
                 }
             }
-            Parent = null;
-            //Game.GameLoop.CallDestory(this);
+            parent.childrens.Remove(this.InstanceID);
+            parent = null;
 
             base.Dispose();
         }

@@ -139,10 +139,9 @@ namespace ZFramework
         }
     }
 
-    public class IdGenerater : IDisposable
+    public class IdGenerater
     {
         public const int Mask18bit = 0x03ffff;
-        public static IdGenerater Instance = new IdGenerater();
 
         public const int MaxZone = 1024;
 
@@ -159,8 +158,12 @@ namespace ZFramework
         private ushort unitIdValue;
         private uint lastUnitIdTime;
 
-        public IdGenerater()
+        private TimeInfo timeInfo;
+
+        public IdGenerater(TimeInfo timeInfo)
         {
+            this.timeInfo = timeInfo;
+
             long epoch1970tick = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks / 10000;
             this.epoch2020 = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks / 10000 - epoch1970tick;
             this.epochThisYear = new DateTime(DateTime.Now.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks / 10000 - epoch1970tick;
@@ -185,22 +188,15 @@ namespace ZFramework
             }
         }
 
-        public void Dispose()
-        {
-            this.epoch2020 = 0;
-            this.epochThisYear = 0;
-            this.value = 0;
-        }
-
         private uint TimeSince2020()
         {
-            uint a = (uint)((TimeInfo.Instance.FrameTime - this.epoch2020) / 1000);
+            uint a = (uint)((timeInfo.FrameTime - this.epoch2020) / 1000);
             return a;
         }
 
         private uint TimeSinceThisYear()
         {
-            uint a = (uint)((TimeInfo.Instance.FrameTime - this.epochThisYear) / 1000);
+            uint a = (uint)((timeInfo.FrameTime - this.epochThisYear) / 1000);
             return a;
         }
 
@@ -286,80 +282,4 @@ namespace ZFramework
 
     }
 
-
-    public class TimeInfo : IDisposable
-    {
-        public static TimeInfo Instance = new TimeInfo();
-
-        private int timeZone;
-
-        public int TimeZone
-        {
-            get
-            {
-                return this.timeZone;
-            }
-            set
-            {
-                this.timeZone = value;
-                dt = dt1970.AddHours(TimeZone);
-            }
-        }
-
-        private readonly DateTime dt1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        public long ServerMinusClientTime { private get; set; }
-
-        public long FrameTime;
-
-        private TimeInfo()
-        {
-            this.FrameTime = this.ClientNow();
-        }
-
-        public void Update()
-        {
-            this.FrameTime = this.ClientNow();
-        }
-
-        /// <summary> 
-        /// 根据时间戳获取时间 
-        /// </summary>  
-        public DateTime ToDateTime(long timeStamp)
-        {
-            return dt.AddTicks(timeStamp * 10000);
-        }
-
-        // 线程安全
-        public long ClientNow()
-        {
-            return (DateTime.UtcNow.Ticks - this.dt1970.Ticks) / 10000;
-        }
-
-        public long ServerNow()
-        {
-            return ClientNow() + Instance.ServerMinusClientTime;
-        }
-
-        public long ClientFrameTime()
-        {
-            return this.FrameTime;
-        }
-
-        public long ServerFrameTime()
-        {
-            return this.FrameTime + Instance.ServerMinusClientTime;
-        }
-
-        public long Transition(DateTime d)
-        {
-            return (d.Ticks - dt.Ticks) / 10000;
-        }
-
-        public void Dispose()
-        {
-            Instance = null;
-        }
-    }
 }

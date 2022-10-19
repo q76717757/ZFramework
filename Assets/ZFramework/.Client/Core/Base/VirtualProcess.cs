@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public class VirtualProcess : Component
+    public class VirtualProcess
     {
         public ProcessType ProcessType { get; set; }
+        public Entity rootEntity;
 
-        private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//当前entity下挂的子entity
+        public void InitFinish()
+        {
 
+        }
     }
 }

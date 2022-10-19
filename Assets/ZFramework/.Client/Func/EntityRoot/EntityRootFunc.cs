@@ -11,6 +11,7 @@ namespace ZFramework
     {
         public override void OnAwake(EntityRoot self)
         {
+
         }
     }
 
@@ -18,7 +19,7 @@ namespace ZFramework
     {
         public static void CreateVR(this EntityRoot self, object parm)
         {
-            self.VirtualProcess = new Dictionary<int, VirtualProcess>();
+
         }
     }
 }

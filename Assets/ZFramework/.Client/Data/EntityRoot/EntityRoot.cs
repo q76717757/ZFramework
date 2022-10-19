@@ -8,6 +8,6 @@ namespace ZFramework
 {
     public class EntityRoot : Component
     {
-        public Dictionary<int, VirtualProcess> VirtualProcess;
+
     }
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Server.Boot": {
+      "commandName": "Project",
+      "commandLineArgs": "--APP"
+    }
+  }
+}

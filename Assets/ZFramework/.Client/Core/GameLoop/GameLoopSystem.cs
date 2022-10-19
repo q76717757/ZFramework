@@ -5,15 +5,16 @@ namespace ZFramework
 {
     internal sealed class GameLoopSystem
     {
-        internal static GameLoopSystem Instance => Game.instance.GameLoopSystem;
-
-        private readonly Dictionary<Type, Dictionary<Type, IGameLoop>> gameloopMaps = new Dictionary<Type, Dictionary<Type, IGameLoop>>();
+        //生命周期映射表    ComponentType -- GameLoopType -- List<GameLoopImpl> 
+        private readonly Dictionary<Type, Dictionary<Type, List<IGameLoop>>> gameloopMaps = new Dictionary<Type, Dictionary<Type, List<IGameLoop>>>();
+        //   component.ID    component(instance)
         private readonly Dictionary<long, Component> allComponents = new Dictionary<long, Component>();
 
         private Queue<long> updates = new Queue<long>();
         private Queue<long> updates2 = new Queue<long>();
         private Queue<long> lateUpdates = new Queue<long>();
         private Queue<long> lateUpdates2 = new Queue<long>();
+        private Queue<long> reload = new Queue<long>();
         private Queue<long> destory = new Queue<long>();
 
         internal void Load(Type[] allTypes)
@@ -21,104 +22,49 @@ namespace ZFramework
             gameloopMaps.Clear();
             foreach (Type type in allTypes)
             {
-                object gameloopSystemObj = Activator.CreateInstance(type);
-                if (gameloopSystemObj is IGameLoop iSystem)
+                if (Activator.CreateInstance(type) is IGameLoop gameloopObj)
                 {
-                    if (!gameloopMaps.TryGetValue(iSystem.ComponentType, out Dictionary<Type, IGameLoop> systemMap))
+                    if (!gameloopMaps.TryGetValue(gameloopObj.ComponentType, out Dictionary<Type, List<IGameLoop>> systemMap))
                     {
-                        systemMap = new Dictionary<Type, IGameLoop>();
-                        gameloopMaps.Add(iSystem.ComponentType, systemMap);
+                        systemMap = new Dictionary<Type, List<IGameLoop>>();
+                        gameloopMaps.Add(gameloopObj.ComponentType, systemMap);
                     }
 
-                    if (!systemMap.ContainsKey(iSystem.GameLoopType))
+                    if (!systemMap.TryGetValue(gameloopObj.GameLoopType,out List<IGameLoop> impls))
                     {
-                        systemMap.Add(iSystem.GameLoopType, iSystem);
+                        impls = new List<IGameLoop>();
+                        systemMap.Add(gameloopObj.GameLoopType, impls);
                     }
-                    else
-                    {
-                        //gameloop唯一?//可以写多个脚本  保证不了唯一
-                    }
+
+                    impls.Add(gameloopObj);
                 }
             }
-        }
-        internal void Reload()
-        {
-            //重建UpdateQueue 仅热重载需要 无中生有Update等延迟生命周期时 他们的id在Awake的时候没有入列(不应该在awake入列?) 会导致Update遍历不到
-            // 取消在awake上入列  改成全局扫描??  还是遍历所有entity 实时判断是否有update周期?
-            updates.Clear();
-            updates2.Clear();
-            lateUpdates.Clear();
-            lateUpdates2.Clear();
-            destory.Clear();
-
-            foreach (var item in allComponents)
-            {
-                var instanceId = item.Key;
-                var entityType = item.Value.GetType();
-
-                if (gameloopMaps.ContainsKey(entityType))
-                {
-                    if (gameloopMaps[entityType].ContainsKey(typeof(IUpdate)))
-                    {
-                        updates.Enqueue(instanceId);
-                    }
-                    if (gameloopMaps[entityType].ContainsKey(typeof(ILateUpdate)))
-                    {
-                        lateUpdates.Enqueue(instanceId);
-                    }
-                }
-            }
-
-            //reload生命周期回调
-            foreach (var item in allComponents)
-            {
-                var instanceId = item.Key;
-                var entity = item.Value;
-
-                if (entity.IsDisposed)
-                {
-                    allComponents.Remove(instanceId);
-                    continue;
-                }
-                if (gameloopMaps.TryGetValue(entity.GetType(), out Dictionary<Type, IGameLoop> life))
-                {
-                    if (life.TryGetValue(typeof(IReLoad), out IGameLoop systemlist) && systemlist is IReLoad system)
-                    {
-                        try
-                        {
-                            system.OnReload(entity);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e);
-                        }
-                    }
-                }
-            }
-            Log.Info("<color=green>Hot Reload!</color>");
         }
         internal void Update()
         {
             while (updates.Count > 0)
             {
-                long instanceId = updates.Dequeue();
-                if (!allComponents.TryGetValue(instanceId, out Component component) || component.IsDisposed)
+                long id = updates.Dequeue();
+                if (!allComponents.TryGetValue(id, out Component component) || component.IsDisposed)
                 {
                     continue;
                 }
-                if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, IGameLoop> life))
+                if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, List<IGameLoop>> gameloopMap))
                 {
-                    if (life.TryGetValue(typeof(IUpdate), out IGameLoop systemlist))
+                    if (gameloopMap.TryGetValue(typeof(IUpdate), out List<IGameLoop> gameloopImpls))
                     {
-                        updates2.Enqueue(instanceId);
-                        try
+                        for (int i = 0; i < gameloopImpls.Count; i++)
                         {
-                            ((IUpdate)systemlist).OnUpdate(component);
+                            try
+                            {
+                                ((IUpdate)gameloopImpls[i]).OnUpdate(component);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error(e);
+                            }
                         }
-                        catch (Exception e)
-                        {
-                            Log.Error(e);
-                        }
+                        updates2.Enqueue(id);
                     }
                 }
             }
@@ -128,47 +74,54 @@ namespace ZFramework
         {
             while (lateUpdates.Count > 0)
             {
-                long instanceId = lateUpdates.Dequeue();
-                if (!allComponents.TryGetValue(instanceId, out Component component) || component.IsDisposed)
+                long id = lateUpdates.Dequeue();
+                if (!allComponents.TryGetValue(id, out Component component) || component.IsDisposed)
                 {
                     continue;
                 }
-                if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, IGameLoop> life))
+                if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, List<IGameLoop>> gameloopMap))
                 {
-                    if (life.TryGetValue(typeof(ILateUpdate), out IGameLoop systemlist))
+                    if (gameloopMap.TryGetValue(typeof(ILateUpdate), out List<IGameLoop> gameloopImpls))
                     {
-                        lateUpdates2.Enqueue(instanceId);
-                        try
+                        for (int i = 0; i < gameloopImpls.Count; i++)
                         {
-                            ((ILateUpdate)systemlist).OnLateUpdate(component);
+                            try
+                            {
+                                ((ILateUpdate)gameloopImpls[i]).OnLateUpdate(component);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error(e);
+                            }
                         }
-                        catch (Exception e)
-                        {
-                            Log.Error(e); 
-                        }
+                        lateUpdates2.Enqueue(id);
                     }
                 }
             }
             (lateUpdates, lateUpdates2) = (lateUpdates2, lateUpdates);
 
-            //延迟销毁
+            DelayDestroy();
+        }
+        void DelayDestroy()//延迟销毁 ??
+        {
+            
             while (destory.Count > 0)
             {
-                long instanceId = destory.Dequeue();
-                if (!allComponents.TryGetValue(instanceId, out Component component) || component.IsDisposed)
+                long id = destory.Dequeue();
+                if (!allComponents.TryGetValue(id, out Component component) || component.IsDisposed)
                 {
                     continue;
                 }
-                if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, IGameLoop> life))
+                if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, List<IGameLoop>> gameloopMap))
                 {
-                    if (life.TryGetValue(typeof(IDestory), out IGameLoop systemlist))
+                    if (gameloopMap.TryGetValue(typeof(IDestory), out List<IGameLoop> gameloopImpls))
                     {
-                        if (systemlist is IDestory system)
+                        for (int i = 0; i < gameloopImpls.Count; i++)
                         {
                             try
                             {
-                                system.OnDestory(component);
-                                allComponents.Remove(instanceId);
+                                ((IDestory)gameloopImpls[i]).OnDestory(component);
+                                allComponents.Remove(id);
                             }
                             catch (Exception e)
                             {
@@ -179,13 +132,204 @@ namespace ZFramework
                 }
             }
         }
-        internal void Close() 
+        internal void Close()
         {
+        }
+        internal void Reload()
+        {
+            //重建UpdateQueue 仅热重载需要 无中生有Update等延迟生命周期时 他们的id在Awake的时候没有入列(不应该在awake入列?) 会导致Update遍历不到
+            // 取消在awake上入列  改成全局扫描??  还是遍历所有entity 实时判断是否有update周期? 遍历所有效率低了点  重建列表好点
+            updates.Clear();
+            updates2.Clear();
+            lateUpdates.Clear();
+            lateUpdates2.Clear();
+            reload.Clear();
+            //destory.Clear();
+            foreach (var item in allComponents)
+            {
+                var componentID = item.Key;
+                var componentType = item.Value.GetType();
 
+                if (gameloopMaps.TryGetValue(componentType,out Dictionary<Type,List<IGameLoop>> map))
+                {
+                    if (map.ContainsKey(typeof(IUpdate)))
+                    {
+                        updates.Enqueue(componentID);
+                    }
+                    if (map.ContainsKey(typeof(ILateUpdate)))
+                    {
+                        lateUpdates.Enqueue(componentID);
+                    }
+                    if (map.ContainsKey(typeof(IReLoad)))
+                    {
+                        reload.Enqueue(componentID);
+                    }
+                }
+            }
+
+            //reload生命周期回调
+            while (reload.Count > 0)
+            {
+                long id = reload.Dequeue();
+                if (!allComponents.TryGetValue(id, out Component component) || component.IsDisposed)
+                {
+                    continue;
+                }
+                if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, List<IGameLoop>> gameloopMap))
+                {
+                    if (gameloopMap.TryGetValue(typeof(IReLoad), out List<IGameLoop> gameloopImpls))
+                    {
+                        for (int i = 0; i < gameloopImpls.Count; i++)
+                        {
+                            try
+                            {
+                                ((IReLoad)gameloopImpls[i]).OnReload(component);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.Error(e);
+                            }
+                        }
+                    }
+                }
+            }
+            Log.Info("<color=green>Hot Reload!</color>");
+        }
+        internal void CallAwake(Component component)
+        {
+            if (Register(component, out Dictionary<Type, List<IGameLoop>> gameLoopImpls))
+            {
+                if (gameLoopImpls.TryGetValue(typeof(IAwake), out List<IGameLoop> gameloopImpl))
+                {
+                    for (int i = 0; i < gameloopImpl.Count; i++)
+                    {
+                        try
+                        {
+                            ((IAwake)gameloopImpl).OnAwake(component);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    }
+                }
+            }
+            
+        }
+        internal void CallAwake<A>(Component component, A a)
+        {
+            if (Register(component, out Dictionary<Type, List<IGameLoop>> gameLoopImpls))
+            {
+                if (gameLoopImpls.TryGetValue(typeof(IAwake<A>), out List<IGameLoop> gameloopImpl))
+                {
+                    for (int i = 0; i < gameloopImpl.Count; i++)
+                    {
+                        try
+                        {
+                            ((IAwake<A>)gameloopImpl).OnAwake(component, a);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    }
+                }
+            }
+            
+        }
+        internal void CallAwake<A, B>(Component component, A a, B b)
+        {
+            if (Register(component, out Dictionary<Type, List<IGameLoop>> gameLoopImpls))
+            {
+                if (gameLoopImpls.TryGetValue(typeof(IAwake<A, B>), out List<IGameLoop> gameloopImpl))
+                {
+                    for (int i = 0; i < gameloopImpl.Count; i++)
+                    {
+                        try
+                        {
+                            ((IAwake<A, B>)gameloopImpl).OnAwake(component, a, b);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    }
+                }
+            }
+            
+        }
+        internal void CallAwake<A, B, C>(Component component, A a, B b, C c)
+        {
+            if (Register(component, out Dictionary<Type, List<IGameLoop>> gameLoopImpls))
+            {
+                if (gameLoopImpls.TryGetValue(typeof(IAwake<A, B, C>), out List<IGameLoop> gameloopImpl))
+                {
+                    for (int i = 0; i < gameloopImpl.Count; i++)
+                    {
+                        try
+                        {
+                            ((IAwake<A, B, C>)gameloopImpl).OnAwake(component, a, b, c);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    }
+                }
+            }
+        }
+        internal void CallEnable(Component component)
+        {
+            if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, List<IGameLoop>> gameLoopImpls))
+            {
+                if (gameLoopImpls.TryGetValue(typeof(IEnable), out List<IGameLoop> gameloopImpl))
+                {
+                    for (int i = 0; i < gameloopImpl.Count; i++)
+                    {
+                        try
+                        {
+                            ((IEnable)gameloopImpl).OnEnable(component);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    }
+                }
+            }
+        }
+        internal void CallDisable(Component component)
+        {
+            if (gameloopMaps.TryGetValue(component.GetType(),out Dictionary<Type,List<IGameLoop>> gameLoopImpls))
+            {
+                if (gameLoopImpls.TryGetValue(typeof(IDisable), out List<IGameLoop> gameloopImpl))
+                {
+                    for (int i = 0; i < gameloopImpl.Count; i++)
+                    {
+                        try
+                        {
+                            ((IDisable)gameloopImpl).OnDisable(component);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    }
+                }
+            }
+            
+        }
+        internal void CallDestory(Component component)
+        {
+            if (component == null)
+            {
+                return;
+            }
+            //递归把子物体和子物体上的component加进延迟销毁队列
+            destory.Enqueue(component.InstanceID);
         }
 
-
-        private bool Register(Component component, out Dictionary<Type, IGameLoop> gameLoop)
+        private bool Register(Component component, out Dictionary<Type, List<IGameLoop>> gameLoop)
         {
             if (component == null || allComponents.ContainsKey(component.InstanceID))
             {
@@ -207,99 +351,11 @@ namespace ZFramework
             {
                 lateUpdates.Enqueue(component.InstanceID);
             }
+            if (gameLoop.ContainsKey(typeof(IReLoad)))
+            {
+                reload.Enqueue(component.InstanceID);
+            }
             return true;
         }
-        internal void CallAwake(Component component)
-        {
-            if (!Register(component, out Dictionary<Type, IGameLoop> gameLoop))
-            {
-                return;
-            }
-            if (gameLoop.TryGetValue(typeof(IAwake), out IGameLoop systems))
-            {
-                try
-                {
-                    ((IAwake)systems).OnAwake(component);
-                }
-                catch (Exception e) { Log.Error(e); }
-            }
-        }
-        internal void CallAwake<A>(Component component, A a)
-        {
-            if (!Register(component, out Dictionary<Type, IGameLoop> gameLoop))
-            {
-                return;
-            }
-            if (gameLoop.TryGetValue(typeof(IAwake<A>), out IGameLoop systems))
-            {
-                try
-                {
-                    ((IAwake<A>)systems).OnAwake(component, a);
-                }
-                catch (Exception e) { Log.Error(e); }
-            }
-        }
-        internal void CallAwake<A, B>(Component component, A a, B b)
-        {
-            if (!Register(component, out Dictionary<Type, IGameLoop> gameLoop))
-            {
-                return;
-            }
-            if (gameLoop.TryGetValue(typeof(IAwake<A,B>), out IGameLoop systems))
-            {
-                try
-                {
-                    ((IAwake<A, B>)systems).OnAwake(component, a, b);
-                }
-                catch (Exception e) { Log.Error(e); }
-            }
-        }
-        internal void CallAwake<A, B, C>(Component component, A a, B b, C c)
-        { 
-
-        }
-        internal void CallEnable(Component component)
-        {
-            if (gameloopMaps.TryGetValue(component.Type, out Dictionary<Type, IGameLoop> iLifes))
-            {
-                if (iLifes.TryGetValue(typeof(IEnable), out IGameLoop systems))
-                {
-                    try
-                    {
-                        ((IEnable)systems).OnEnable(component);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e);
-                    }
-                }
-            }
-        }
-        internal void CallDisable(Component component)
-        {
-            if (gameloopMaps.TryGetValue(component.Type, out Dictionary<Type, IGameLoop> iLifes))
-            {
-                if (iLifes.TryGetValue(typeof(IDisable), out IGameLoop systems))
-                {
-                    try
-                    {
-                        ((IDisable)systems).OnDisable(component);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e);
-                    }
-                }
-            }
-        }
-        internal void CallDestory(Component component)
-        {
-            if (component == null)
-            {
-                return;
-            }
-            destory.Enqueue(component.InstanceID);
-        }
     }
-
 }

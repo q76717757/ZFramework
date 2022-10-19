@@ -19,11 +19,6 @@ namespace ZFramework
             //按照boot的设置  进行程序集加载
             //如果支持热更新的平台  则走文件对比流程 如果不支持热更新的 那也没必要热更资源了 资源变了 一般脚本也有变动
 
-
-
-
-
-
             var dllName = boot.GetDllName();
             if (Assemblys.TryGetValue(dllName, out Assembly assembly))
             {

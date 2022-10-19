@@ -5,9 +5,10 @@ namespace ZFramework
 {
     public sealed class EventSystem
     {
-        internal static EventSystem Instance => Game.instance.EventSystem;
+        //事件映射表   订阅发布模型的事件 //再分同步和异步事件 异步事件做取消  
+        private readonly Dictionary<Type, List<IEvent>> allEvents = new Dictionary<Type, List<IEvent>>();
 
-        private readonly Dictionary<Type, List<IEvent>> allEvents = new Dictionary<Type, List<IEvent>>();//订阅发布模型的事件 //再分同步和异步事件 异步事件做取消
+        private readonly Dictionary<Type, List<IEvent>> allAsyncEvents = new Dictionary<Type, List<IEvent>>();//未实现..
 
         internal void Load(Type[] allTypes)
         {
@@ -25,6 +26,9 @@ namespace ZFramework
                 }
             }
         }
+        internal void Reload()
+        {
+        }
         internal void Update()
         {
         }
@@ -33,13 +37,15 @@ namespace ZFramework
         }
         internal void Close()
         {
-
         }
+
+
+
 
         //订阅-发布模型
         public static void Call<T>(T eventArg)
         {
-            if (!Instance.allEvents.TryGetValue(typeof(IEventCallback<T>), out List<IEvent> iEvents))
+            if (!Game.instance.EventSystem.allEvents.TryGetValue(typeof(IEventCallback<T>), out List<IEvent> iEvents))
             {
                 return;
             }
@@ -64,7 +70,7 @@ namespace ZFramework
         }
         public static async AsyncTask WaitAllAsync<T>(T eventArg)
         {
-            if (!Instance.allEvents.TryGetValue(typeof(IEventCallbackAsync<T>), out List<IEvent> iEvents))
+            if (!Game.instance.EventSystem.allEvents.TryGetValue(typeof(IEventCallbackAsync<T>), out List<IEvent> iEvents))
             {
                 return;
             }
@@ -96,27 +102,19 @@ namespace ZFramework
         {
             return default;
         }
-        public static T Get<T, A, B>(A a, B b)
+        public static async AsyncTask<T> GetAsyncAny<T>()
         {
             return default;
         }
-        public static T Get<T, A, B, C>(A a, B b, C c)
+        public static async AsyncTask<T> GetAsyncAny<T, A>(A a)
         {
             return default;
         }
-        public static async AsyncTask<T> GetAsync<T>()
+        public static async AsyncTask<List<T>> GetAsyncAll<T>()
         {
             return default;
         }
-        public static async AsyncTask<T> GetAsync<T, A>(A a)
-        {
-            return default;
-        }
-        public static async AsyncTask<T> GetAsync<T, A, B>(A a, B b)
-        {
-            return default;
-        }
-        public static async AsyncTask<T> GetAsync<T, A, B, C>(A a, B b, C c)
+        public static async AsyncTask<List<T>> GetAsyncAll<T, A>(A a)
         {
             return default;
         }

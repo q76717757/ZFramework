@@ -11,9 +11,14 @@ namespace ZFramework
         {
             Log.ILog = new UnityLogger();
 
-
             Debug.Log(AssemblyLoader.CurrentBoot.GetDllName());
             Log.Info("<color=green>Game Start!</color>");
+
+            //根节点  
+            //读表
+            //创建虚拟进程
+            //挂一堆组件
+
         }
     }
     public class TestEventAsync : EventCallbackAsync<EventType.OnGameStart>
