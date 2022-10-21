@@ -1,0 +1,10 @@
+﻿namespace ZFramework
+{
+    namespace EventType
+    { 
+
+
+
+
+    }
+}

@@ -33,12 +33,10 @@ public class MyUnityTextureWindow : EditorWindow
 				m_Icons.Add(x.name);
 			}
 		}
-		Debug.Log(m_Icons.Count);
 	}
 	void OnGUI()
 	{
 		GUILayout.BeginVertical();
-
 		m_Scroll = GUILayout.BeginScrollView(m_Scroll);
 		float width = 50f;
 		int count = (int)(position.width / width);
@@ -50,10 +48,9 @@ public class MyUnityTextureWindow : EditorWindow
 				int index = i + j;
 				if (index < m_Icons.Count)
 				{
-					//EditorGUILayout.SelectableLabel(m_Icons[index]);
                     if (GUILayout.Button(EditorGUIUtility.IconContent(m_Icons[index]), GUILayout.Width(width), GUILayout.Height(30)))
                     {
-						Log.Info(m_Icons[index]);
+						Debug.Log(m_Icons[index]);
                     };
 				}
 			}

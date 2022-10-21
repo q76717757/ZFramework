@@ -1,0 +1,17 @@
+{
+    "name": "Unity.Hotfix.Func",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.Hotfix.Core",
+        "Unity.Hotfix.Data"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

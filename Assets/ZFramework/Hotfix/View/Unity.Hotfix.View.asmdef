@@ -1,0 +1,20 @@
+{
+    "name": "Unity.Hotfix.View",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.Package.Runtime",
+        "Unity.Boot",
+        "Unity.Hotfix.Core",
+        "Unity.Hotfix.Data",
+        "Unity.Hotfix.Func"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

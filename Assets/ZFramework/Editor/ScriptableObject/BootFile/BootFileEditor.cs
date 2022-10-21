@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace ZFramework
 {
@@ -11,94 +13,159 @@ namespace ZFramework
     {
         public override void OnInspectorGUI()
         {
-            var boot = (target as BootFile);
-
             Draw(serializedObject);
         }
-
         public static void Draw(SerializedObject serializedObject)
         {
-            EditorGUILayout.LabelField("PlayerSetting");
-            EditorGUI.BeginDisabledGroup(true);//HyCLRÒªÇó IL2CPPºó¶Ë ¹Ø±ÕÔöÁ¿GC
-            EditorGUILayout.LabelField("±àÒëºó¶Ë");
-            BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-            ScriptingImplementation banckendType = PlayerSettings.GetScriptingBackend(buildTargetGroup);
-            EditorGUILayout.EnumPopup(banckendType);
-            EditorGUILayout.LabelField("C++±àÒëÆ÷ÅäÖÃ");
-            var com = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
-            EditorGUILayout.EnumPopup(com);
-            EditorGUILayout.LabelField("ÔöÁ¿GC");
-            EditorGUILayout.Toggle(PlayerSettings.gcIncremental);
+            if (serializedObject == null)
+            {
+                return;
+            }
+            var titleWidth = GUILayout.Width(80);
+          
+            EditorGUILayout.BeginVertical("FrameBox");
+
+
+            EditorGUILayout.BeginHorizontal();
+            var temp = GUI.contentColor;
+            GUI.contentColor = Color.green;
+            var projectCode = serializedObject.FindProperty("projectCode");
+            EditorGUILayout.LabelField("é¡¹ç›®ä»£å·:", titleWidth);
+            projectCode.stringValue = GetNumberAlpha(EditorGUILayout.DelayedTextField(projectCode.stringValue));
+            GUI.contentColor = temp;
+            EditorGUILayout.EndHorizontal();
+            bool notCode = string.IsNullOrEmpty(projectCode.stringValue);
+            if (notCode)
+            {
+                EditorGUILayout.HelpBox("éœ€è¦å¡«é¡¹ç›®ä»£å·,é¡¹ç›®ä»£å·å°†ä½œä¸ºDllå‘½åçš„ä¸€éƒ¨åˆ†", MessageType.Error);
+            }
+            string GetNumberAlpha(string source)//åªä¿ç•™æ•°å­—å’Œå­—æ¯
+            {
+                string pattern = "[A-Za-z0-9]";
+                string strRet = "";
+                MatchCollection results = Regex.Matches(source, pattern);
+                foreach (var v in results)
+                {
+                    strRet += v.ToString();
+                }
+                return strRet;
+            }
+
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("é¡¹ç›®åç§°:", titleWidth);
+            var projectName = serializedObject.FindProperty("projectName");
+            projectName.stringValue = EditorGUILayout.DelayedTextField(projectName.stringValue);
+            EditorGUILayout.EndHorizontal();
+
+
+            EditorGUILayout.BeginHorizontal();
+            var versionString = serializedObject.FindProperty("projectVersion");
+            EditorGUILayout.LabelField("ç¨‹åºç‰ˆæœ¬:", titleWidth);
+            if (!VersionInfo.TryParse(versionString.stringValue,out VersionInfo ver))
+            {
+                versionString.stringValue = ver.ToString();
+            }
+            if (GUILayout.Button(ver.X.ToString()))
+            {
+                ver.X++;
+                ver.Y = 0;
+                ver.Z = 0;
+                ver.W = 0;
+                versionString.stringValue = ver.ToString();
+            }
+            if (GUILayout.Button(ver.Y.ToString()))
+            {
+                ver.Y++;
+                ver.Z = 0;
+                ver.W = 0;
+                versionString.stringValue = ver.ToString();
+            }
+            if (GUILayout.Button(ver.Z.ToString()))
+            {
+                ver.Z++;
+                ver.W = 0;
+                versionString.stringValue = ver.ToString();
+            }
+            GUILayout.Label("ç¼–è¯‘ç‰ˆæœ¬:" + ver.W);
+
+            ver.S = GUILayout.TextField(ver.S);
+            versionString.stringValue = ver.ToString();
+
+            if (GUILayout.Button("Reset", GUILayout.Width(50)))
+            {
+                versionString.stringValue = new VersionInfo().ToString();
+            }
+            EditorGUILayout.EndHorizontal();
+
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("ç›®æ ‡å¹³å°:", titleWidth);
+            var platform = serializedObject.FindProperty("platform");
+            platform.enumValueIndex = (int)(Platform)EditorGUILayout.EnumPopup((Platform)platform.enumValueIndex);
+            EditorGUILayout.EndHorizontal();
+
+            var selectPlatform = (Platform)platform.enumValueIndex;
+            bool supportHotfix = false;
+            switch (selectPlatform)
+            {
+                case Platform.Win:
+                case Platform.Mac:
+                case Platform.Andorid:
+                case Platform.IOS:
+                    supportHotfix = true;
+                    break;
+                case Platform.WebGL:
+                case Platform.UWP:
+                    supportHotfix = false;
+                    break;
+            }
+            if (!supportHotfix)
+            {
+                EditorGUILayout.HelpBox("ä¸æ”¯æŒçƒ­æ›´æ–°çš„å¹³å°,ç¨‹åºé›†ç¼–è¯‘å®Œéœ€è¦è·Ÿå·¥ç¨‹ä¸€èµ·å‘å¸ƒ,ä»¥æ’ä»¶çš„å½¢å¼åŠ è½½", MessageType.Warning);
+            }
+
+
+            //EditorGUILayout.BeginHorizontal();
+            //GUILayout.Label("æ›´æ–°æ–¹å¼:", titleWidth);
+            //var network = serializedObject.FindProperty("network");
+            //network.enumValueIndex = (int)(Network)EditorGUILayout.EnumPopup((Network)network.enumValueIndex);
+            //var selectNetwork = (Network)network.enumValueIndex;
+            //EditorGUILayout.EndHorizontal();
+            //ä»…PCå¹³å°æœ‰æœ¬åœ°æ¨¡å¼,ç›´æ¥é€šè¿‡æœ¬åœ°è¯»è¡¥ä¸,ä¸€äº›å†…ç½‘PCé¡¹ç›®,macPCå¾ˆå°‘  å…ˆé’ˆå¯¹Winæ¥è®¾è®¡
+
+            //
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("å…è®¸ç¦»çº¿:", titleWidth);
+            EditorGUILayout.EndHorizontal();
+
+
+            EditorGUILayout.Space(20);
+           
+            EditorGUI.BeginDisabledGroup(EditorApplication.isCompiling || EditorApplication.isPlaying || notCode);
+            bool ReCompile = GUILayout.Button("é‡æ–°ç¼–è¯‘", GUILayout.Height(50));
+            if (ReCompile)
+            {
+                ver.W++;
+                versionString.stringValue = ver.ToString();
+            }
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.Space(10);
 
-            if (serializedObject == null) return;
-
-            //Ä¿±êÆ½Ì¨  win android ios  webgl uwp
-            //         [     ÈÈ¸ü     ] [ ²»ÈÈ¸ü ]
-            var targetPlatform = (Platform)serializedObject.FindProperty("platform").enumValueIndex;
-            serializedObject.FindProperty("platform").enumValueIndex = (int)(Platform)EditorGUILayout.EnumPopup(targetPlatform);
-
-            serializedObject.FindProperty("useHotfix").intValue = EditorGUILayout.Popup(serializedObject.FindProperty("useHotfix").intValue, new string[] { "²»Ó¦ÓÃ", "Ó¦ÓÃ" });
-
-            if (serializedObject.FindProperty("useHotfix").intValue == 1)
-            {
-                serializedObject.FindProperty("hotfixType").intValue = EditorGUILayout.Popup(serializedObject.FindProperty("hotfixType").intValue, new string[] { "±¾µØ", "Ô¶³Ì" });
-            }
-            else
-            {
-
-            }
-
-            //ÁÙÊ±ÓÃ
-            if (true)//Ç°Õ°×ÓÏîÄ¿ winÆ½Ì¨ monoºó¶Ë  not HyCLY
-            {
-
-            }
-
-            //core²ãÔÚunity¹¤³ÌÄÚ  ÔÚwinÆ½Ì¨ÏÂ  ¿ÉÒÔºÍil2cppÒ»ÑùµÄÁ÷³Ì  ´ò°ü°şÀëcore³ÌĞò¼¯  (ĞèÒª²âÊÔ)?
-            //µ«ÊÇÔÚÆäËûÆ½Ì¨Òª°şÀëcore  ĞèÒªHyCLRµÄÖ§³Ö
-            //·ñÔòCore½«¸úËæ¹¤³Ì ²¢ÇÒ²»ÄÜ¸üĞÂ
-
-            if (true)//Ö§³ÖÈÈ¸üµÄÆ½Ì¨
-            {
-                if (true)//ĞèÒªÈÈ¸üĞÂ
-                {
-                    if (true)//ÒÑ¾­Íê³ÉHyCLR¿âÅäÖÃ
-                    {
-                        if (true)//ÓĞÔ¶³Ì»·¾³
-                        {
-
-                        }
-                        else//Ã»ÓĞÔ¶³Ì»·¾³ ±¾µØ¸üĞÂ
-                        {
-
-                        }
-                    }
-                    else//ÎªÅäÖÃÈÈ¸ü»·¾³
-                    {
-
-                    }
-                }
-                else//²»ĞèÒªÈÈ¸üĞÂ
-                {
-
-                }
-            }
-            else//²»Ö§³ÖµÄÆ½Ì¨
-            {
-
-            }
-
+            EditorGUILayout.EndVertical();
 
             if (serializedObject.ApplyModifiedProperties())
             {
                 AssetDatabase.SaveAssetIfDirty(serializedObject.targetObject);
             }
+
+            if (ReCompile)
+            {
+                string assemblyName = (serializedObject.targetObject as BootFile).GetDllName();
+                BuildAssemblieEditor.CompileAssembly_Development(assemblyName, UnityEditor.Compilation.CodeOptimization.Debug);
+            }
         }
 
-
         protected override bool ShouldHideOpenButton() => true;
-
     }
 }

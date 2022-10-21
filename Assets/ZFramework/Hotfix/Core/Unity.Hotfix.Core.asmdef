@@ -1,0 +1,16 @@
+{
+    "name": "Unity.Hotfix.Core",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.Boot"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

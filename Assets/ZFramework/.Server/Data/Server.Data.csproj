@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <RootNamespace>ZFramework</RootNamespace>
+	  <BaseOutputPath>..\bin</BaseOutputPath>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\.Client\Data\**\*.cs">
+			<Link>Data\%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\.Packages\UnityEngine\UnityEngine.csproj" />
+	  <ProjectReference Include="..\Core\Server.Core.csproj" />
+	</ItemGroup>
+	
+</Project>

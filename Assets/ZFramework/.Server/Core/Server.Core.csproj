@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <RootNamespace>ZFramework</RootNamespace>
+	  <BaseOutputPath>..\bin</BaseOutputPath>
+  </PropertyGroup>
+	
+	<ItemGroup>
+		<Compile Include="..\..\.Client\Core\**\*.cs">
+			<Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Compile>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="..\..\.Client\Core\Task\Unity\**" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Compile Include="..\..\Boot\Base\VersionInfo.cs">
+			<Link>Server\Base\VersionInfo.cs</Link>
+		</Compile>
+		<Compile Include="..\..\Boot\Base\IGameInstance.cs">
+			<Link>Server\Base\IGameInstance.cs</Link>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\.Packages\UnityEngine\UnityEngine.csproj" />
+	</ItemGroup>
+	
+</Project>
