@@ -2,7 +2,7 @@
 {
     namespace EventType
     {
-        public struct OnGameStart
+        public struct LoadAssemblyFinish
         {
         }
     }

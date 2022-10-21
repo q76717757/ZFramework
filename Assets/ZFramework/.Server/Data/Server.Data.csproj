@@ -13,10 +13,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Server\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\..\.Packages\UnityEngine\UnityEngine.csproj" />
 	  <ProjectReference Include="..\Core\Server.Core.csproj" />
 	</ItemGroup>

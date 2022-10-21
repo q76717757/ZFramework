@@ -1,4 +1,10 @@
-﻿namespace ZFramework.EventType
+﻿namespace ZFramework
 {
+    namespace EventType
+    { 
 
+
+
+
+    }
 }

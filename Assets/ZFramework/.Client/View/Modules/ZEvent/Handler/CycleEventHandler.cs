@@ -12,6 +12,11 @@ namespace ZFramework
             [CycleType.LateUpdate] = ZEvent.GetNewGroup<CycleEventListenerGroup>().SetTarget(CycleType.LateUpdate),
         };
 
+        public CycleEventHandler()
+        {
+            Game.Root.GetComponent<ZEventTemp>().callback += Update;//临时用一下
+        }
+
         internal void AddListener(CycleEventListenerBase newlistener)
         {
             AllListenerGroups[newlistener.Target].AddListenerToGroup(newlistener);

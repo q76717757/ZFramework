@@ -7,7 +7,6 @@ namespace ZFramework
     {
         //事件映射表   订阅发布模型的事件 //再分同步和异步事件 异步事件做取消  
         private readonly Dictionary<Type, List<IEvent>> allEvents = new Dictionary<Type, List<IEvent>>();
-
         private readonly Dictionary<Type, List<IEvent>> allAsyncEvents = new Dictionary<Type, List<IEvent>>();//未实现..
 
         internal void Load(Type[] allTypes)

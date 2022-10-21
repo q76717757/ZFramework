@@ -4,7 +4,7 @@ namespace ZFramework
     public enum ProcessType
     {
         //Common
-        Root,//only one
+        //Root,//only one
 
         //Client
         Client,

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,13 +20,6 @@ namespace ZFramework
 
             try
             {
-                //// 异步方法全部会回掉到主线程
-                //SynchronizationContext.SetSynchronizationContext(ThreadSynchronizationContext.Instance);
-                //// 命令行参数
-                //Parser.Default.ParseArguments<Options>(args)
-                //    .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
-                //    .WithParsed(Game.AddSingleton);
-
                 List<Type> types = new List<Type>();  //server.boot依赖core+data
                 types.AddRange(typeof(Game).Assembly.GetTypes());//core
                 types.AddRange(typeof(EntityRoot).Assembly.GetTypes());//data  data依赖core
@@ -37,13 +30,18 @@ namespace ZFramework
                     .Invoke(null, Array.Empty<object>()) as IGameInstance;
                 game.Start(types.ToArray());
 
-                //ReadLine().Coroutine();//移到守护进程上 让守护进程接受命令输入
                 Log.Info("=================Success=================");
+
+                ReadLine().Coroutine();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    timeBeginPeriod(1);
+                }
                 while (true)
                 {
                     try
                     {
-                        Thread.Sleep(10);
+                        Thread.Sleep(1);
                         game.Update();
                         game.LateUpdate();
                     }
@@ -67,8 +65,15 @@ namespace ZFramework
                 {
                     return Console.In.ReadLine();
                 });
-                Log.Info("输入->" + line);
+                Log.Info("->" + line);
             }
         }
+
+
+        [DllImport("winmm.dll")]
+        private static extern void timeBeginPeriod(int t);//调整windows平台时钟精度
+        //[DllImport("winmm.dll")]
+        //static extern void timeEndPeriod(int t);
     }
+
 }

@@ -12,6 +12,11 @@ namespace ZFramework
         public Dictionary<string, CustomEventListenerGroup> AllListenerGroups { get; } = new Dictionary<string, CustomEventListenerGroup>();
         private List<CustomEventDataBase> eventDataCache = new List<CustomEventDataBase>();//next Call cache 换了ECS架构生命周期没改 暂时失效了
 
+        public CustomEventHandler()
+        {
+            Game.Root.GetComponent<ZEventTemp>().callback += Update;//临时用一下
+        }
+
         internal void AddListener(CustomEventListenerBase newlistener)//channel保证了newlistener正确
         {
             if (!AllListenerGroups.TryGetValue(newlistener.Target, out CustomEventListenerGroup group))

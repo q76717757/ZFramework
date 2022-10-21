@@ -5,31 +5,19 @@ using ZFramework.EventType;
 
 namespace ZFramework
 {
-    public class Launcher : EventCallback<EventType.OnGameStart>
+    public class Launcher : EventCallback<EventType.LoadAssemblyFinish>
     {
-        public override void Callback(OnGameStart arg)
+        public override void Callback(LoadAssemblyFinish arg)
         {
             Log.ILog = new UnityLogger();
-
             Debug.Log(AssemblyLoader.CurrentBoot.GetDllName());
+
+            Game.Root.AddComponent<ZEventTemp>();//临时给Zevent接一下update生命周期
+
+
+
             Log.Info("<color=green>Game Start!</color>");
-
-            //根节点  
-            //读表
-            //创建虚拟进程
-            //挂一堆组件
-
         }
-    }
-    public class TestEventAsync : EventCallbackAsync<EventType.OnGameStart>
-    {
-        public override async AsyncTask Callback(OnGameStart agg)
-        {
-            await Task.Delay(1000);
-
-
-        }
-
     }
 
 }

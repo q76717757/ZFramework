@@ -29,13 +29,12 @@ namespace ZFramework
                         systemMap = new Dictionary<Type, List<IGameLoop>>();
                         gameloopMaps.Add(gameloopObj.ComponentType, systemMap);
                     }
-
+                   
                     if (!systemMap.TryGetValue(gameloopObj.GameLoopType,out List<IGameLoop> impls))
                     {
                         impls = new List<IGameLoop>();
                         systemMap.Add(gameloopObj.GameLoopType, impls);
                     }
-
                     impls.Add(gameloopObj);
                 }
             }
@@ -57,7 +56,7 @@ namespace ZFramework
                         {
                             try
                             {
-                                ((IUpdate)gameloopImpls[i]).OnUpdate(component);
+                                (gameloopImpls[i] as IUpdate).OnUpdate(component);
                             }
                             catch (Exception e)
                             {
@@ -87,7 +86,7 @@ namespace ZFramework
                         {
                             try
                             {
-                                ((ILateUpdate)gameloopImpls[i]).OnLateUpdate(component);
+                                (gameloopImpls[i] as ILateUpdate).OnLateUpdate(component);
                             }
                             catch (Exception e)
                             {
@@ -120,7 +119,7 @@ namespace ZFramework
                         {
                             try
                             {
-                                ((IDestory)gameloopImpls[i]).OnDestory(component);
+                                (gameloopImpls[i] as IDestory).OnDestory(component);
                                 allComponents.Remove(id);
                             }
                             catch (Exception e)
@@ -183,7 +182,7 @@ namespace ZFramework
                         {
                             try
                             {
-                                ((IReLoad)gameloopImpls[i]).OnReload(component);
+                                (gameloopImpls[i] as IReLoad).OnReload(component);
                             }
                             catch (Exception e)
                             {
@@ -205,7 +204,7 @@ namespace ZFramework
                     {
                         try
                         {
-                            ((IAwake)gameloopImpl).OnAwake(component);
+                            (gameloopImpl[i] as IAwake).OnAwake(component);
                         }
                         catch (Exception e)
                         {
@@ -226,7 +225,7 @@ namespace ZFramework
                     {
                         try
                         {
-                            ((IAwake<A>)gameloopImpl).OnAwake(component, a);
+                            (gameloopImpl[i] as IAwake<A>).OnAwake(component, a);
                         }
                         catch (Exception e)
                         {
@@ -247,7 +246,7 @@ namespace ZFramework
                     {
                         try
                         {
-                            ((IAwake<A, B>)gameloopImpl).OnAwake(component, a, b);
+                            (gameloopImpl[i] as IAwake<A, B>).OnAwake(component, a, b);
                         }
                         catch (Exception e)
                         {
@@ -268,7 +267,7 @@ namespace ZFramework
                     {
                         try
                         {
-                            ((IAwake<A, B, C>)gameloopImpl).OnAwake(component, a, b, c);
+                            (gameloopImpl[i] as IAwake<A, B, C>).OnAwake(component, a, b, c);
                         }
                         catch (Exception e)
                         {
@@ -288,7 +287,7 @@ namespace ZFramework
                     {
                         try
                         {
-                            ((IEnable)gameloopImpl).OnEnable(component);
+                            (gameloopImpl[i] as IEnable).OnEnable(component);
                         }
                         catch (Exception e)
                         {
@@ -308,7 +307,7 @@ namespace ZFramework
                     {
                         try
                         {
-                            ((IDisable)gameloopImpl).OnDisable(component);
+                            (gameloopImpl[i] as IDisable).OnDisable(component);
                         }
                         catch (Exception e)
                         {

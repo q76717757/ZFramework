@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace ZFramework
 {
@@ -33,13 +32,10 @@ namespace ZFramework
             }
         }
 
-        public Component() : base(Game.instance.IdGenerater.GenerateInstanceId())
+        protected Component() : base(Game.instance.IdGenerater.GenerateInstanceId())
         {
         }
-        public Component(Entity entity) : base(Game.instance.IdGenerater.GenerateId())
-        {
-            Entity = entity;
-        }
+
         internal void SetEnable(bool enable)
         {
             isEnable = enable;
@@ -54,10 +50,24 @@ namespace ZFramework
         }
         internal void SetEntity(Entity entity)
         {
+            //if this is Root return ->
             Log.Error("未实现");
         }
 
 
+        //CREATE
+        internal static Component Create(Type type,Entity entity)
+        {
+            Component component = (Component)Activator.CreateInstance(type);
+            component.entity = entity;
+            return component;
+        }
+        internal static T Create<T>(Entity entity) where T : Component
+        {
+            var component = Activator.CreateInstance<T>();
+            component.entity = entity;
+            return component;
+        }
 
 
         //GET
@@ -67,6 +77,10 @@ namespace ZFramework
         public T[] GetComponentsInParent<T>(bool iscludSelf = true) where T : Component => Entity.GetComponentsInParent<T>(iscludSelf);
         public T GetComponentInChildren<T>(bool includSelf = true) where T : Component => Entity.GetComponentInChildren<T>(includSelf);
         public T[] GetComponentsInChilren<T>(bool includSelf = true) where T : Component => Entity.GetComponentsInChilren<T>(includSelf);
+    }
 
+    public abstract class SingleComponent<T> : Component where T : SingleComponent<T>
+    { 
+        public static T Instance { get; set; }
     }
 }

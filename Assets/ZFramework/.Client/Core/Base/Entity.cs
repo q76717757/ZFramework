@@ -4,22 +4,17 @@ using System;
 
 namespace ZFramework
 {
-    public sealed class Entity : Object //可以类比Unity的Gameboject合并Tranform 除去空间坐标系的相关内容 主要负责管理层级关系和组件挂载
+    public sealed class Entity : Object
     {
         private readonly Dictionary<long, Entity> childrens = new Dictionary<long, Entity>();//子物体
         private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();//组件
         private Entity parent;
+        private VirtualProcess process;
 
         private Entity() : base(Game.instance.IdGenerater.GenerateInstanceId())
         {
         }
-        public Entity(Entity parent) : base(Game.instance.IdGenerater.GenerateInstanceId())
-        {
-            Parent = parent;
-            Process = parent.Process;
-        }
 
-        public VirtualProcess Process { get; }
         public Entity Parent
         {
             get => parent;
@@ -38,31 +33,42 @@ namespace ZFramework
                     return;
                 }
                 //normal entity
-                parent.childrens.Remove(this.InstanceID);
-                value.childrens.Add(this.InstanceID, this);
+                parent.RemoveChild(this);
+                value.AddChild(this);
                 parent = value;
             }
         }
+
         public bool IsActive { get; set; } = true;
 
 
         //CREATE
-        internal static Entity CreateRoot()
-        { 
+        internal static Entity Create()
+        {
             Entity entity = new Entity();
             return entity;
         }
-        private Component CreateEntity(Type type)
+
+        //NODE
+        private void AddChild(Entity child)
         {
-            Component com = (Component)Activator.CreateInstance(type);
-            return com;
+            childrens.Add(child.InstanceID, child);
         }
-        private T CreateEntity<T>() where T : Component
+        private void RemoveChild(Entity child)
         {
-            return Activator.CreateInstance<T>();
+            childrens.Remove(child.InstanceID);
         }
 
-        //ADD
+        //ADD ENTITY
+        public Entity AddChild()
+        {
+            var child = new Entity();
+            child.parent = this;
+            AddChild(child);
+            return child;
+        }
+
+        //ADD COMPONENT
         public Component AddComponent(Type type)
         {
             if (components.ContainsKey(type))
@@ -70,7 +76,7 @@ namespace ZFramework
                 Log.Error("一个entity下 每种component只能挂一个");
                 return null;
             }
-            var component = CreateEntity(type);
+            var component = Component.Create(type, this);
             components.Add(component.GetType(), component);
             Game.instance.GameLoopSystem.CallAwake(component);
             return component;
@@ -82,7 +88,7 @@ namespace ZFramework
                 Log.Error("一个entity下 每种component只能挂一个");
                 return null;
             }
-            var component = CreateEntity<T>();
+            var component = Component.Create<T>(this);
             components.Add(component.GetType(), component);
             Game.instance.GameLoopSystem.CallAwake(component);
             return component;
@@ -94,7 +100,7 @@ namespace ZFramework
                 Log.Error("一个entity下 每种component只能挂一个");
                 return null;
             }
-            var component = CreateEntity<T>();
+            var component = Component.Create<T>(this);
             components.Add(component.GetType(), component);
             Game.instance.GameLoopSystem.CallAwake(component, a);
             return component;
@@ -106,7 +112,7 @@ namespace ZFramework
                 Log.Error("一个entity下 每种component只能挂一个");
                 return null;
             }
-            var component = CreateEntity<T>();
+            var component = Component.Create<T>(this);
             components.Add(component.GetType(), component);
             Game.instance.GameLoopSystem.CallAwake(component, a, b);
             return component;
@@ -118,7 +124,7 @@ namespace ZFramework
                 Log.Error("一个entity下 每种component只能挂一个");
                 return null;
             }
-            var component = CreateEntity<T>();
+            var component = Component.Create<T>(this);
             components.Add(component.GetType(), component);
             Game.instance.GameLoopSystem.CallAwake(component, a, b, c);
             return component;
