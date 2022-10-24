@@ -31,6 +31,7 @@ namespace ZFramework
                 }
             }
         }
+        public VirtualProcess Process => entity.Process;
 
         protected Component() : base(Game.instance.IdGenerater.GenerateInstanceId())
         {
@@ -77,10 +78,5 @@ namespace ZFramework
         public T[] GetComponentsInParent<T>(bool iscludSelf = true) where T : Component => Entity.GetComponentsInParent<T>(iscludSelf);
         public T GetComponentInChildren<T>(bool includSelf = true) where T : Component => Entity.GetComponentInChildren<T>(includSelf);
         public T[] GetComponentsInChilren<T>(bool includSelf = true) where T : Component => Entity.GetComponentsInChilren<T>(includSelf);
-    }
-
-    public abstract class SingleComponent<T> : Component where T : SingleComponent<T>
-    { 
-        public static T Instance { get; set; }
     }
 }

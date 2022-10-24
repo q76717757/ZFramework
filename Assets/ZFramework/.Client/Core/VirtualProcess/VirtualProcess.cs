@@ -9,11 +9,11 @@ namespace ZFramework
     public class VirtualProcess
     {
         public ProcessType ProcessType { get; set; }
-        public Entity rootEntity;
+        public Entity RootEntity { get; private set; }
 
-        public void InitFinish()
+        internal void SetRoot(Entity vpRoot)
         {
-
+            RootEntity = vpRoot;
         }
     }
 }

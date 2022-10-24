@@ -9,14 +9,11 @@ namespace ZFramework
     {
         public override void Callback(LoadAssemblyFinish arg)
         {
-            Log.ILog = new UnityLogger();
             Debug.Log(AssemblyLoader.CurrentBoot.GetDllName());
 
-            Game.Root.AddComponent<ZEventTemp>();//临时给Zevent接一下update生命周期
+            Game.AddSingleComponent<ZEventTemp>();//临时给Zevent接一下update生命周期
 
-
-
-            Log.Info("<color=green>Game Start!</color>");
+            Log.Info("Game Start!");
         }
     }
 

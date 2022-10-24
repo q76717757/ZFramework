@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
 	<RootNamespace>ZFramework</RootNamespace>
 	<BaseOutputPath>..\bin</BaseOutputPath>
+	<AssemblyName>BootStrap</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

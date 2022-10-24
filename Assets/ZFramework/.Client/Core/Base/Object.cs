@@ -6,6 +6,7 @@ namespace ZFramework
     {
         public long InstanceID { get; private set; }
         public bool IsDisposed => InstanceID == 0;
+        public string Name { get; set; }
 
         protected Object(long instanceID)
         {
@@ -57,6 +58,10 @@ namespace ZFramework
         public static bool operator !=(Object entity1, Object entity2)
         {
             return !(entity1 == entity2);
+        }
+        public override string ToString()
+        {
+            return IsDisposed ? $"NULL({GetType()})" : $"{Name}({GetType()})";
         }
     }
 }

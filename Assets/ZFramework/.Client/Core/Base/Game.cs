@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace ZFramework
 {
@@ -14,39 +13,15 @@ namespace ZFramework
 
         internal IdGenerater IdGenerater;
         internal TimeInfo TimeInfo;
-
         private Entity root;//根节点
-        private Dictionary<Type, Component> SingleComponents;//单例组件挂在根节点上
-
-        public static Entity Root
-        {
-            get 
-            {
-                return instance.root;
-            }
-        }
-        public static T GetSingleComponent<T>() where T : SingleComponent<T>
-        {
-            if (instance.SingleComponents.TryGetValue(typeof(T),out Component value))
-            {
-                return (T)value;
-            }
-            else
-            {
-                return instance.root.AddComponent<T>();
-            }
-        }
 
         private Game() { }//封闭构造 
+
         static IGameInstance CreateInstance()
         {
             instance = new Game();
-            instance.TimeInfo = new TimeInfo();
-            instance.IdGenerater = new IdGenerater(instance.TimeInfo);
-            instance.root = Entity.Create();
             return instance;
         }
-
         void Load(Type[] allTypes)
         {
             AttributeMap.Load(allTypes);
@@ -54,10 +29,16 @@ namespace ZFramework
             EventSystem.Load(AttributeMap.GetTypesByAttribute(typeof(EventAttribute)));
         }
 
+        //GameLoop
         void IGameInstance.Start(Type[] allTypes)
         {
             Load(allTypes);
-            EventSystem.Call(new EventType.LoadAssemblyFinish());
+
+            TimeInfo = new TimeInfo();
+            IdGenerater = new IdGenerater(TimeInfo);//依赖Time
+            root = Entity.Create();//依赖ID
+
+            AddSingleComponent<VirtualProcessManager, Entity>(root);
         }
         void IGameInstance.Reload(Type[] allTypes)//only server  
         {
@@ -86,11 +67,36 @@ namespace ZFramework
             instance = null;
         }
 
-        //公开方法
+        //public
         public static Type[] GetTypesByAttribute(Type AttributeType)
         {
             return instance.AttributeMap.GetTypesByAttribute(AttributeType);
         }
 
+        //Single
+        public static T AddSingleComponent<T>() where T : SingleComponent<T>
+        {
+            var single = instance.root.AddComponent<T>();
+            (single as ISingleComponent).Set(single);
+            return single;
+        }
+        public static T AddSingleComponent<T, A>(A a) where T : SingleComponent<T>
+        {
+            var single = instance.root.AddComponent<T, A>(a);
+            (single as ISingleComponent).Set(single);
+            return single;
+        }
+        public static T AddSingleComponent<T, A, B>(A a, B b) where T : SingleComponent<T>
+        {
+            var single = instance.root.AddComponent<T, A, B>(a, b);
+            (single as ISingleComponent).Set(single);
+            return single;
+        }
+        public static T AddSingleComponent<T, A, B, C>(A a, B b, C c) where T : SingleComponent<T>
+        {
+            var single = instance.root.AddComponent<T, A, B, C>(a, b, c);
+            (single as ISingleComponent).Set(single);
+            return single;
+        }
     }
 }

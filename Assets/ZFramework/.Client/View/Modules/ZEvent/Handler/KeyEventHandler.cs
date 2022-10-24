@@ -16,7 +16,7 @@ namespace ZFramework
 
         public KeyEventHandler()
         {
-            Game.Root.GetComponent<ZEventTemp>().callback += Update;//临时用一下
+            ZEventTemp.Instance.callback += Update;//临时用一下
         }
 
 

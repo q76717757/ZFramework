@@ -222,7 +222,7 @@ namespace ZFramework
                 if (gameLoopImpls.TryGetValue(typeof(IAwake<A>), out List<IGameLoop> gameloopImpl))
                 {
                     for (int i = 0; i < gameloopImpl.Count; i++)
-                    {
+                    {   
                         try
                         {
                             (gameloopImpl[i] as IAwake<A>).OnAwake(component, a);
@@ -234,7 +234,6 @@ namespace ZFramework
                     }
                 }
             }
-            
         }
         internal void CallAwake<A, B>(Component component, A a, B b)
         {

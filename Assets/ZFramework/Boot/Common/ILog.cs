@@ -1,3 +1,4 @@
+
 namespace ZFramework
 {
     public interface ILog

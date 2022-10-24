@@ -9,6 +9,8 @@ namespace ZFramework
         private readonly Dictionary<Type, List<IEvent>> allEvents = new Dictionary<Type, List<IEvent>>();
         private readonly Dictionary<Type, List<IEvent>> allAsyncEvents = new Dictionary<Type, List<IEvent>>();//未实现..
 
+        internal EventSystem() { }
+
         internal void Load(Type[] allTypes)
         {
             allEvents.Clear();

@@ -13,6 +13,7 @@ namespace ZFramework
 
         void Awake()
         {
+            Log.ILog = new UnityLogger();
             if (instance == null)
             {
                 instance = this;

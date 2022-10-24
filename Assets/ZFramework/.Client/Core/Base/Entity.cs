@@ -11,9 +11,6 @@ namespace ZFramework
         private Entity parent;
         private VirtualProcess process;
 
-        private Entity() : base(Game.instance.IdGenerater.GenerateInstanceId())
-        {
-        }
 
         public Entity Parent
         {
@@ -38,9 +35,20 @@ namespace ZFramework
                 parent = value;
             }
         }
-
+        public VirtualProcess Process
+        {
+            get => process;
+            private set
+            {
+                process = value;
+            }
+        }
         public bool IsActive { get; set; } = true;
 
+
+        private Entity() : base(Game.instance.IdGenerater.GenerateInstanceId())
+        {
+        }
 
         //CREATE
         internal static Entity Create()
@@ -48,6 +56,13 @@ namespace ZFramework
             Entity entity = new Entity();
             return entity;
         }
+        internal static Entity Create(VirtualProcess process)
+        {
+            Entity entity = new Entity();
+            entity.process = process;
+            return entity;
+        }
+
 
         //NODE
         private void AddChild(Entity child)
@@ -64,6 +79,7 @@ namespace ZFramework
         {
             var child = new Entity();
             child.parent = this;
+            child.process = this.process;
             AddChild(child);
             return child;
         }

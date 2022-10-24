@@ -14,7 +14,7 @@ namespace ZFramework
 
         public CustomEventHandler()
         {
-            Game.Root.GetComponent<ZEventTemp>().callback += Update;//临时用一下
+            ZEventTemp.Instance.callback += Update;//临时用一下
         }
 
         internal void AddListener(CustomEventListenerBase newlistener)//channel保证了newlistener正确
