@@ -27,9 +27,6 @@ namespace ZFramework
                 }
             }
         }
-        internal void Reload()
-        {
-        }
         internal void Update()
         {
         }

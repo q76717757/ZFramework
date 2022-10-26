@@ -10,10 +10,9 @@ namespace ZFramework
         internal GameLoopSystem GameLoopSystem = new GameLoopSystem();
         internal EventSystem EventSystem = new EventSystem();
         internal AttributeMap AttributeMap = new AttributeMap();
-
-        internal IdGenerater IdGenerater;
-        internal TimeInfo TimeInfo;
-        private Entity root;//根节点
+        internal IdGenerater IdGenerater;//ID生成器
+        internal TimeInfo TimeInfo = new TimeInfo();
+        internal VirtualProcessManager vpm = new VirtualProcessManager();//虚拟进程
 
         private Game() { }//封闭构造 
 
@@ -34,18 +33,15 @@ namespace ZFramework
         {
             Load(allTypes);
 
-            TimeInfo = new TimeInfo();
             IdGenerater = new IdGenerater(TimeInfo);//依赖Time
-            root = Entity.Create();//依赖ID
 
-            AddSingleComponent<VirtualProcessManager, Entity>(root);
+            vpm.Start(AttributeMap.GetTypesByAttribute(typeof(ProcessType)));
         }
         void IGameInstance.Reload(Type[] allTypes)//only server  
         {
             Load(allTypes);
 
-            GameLoopSystem.Reload();//触发Reload生命周期
-            EventSystem.Reload();//?  好像没用
+            GameLoopSystem.Reload();
         }
         void IGameInstance.Update()
         {
@@ -63,7 +59,6 @@ namespace ZFramework
             //Destort root
             GameLoopSystem.Close();
             EventSystem.Close();
-            root = null;
             instance = null;
         }
 
@@ -76,25 +71,25 @@ namespace ZFramework
         //Single
         public static T AddSingleComponent<T>() where T : SingleComponent<T>
         {
-            var single = instance.root.AddComponent<T>();
+            var single = instance.vpm.singleVP.Root.AddComponent<T>();
             (single as ISingleComponent).Set(single);
             return single;
         }
         public static T AddSingleComponent<T, A>(A a) where T : SingleComponent<T>
         {
-            var single = instance.root.AddComponent<T, A>(a);
+            var single = instance.vpm.singleVP.Root.AddComponent<T, A>(a);
             (single as ISingleComponent).Set(single);
             return single;
         }
         public static T AddSingleComponent<T, A, B>(A a, B b) where T : SingleComponent<T>
         {
-            var single = instance.root.AddComponent<T, A, B>(a, b);
+            var single = instance.vpm.singleVP.Root.AddComponent<T, A, B>(a, b);
             (single as ISingleComponent).Set(single);
             return single;
         }
         public static T AddSingleComponent<T, A, B, C>(A a, B b, C c) where T : SingleComponent<T>
         {
-            var single = instance.root.AddComponent<T, A, B, C>(a, b, c);
+            var single = instance.vpm.singleVP.Root.AddComponent<T, A, B, C>(a, b, c);
             (single as ISingleComponent).Set(single);
             return single;
         }

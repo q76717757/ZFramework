@@ -3,23 +3,44 @@ using System.Collections.Generic;
 
 namespace ZFramework
 {
-    internal class VPAwake : OnAwakeImpl<VirtualProcessManager,Entity>
+    internal class VirtualProcessManager
     {
-        public override void OnAwake(VirtualProcessManager self,Entity root)
+        public Dictionary<string, Type> VPMap = new Dictionary<string, Type>();//类名 -- 类
+        public SingletonProcess singleVP;
+        public List<VirtualProcess> vps;
+
+        public void Start(Type[] types)
         {
-            Log.Info("CreateProcess");//根据配置
+            foreach (var item in types)
+            {
+                VPMap.Add(item.Name, item);
+            }
 
-            var e = root.AddChild();
-            var vp = new VirtualProcess();
-            vp.SetRoot(e);
+            ProcessConfig[] configs = ProcessConfigLoader.Load();//客户端直接写死 出一个创建一个Client进程??  服务端从某个地方读配置表 反序列化出来
 
-            EventSystem.Call(new EventType.LoadAssemblyFinish());
+            singleVP = new SingletonProcess();
+            var singleEntity = Entity.Create();
+            singleVP.Init(singleEntity, null);
+            singleVP.Start();
+
+            vps = new List<VirtualProcess>();
+            foreach (var item in configs)
+            {
+                if (VPMap.TryGetValue(item.processClassName,out Type value))
+                {
+                    if (Activator.CreateInstance(value) is VirtualProcess vp)
+                    {
+                        vp.Init(Entity.Create(), item.parms);
+                        vps.Add(vp);
+                    }
+                }
+            }
+
+            foreach (var item in vps)
+            {
+                item.Start();
+            }
         }
-    }
 
-    internal class VirtualProcessManager : SingleComponent<VirtualProcessManager>
-    {
-        private List<Entity> vps = new List<Entity>();
-        private Dictionary<long, Entity> vpEntity = new Dictionary<long, Entity>();
     }
 }

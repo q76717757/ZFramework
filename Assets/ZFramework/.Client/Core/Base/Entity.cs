@@ -11,7 +11,6 @@ namespace ZFramework
         private Entity parent;
         private VirtualProcess process;
 
-
         public Entity Parent
         {
             get => parent;
@@ -38,13 +37,9 @@ namespace ZFramework
         public VirtualProcess Process
         {
             get => process;
-            private set
-            {
-                process = value;
-            }
         }
-        public bool IsActive { get; set; } = true;
 
+        public bool IsActive { get; set; } = true;
 
         private Entity() : base(Game.instance.IdGenerater.GenerateInstanceId())
         {

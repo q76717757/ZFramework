@@ -12,15 +12,14 @@
 		</Compile>
 	</ItemGroup>
 	
-	<!--task有一些对unity的拓展 这里排除掉-->
-	<ItemGroup>
-	  <Compile Remove="..\..\.Client\Core\Task\Unity\**" />
-	</ItemGroup>
-
 	<ItemGroup>
 		<Compile Include="..\..\Boot\Common\**\*.cs">
 			<Link>Core\Common\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="..\..\.Client\Core\Unity\**" />
 	</ItemGroup>
 
 	<ItemGroup>

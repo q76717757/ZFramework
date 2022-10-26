@@ -1,19 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public class VirtualProcess
+    [ProcessType]
+    public abstract class VirtualProcess
     {
-        public ProcessType ProcessType { get; set; }
-        public Entity RootEntity { get; private set; }
+        private Entity root;
+        public Entity Root { get => root; }
 
-        internal void SetRoot(Entity vpRoot)
+        public string Parms;
+
+        internal void Init(Entity entity,string parms)
         {
-            RootEntity = vpRoot;
+            root = entity;
+            Parms = parms;
         }
+        public abstract void Start();
     }
+
 }

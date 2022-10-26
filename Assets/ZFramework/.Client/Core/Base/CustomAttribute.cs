@@ -19,4 +19,10 @@ namespace ZFramework
 
     }
 
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public class ProcessType : BaseAttribute
+    {
+
+    }
+
 }
