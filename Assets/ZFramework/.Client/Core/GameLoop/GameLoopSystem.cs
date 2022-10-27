@@ -103,7 +103,6 @@ namespace ZFramework
         }
         void DelayDestroy()//延迟销毁 ??
         {
-            
             while (destory.Count > 0)
             {
                 long id = destory.Dequeue();

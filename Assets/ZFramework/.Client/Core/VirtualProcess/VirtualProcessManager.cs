@@ -20,7 +20,11 @@ namespace ZFramework
 
             singleVP = new SingletonProcess();
             var singleEntity = Entity.Create();
-            singleVP.Init(singleEntity, null);
+            var config =  new ProcessConfig()
+            {
+                processClassName = "SingletonProcess"
+            };
+            singleVP.Init(singleEntity, config);
             singleVP.Start();
 
             vps = new List<VirtualProcess>();
@@ -30,7 +34,7 @@ namespace ZFramework
                 {
                     if (Activator.CreateInstance(value) is VirtualProcess vp)
                     {
-                        vp.Init(Entity.Create(), item.parms);
+                        vp.Init(Entity.Create(), item);
                         vps.Add(vp);
                     }
                 }

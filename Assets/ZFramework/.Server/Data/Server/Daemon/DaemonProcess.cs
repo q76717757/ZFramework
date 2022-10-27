@@ -2,6 +2,7 @@
 
 namespace ZFramework
 {
+    /// <summary> 守护进程 </summary>
     public class DaemonProcess : VirtualProcess
     {
         public override void Start()

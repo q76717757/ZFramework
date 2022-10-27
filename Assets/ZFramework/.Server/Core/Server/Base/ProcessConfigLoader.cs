@@ -16,7 +16,6 @@ namespace ZFramework
                 }
             };
 
-
             return output;
         }
     }
