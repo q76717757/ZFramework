@@ -5,8 +5,6 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEditor.Build.Reporting;
-using UnityEditor.WindowsStandalone;
 
 #if ENABLE_HYBRIDCLR
 using HybridCLR.Editor.Installer;

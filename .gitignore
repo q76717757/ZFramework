@@ -26,3 +26,9 @@ Unity.Hotfix.View.csproj
 Unity.Package.Editor.csproj
 Unity.Package.Runtime.csproj
 HybridCLRData/
+/Unity.Hotfix.Data.Player.csproj
+/Unity.Hotfix.Core.Player.csproj
+/Unity.Hotfix.Func.Player.csproj
+/Unity.Hotfix.View.Player.csproj
+/Unity.Package.Runtime.Player.csproj
+/Unity.Boot.Player.csproj
