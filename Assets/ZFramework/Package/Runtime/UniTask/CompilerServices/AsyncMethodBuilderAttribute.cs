@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS0436
 
 namespace System.Runtime.CompilerServices
 {
-    public sealed class AsyncMethodBuilderAttribute : Attribute
+    internal sealed class AsyncMethodBuilderAttribute : Attribute
     {
         public Type BuilderType { get; }
 
@@ -16,3 +14,4 @@ namespace System.Runtime.CompilerServices
         }
     }
 }
+

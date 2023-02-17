@@ -2,15 +2,24 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 	<RootNamespace>ZFramework</RootNamespace>
 	<BaseOutputPath>..\bin</BaseOutputPath>
 	<AssemblyName>BootStrap</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;SERVER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;SERVER</DefineConstants>
+  </PropertyGroup>
+	
   <ItemGroup>
     <ProjectReference Include="..\Core\Server.Core.csproj" />
     <ProjectReference Include="..\Data\Server.Data.csproj" />
+    <ProjectReference Include="..\Packages\Server.Packages.csproj" />
   </ItemGroup>
 
 </Project>

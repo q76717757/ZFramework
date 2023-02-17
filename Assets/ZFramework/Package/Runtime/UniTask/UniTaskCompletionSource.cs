@@ -340,6 +340,7 @@ namespace Cysharp.Threading.Tasks
             {
                 result = new AutoResetUniTaskCompletionSource();
             }
+            TaskTracker.TrackActiveTask(result, 2);
             return result;
         }
 
@@ -432,6 +433,7 @@ namespace Cysharp.Threading.Tasks
         [DebuggerHidden]
         bool TryReturn()
         {
+            TaskTracker.RemoveTracking(this);
             core.Reset();
             return pool.TryPush(this);
         }
@@ -461,6 +463,7 @@ namespace Cysharp.Threading.Tasks
             {
                 result = new AutoResetUniTaskCompletionSource<T>();
             }
+            TaskTracker.TrackActiveTask(result, 2);
             return result;
         }
 
@@ -558,6 +561,7 @@ namespace Cysharp.Threading.Tasks
         [DebuggerHidden]
         bool TryReturn()
         {
+            TaskTracker.RemoveTracking(this);
             core.Reset();
             return pool.TryPush(this);
         }
@@ -575,12 +579,18 @@ namespace Cysharp.Threading.Tasks
         int intStatus; // UniTaskStatus
         bool handled = false;
 
+        public UniTaskCompletionSource()
+        {
+            TaskTracker.TrackActiveTask(this, 2);
+        }
+
         [DebuggerHidden]
         internal void MarkHandled()
         {
             if (!handled)
             {
                 handled = true;
+                TaskTracker.RemoveTracking(this);
             }
         }
 
@@ -751,12 +761,18 @@ namespace Cysharp.Threading.Tasks
         int intStatus; // UniTaskStatus
         bool handled = false;
 
+        public UniTaskCompletionSource()
+        {
+            TaskTracker.TrackActiveTask(this, 2);
+        }
+
         [DebuggerHidden]
         internal void MarkHandled()
         {
             if (!handled)
             {
                 handled = true;
+                TaskTracker.RemoveTracking(this);
             }
         }
 

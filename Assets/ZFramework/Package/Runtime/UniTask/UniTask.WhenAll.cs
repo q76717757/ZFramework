@@ -55,6 +55,7 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAllPromise(UniTask<T>[] tasks, int tasksLength)
             {
+                TaskTracker.TrackActiveTask(this, 3);
 
                 this.completeCount = 0;
 
@@ -117,6 +118,7 @@ namespace Cysharp.Threading.Tasks
 
             public T[] GetResult(short token)
             {
+                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -150,6 +152,7 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAllPromise(UniTask[] tasks, int tasksLength)
             {
+                TaskTracker.TrackActiveTask(this, 3);
 
                 this.tasksLength = tasksLength;
                 this.completeCount = 0;
@@ -210,6 +213,7 @@ namespace Cysharp.Threading.Tasks
 
             public void GetResult(short token)
             {
+                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 core.GetResult(token);
             }

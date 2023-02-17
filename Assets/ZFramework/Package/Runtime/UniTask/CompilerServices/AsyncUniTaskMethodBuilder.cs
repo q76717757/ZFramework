@@ -118,6 +118,21 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             // don't use boxed stateMachine.
         }
 
+#if DEBUG || !UNITY_2018_3_OR_NEWER
+        // Important for IDE debugger.
+        object debuggingId;
+        private object ObjectIdForDebugger
+        {
+            get
+            {
+                if (debuggingId == null)
+                {
+                    debuggingId = new object();
+                }
+                return debuggingId;
+            }
+        }
+#endif
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -234,6 +249,21 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             // don't use boxed stateMachine.
         }
 
+#if DEBUG || !UNITY_2018_3_OR_NEWER
+        // Important for IDE debugger.
+        object debuggingId;
+        private object ObjectIdForDebugger
+        {
+            get
+            {
+                if (debuggingId == null)
+                {
+                    debuggingId = new object();
+                }
+                return debuggingId;
+            }
+        }
+#endif
 
     }
 }

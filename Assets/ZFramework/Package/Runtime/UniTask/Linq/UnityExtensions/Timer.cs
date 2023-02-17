@@ -105,6 +105,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 this.updateTiming = updateTiming;
                 this.ignoreTimeScale = ignoreTimeScale;
                 this.cancellationToken = cancellationToken;
+                TaskTracker.TrackActiveTask(this, 2);
                 PlayerLoopHelper.AddAction(updateTiming, this);
             }
 
@@ -127,6 +128,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 if (!disposed)
                 {
                     disposed = true;
+                    TaskTracker.RemoveTracking(this);
                 }
                 return default;
             }
@@ -224,6 +226,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 this.periodFrameCount = periodFrameCount;
                 this.cancellationToken = cancellationToken;
 
+                TaskTracker.TrackActiveTask(this, 2);
                 PlayerLoopHelper.AddAction(updateTiming, this);
             }
 
@@ -247,6 +250,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 if (!disposed)
                 {
                     disposed = true;
+                    TaskTracker.RemoveTracking(this);
                 }
                 return default;
             }

@@ -201,6 +201,7 @@ namespace ZFramework
 
 
 
+
 namespace A
 {
     internal class HttpServer
@@ -314,7 +315,6 @@ namespace A
         /// </summary>
         public IPEndPoint IP { get { return this._IP; } }
     }
-
     public class HttpClient
     {
         private static int MAX_POST_SIZE = 10 * 1024 * 1024; // 10MB

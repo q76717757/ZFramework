@@ -6,11 +6,10 @@ using System.Threading;
 namespace Cysharp.Threading.Tasks.Internal
 {
     // Same interface as System.Buffers.ArrayPool<T> but only provides Shared.
-    //与System.Buffers接口相同。ArrayPool<T>但只提供Shared。
+
     internal sealed class ArrayPool<T>
     {
         // Same size as System.Buffers.DefaultArrayPool<T>
-        //大小与System.Buffers.DefaultArrayPool<T>相同
         const int DefaultMaxNumberOfArraysPerBucket = 50;
 
         static readonly T[] EmptyArray = new T[0];

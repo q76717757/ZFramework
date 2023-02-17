@@ -71,6 +71,7 @@ namespace Cysharp.Threading.Tasks.Linq
                     this.cancellationTokenRegistration1 = cancellationToken1.RegisterWithoutCaptureExecutionContext(CancelDelegate1, this);
                 }
 
+                TaskTracker.TrackActiveTask(this, 3);
                 RunOther(other).Forget();
             }
 
@@ -173,6 +174,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask DisposeAsync()
             {
+                TaskTracker.RemoveTracking(this);
                 cancellationTokenRegistration1.Dispose();
                 if (enumerator != null)
                 {

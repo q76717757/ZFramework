@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace ZFramework
 {
@@ -6,6 +8,7 @@ namespace ZFramework
     {
         public static ILog ILog { get; set; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Info(object obj)
         {
 #if UNITY_EDITOR
@@ -14,7 +17,7 @@ namespace ZFramework
             ILog.Info(obj);
 #endif
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Warning(object obj)
         {
 #if UNITY_EDITOR
@@ -23,7 +26,7 @@ namespace ZFramework
             ILog.Warning(obj);
 #endif
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Error(object obj)
         {
 #if UNITY_EDITOR

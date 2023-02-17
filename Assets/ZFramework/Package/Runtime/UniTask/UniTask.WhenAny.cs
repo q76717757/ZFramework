@@ -49,6 +49,7 @@ namespace Cysharp.Threading.Tasks
 
             public WhenAnyLRPromise(UniTask<T> leftTask, UniTask rightTask)
             {
+                TaskTracker.TrackActiveTask(this, 3);
 
                 {
                     UniTask<T>.Awaiter awaiter;
@@ -146,6 +147,7 @@ namespace Cysharp.Threading.Tasks
 
             public (bool, T) GetResult(short token)
             {
+                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -184,6 +186,7 @@ namespace Cysharp.Threading.Tasks
                     throw new ArgumentException("The tasks argument contains no tasks.");
                 }
 
+                TaskTracker.TrackActiveTask(this, 3);
 
                 for (int i = 0; i < tasksLength; i++)
                 {
@@ -236,6 +239,7 @@ namespace Cysharp.Threading.Tasks
 
             public (int, T) GetResult(short token)
             {
+                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
@@ -273,6 +277,7 @@ namespace Cysharp.Threading.Tasks
                     throw new ArgumentException("The tasks argument contains no tasks.");
                 }
 
+                TaskTracker.TrackActiveTask(this, 3);
 
                 for (int i = 0; i < tasksLength; i++)
                 {
@@ -324,6 +329,7 @@ namespace Cysharp.Threading.Tasks
 
             public int GetResult(short token)
             {
+                TaskTracker.RemoveTracking(this);
                 GC.SuppressFinalize(this);
                 return core.GetResult(token);
             }
