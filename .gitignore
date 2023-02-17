@@ -26,3 +26,11 @@ Unity.Hotfix.View.csproj
 Unity.Package.Editor.csproj
 Unity.Package.Runtime.csproj
 HybridCLRData/
+Unity.ViewModel.csproj
+Unity.ViewLogic.csproj
+Unity.ThirdParty.csproj
+Unity.Runtime.csproj
+Unity.Mono.csproj
+Unity.Model.csproj
+Unity.Logic.csproj
+Unity.Hotfix.csproj
