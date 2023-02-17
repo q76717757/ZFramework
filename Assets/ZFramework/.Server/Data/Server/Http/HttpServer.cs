@@ -2,16 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using System.Xml.Linq;
+using ZFramework;
 
 namespace ZFramework
 {
@@ -23,13 +21,12 @@ namespace ZFramework
 
             httpServer.AddPrefixes("/test", (value) =>
             {
-                System.Console.WriteLine("test" + value);
+                Log.Info("test" + value);
             });
 
             httpServer.AddPrefixes("/vac", (value) =>
             {
-                System.Console.WriteLine("vac" + value);
-
+                Log.Info("vac" + value);
             });
             httpServer.Start(8080);
         }
@@ -204,6 +201,7 @@ namespace ZFramework
 
 
 
+
 namespace A
 {
     internal class HttpServer
@@ -229,7 +227,7 @@ namespace A
             {
                 foreach (var item in names)
                 {
-                    Console.WriteLine(string.Format(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff：") + "Start Listen Http Socket -> {0}:{1}{2} ", ip, port, item));
+                    Log.Info(string.Format(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff：") + "Start Listen Http Socket -> {0}:{1}{2} ", ip, port, item));
                 }
                 this._Listeners = new TcpListener(IPAddress.Parse(ip), port);
                 this._Listeners.Start(5000);
@@ -238,7 +236,7 @@ namespace A
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Log.Info(ex);
                 this.Dispose();
             }
         }
@@ -259,7 +257,7 @@ namespace A
             {
                 TcpClient client = this._Listeners.EndAcceptTcpClient(iar);
                 var socket = new HttpClient(client);
-                Console.WriteLine(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff：") + "Create Http Socket Remote Socket LocalEndPoint：" + client.Client.LocalEndPoint + " RemoteEndPoint：" + client.Client.RemoteEndPoint.ToString());
+                Log.Info(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff：") + "Create Http Socket Remote Socket LocalEndPoint：" + client.Client.LocalEndPoint + " RemoteEndPoint：" + client.Client.RemoteEndPoint.ToString());
                 foreach (var item in Names)
                 {
                     if (socket.http_url.StartsWith(item))
@@ -303,7 +301,7 @@ namespace A
                 {
                     try
                     {
-                        Console.WriteLine(string.Format("Stop Http Listener -> {0}:{1} ", this.IP.Address.ToString(), this.IP.Port));
+                        Log.Info(string.Format("Stop Http Listener -> {0}:{1} ", this.IP.Address.ToString(), this.IP.Port));
                         _Listeners.Stop();
                         _Listeners = null;
                     }
@@ -317,7 +315,6 @@ namespace A
         /// </summary>
         public IPEndPoint IP { get { return this._IP; } }
     }
-
     public class HttpClient
     {
         private static int MAX_POST_SIZE = 10 * 1024 * 1024; // 10MB
@@ -347,11 +344,11 @@ namespace A
             {
                 if (http_method.Equals("GET"))
                 {
-                    Program.Pool.ActiveHttp(this, GetRequestExec());
+                    HTTPAPP.Pool.ActiveHttp(this, GetRequestExec());
                 }
                 else if (http_method.Equals("POST"))
                 {
-                    Program.Pool.ActiveHttp(this, PostRequestExec());
+                    HTTPAPP.Pool.ActiveHttp(this, PostRequestExec());
                 }
             }
             catch (Exception e)
@@ -541,11 +538,10 @@ namespace A
             return rets;
         }
     }
-
-    public class Program
+    public class HTTPAPP
     {
         public static MessagePool Pool = new MessagePool();
-        void Main(string[] args)
+        void Start()
         {
             HttpServer https = new HttpServer("127.0.0.1", 80, new HashSet<string>() { "/test/", "/flie/" });
         }
@@ -575,7 +571,6 @@ namespace A
             client.Close();
         }
     }
-
     public interface ISocketPool
     {
         /// <summary>

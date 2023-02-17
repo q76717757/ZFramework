@@ -10,6 +10,8 @@ namespace ZFramework
     internal static class BootStrap
     {
         static IGameInstance game;
+        static bool Running = true;
+
         static void Main(string[] args)
         {
             Log.ILog = new ConsoleLog();
@@ -28,16 +30,18 @@ namespace ZFramework
                 game = typeof(Game)
                     .GetMethod("CreateInstance", BindingFlags.Static | BindingFlags.NonPublic)
                     .Invoke(null, Array.Empty<object>()) as IGameInstance;
-                game.Start(types.ToArray());
+                game.Init(types.ToArray());
 
                 Log.Info("=================Success=================");
 
-                ReadLine().Coroutine();
+                ReadLine().Invoke();//给守护组件 其他组件不用提供命令行控制
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    timeBeginPeriod(1);
+                    timeBeginPeriod(1);//时钟默认精度 win/15ms linux/1ms
                 }
-                while (true)
+
+
+                while (Running)
                 {
                     try
                     {
@@ -47,17 +51,19 @@ namespace ZFramework
                     }
                     catch (Exception e)
                     {
-                        Log.Error(e);
+                        Log.Error(e.StackTrace);
                     }
-                }
+                }                                                                                                                                                                                                   
             }
             catch (Exception e)
             {
                 Log.Error(e);
             }
+
+            Console.ReadKey();
 		}
 
-        static async AsyncVoid ReadLine()
+        static async ATask ReadLine()
         {
             while (true)
             {
@@ -65,10 +71,13 @@ namespace ZFramework
                 {
                     return Console.In.ReadLine();
                 });
-                Log.Info("->" + line);
+
+                if (line == "exit")//临时用一下 退出    **重载应该在一帧完整结束之后执行 
+                {
+                    Running = false;
+                }
             }
         }
-
 
         [DllImport("winmm.dll")]
         private static extern void timeBeginPeriod(int t);//调整windows平台时钟精度

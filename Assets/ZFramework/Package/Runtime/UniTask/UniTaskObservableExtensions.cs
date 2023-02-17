@@ -51,7 +51,6 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>
         /// Ideally returns IObservabl[Unit] is best but Cysharp.Threading.Tasks does not have Unit so return AsyncUnit instead.
-        /// 理想情况下返回IObservabl[Unit]是最好的，但是Cysharp.Threading.Tasks没有Unit，所以返回AsyncUnit。
         /// </summary>
         public static IObservable<AsyncUnit> ToObservable(this UniTask task)
         {
@@ -134,7 +133,7 @@ namespace Cysharp.Threading.Tasks
             {
                 var self = (ToUniTaskObserver<T>)state;
                 self.disposable.Dispose();
-                self.promise.TrySetCanceled();
+                self.promise.TrySetCanceled(self.cancellationToken);
             }
 
             public void OnNext(T value)
@@ -204,7 +203,7 @@ namespace Cysharp.Threading.Tasks
             {
                 var self = (FirstValueToUniTaskObserver<T>)state;
                 self.disposable.Dispose();
-                self.promise.TrySetCanceled();
+                self.promise.TrySetCanceled(self.cancellationToken);
             }
 
             public void OnNext(T value)
@@ -742,7 +741,6 @@ namespace Cysharp.Threading.Tasks.Internal
             for (var i = 0; i < data.Length; ++i)
             {
                 // ImmutableList only use for IObserver(no worry for boxed)
-                //ImmutableList只用于IObserver(不用担心装箱)
                 if (object.Equals(data[i], value)) return i;
             }
             return -1;

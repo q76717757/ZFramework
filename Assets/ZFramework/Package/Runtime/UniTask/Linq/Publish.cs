@@ -111,6 +111,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 }
 
                 parent.trigger.Add(this);
+                TaskTracker.TrackActiveTask(this, 3);
             }
 
             public TSource Current { get; private set; }
@@ -139,6 +140,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 if (!isDisposed)
                 {
                     isDisposed = true;
+                    TaskTracker.RemoveTracking(this);
                     cancellationTokenRegistration.Dispose();
                     parent.trigger.Remove(this);
                 }

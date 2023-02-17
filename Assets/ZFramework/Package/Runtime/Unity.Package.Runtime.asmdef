@@ -1,6 +1,6 @@
 {
     "name": "Unity.Package.Runtime",
-    "rootNamespace": "",
+    "rootNamespace": "ZFramework",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -194,6 +194,7 @@ namespace Cysharp.Threading.Tasks
             {
                 this.parent = parent;
 
+                TaskTracker.TrackActiveTask(this, 4);
             }
 
             public override UniTask Completion
@@ -305,6 +306,7 @@ namespace Cysharp.Threading.Tasks
 
             public void SingalCancellation(CancellationToken cancellationToken)
             {
+                TaskTracker.RemoveTracking(this);
                 core.TrySetCanceled(cancellationToken);
             }
 
@@ -312,10 +314,12 @@ namespace Cysharp.Threading.Tasks
             {
                 if (error != null)
                 {
+                    TaskTracker.RemoveTracking(this);
                     core.TrySetException(error);
                 }
                 else
                 {
+                    TaskTracker.RemoveTracking(this);
                     core.TrySetResult(false);
                 }
             }
@@ -343,6 +347,11 @@ namespace Cysharp.Threading.Tasks
             void IUniTaskSource.OnCompleted(Action<object> continuation, object state, short token)
             {
                 core.OnCompleted(continuation, state, token);
+            }
+
+            UniTaskStatus IUniTaskSource.UnsafeGetStatus()
+            {
+                return core.UnsafeGetStatus();
             }
 
             static void CancellationCallback(object state)

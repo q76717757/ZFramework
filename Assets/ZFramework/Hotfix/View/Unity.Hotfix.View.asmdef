@@ -6,7 +6,8 @@
         "Unity.Boot",
         "Unity.Hotfix.Core",
         "Unity.Hotfix.Data",
-        "Unity.Hotfix.Func"
+        "Unity.Hotfix.Func",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

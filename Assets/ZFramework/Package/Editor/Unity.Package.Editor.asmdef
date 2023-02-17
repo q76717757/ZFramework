@@ -1,8 +1,14 @@
 {
     "name": "Unity.Package.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "ZFramework.Editor",
     "references": [
-        "Unity.Package.Runtime"
+        "Unity.Package.Runtime",
+        "Unity.Boot",
+        "Unity.Hotfix.Core",
+        "Unity.Hotfix.Data",
+        "Unity.Hotfix.Func",
+        "Unity.Hotfix.View",
+        "HybridCLR.Editor"
     ],
     "includePlatforms": [
         "Editor"
@@ -13,6 +19,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.focus-creative-games.hybridclr_unity",
+            "expression": "",
+            "define": "ENABLE_HYBRIDCLR"
+        }
+    ],
     "noEngineReferences": false
 }

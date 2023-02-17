@@ -1,7 +1,9 @@
 {
     "name": "Unity.Boot",
     "rootNamespace": "ZFramework",
-    "references": [],
+    "references": [
+        "HybridCLR.Runtime"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -9,6 +11,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.focus-creative-games.hybridclr_unity",
+            "expression": "",
+            "define": "ENABLE_HYBRIDCLR"
+        }
+    ],
     "noEngineReferences": false
 }
