@@ -1,0 +1,12 @@
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\Server.Packages.deps.json
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\Server.Packages.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\Server.Packages.pdb
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\Server.Packages.csproj.AssemblyReference.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\Server.Packages.GeneratedMSBuildEditorConfig.editorconfig
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\Server.Packages.AssemblyInfoInputs.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\Server.Packages.AssemblyInfo.cs
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\Server.Packages.csproj.CoreCompileInputs.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\Server.Packages.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\refint\Server.Packages.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\Server.Packages.pdb
+E:\MetaCJ2\Assets\ZFramework\.Server\Packages\obj\Debug\net6.0\ref\Server.Packages.dll

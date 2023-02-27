@@ -1,0 +1,13 @@
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net7.0\Server.Core.deps.json
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net7.0\Server.Core.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net7.0\Server.Core.pdb
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\Server.Core.csproj.AssemblyReference.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\Server.Core.GeneratedMSBuildEditorConfig.editorconfig
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\Server.Core.AssemblyInfoInputs.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\Server.Core.AssemblyInfo.cs
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\Server.Core.csproj.CoreCompileInputs.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\Server.Core.csproj.CopyComplete
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\Server.Core.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\refint\Server.Core.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\Server.Core.pdb
+E:\MetaCJ2\Assets\ZFramework\.Server\Core\obj\Debug\net7.0\ref\Server.Core.dll

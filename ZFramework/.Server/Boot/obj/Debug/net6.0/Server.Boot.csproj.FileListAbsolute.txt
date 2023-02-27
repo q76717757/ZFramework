@@ -1,0 +1,16 @@
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\BootStrap.exe
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\BootStrap.deps.json
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\BootStrap.runtimeconfig.json
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\BootStrap.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\BootStrap.pdb
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\Server.Boot.csproj.AssemblyReference.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\Server.Boot.GeneratedMSBuildEditorConfig.editorconfig
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\Server.Boot.AssemblyInfoInputs.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\Server.Boot.AssemblyInfo.cs
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\Server.Boot.csproj.CoreCompileInputs.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\Server.Boot.csproj.CopyComplete
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\BootStrap.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\refint\BootStrap.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\BootStrap.pdb
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\Server.Boot.genruntimeconfig.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Boot\obj\Debug\net6.0\ref\BootStrap.dll

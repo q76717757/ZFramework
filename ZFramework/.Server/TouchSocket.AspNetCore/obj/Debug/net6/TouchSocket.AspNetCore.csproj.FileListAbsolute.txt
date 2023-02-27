@@ -1,0 +1,15 @@
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\bin\Debug\net6\TouchSocket.AspNetCore.xml
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\bin\Debug\net6\TouchSocket.AspNetCore.deps.json
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\bin\Debug\net6\TouchSocket.AspNetCore.dll
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\bin\Debug\net6\TouchSocket.dll
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\bin\Debug\net6\TouchSocket.pdb
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\bin\Debug\net6\TouchSocket.xml
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\TouchSocket.AspNetCore.csproj.AssemblyReference.cache
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\TouchSocket.AspNetCore.GeneratedMSBuildEditorConfig.editorconfig
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\TouchSocket.AspNetCore.AssemblyInfoInputs.cache
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\TouchSocket.AspNetCore.AssemblyInfo.cs
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\TouchSocket.AspNetCore.csproj.CoreCompileInputs.cache
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\TouchSocket.AspNetCore.csproj.CopyComplete
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\TouchSocket.AspNetCore.dll
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\refint\TouchSocket.AspNetCore.dll
+E:\ZFramework\Assets\ZFramework\.Server\src\TouchSocket.AspNetCore\obj\Debug\net6\ref\TouchSocket.AspNetCore.dll

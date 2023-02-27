@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = TouchSocket.AspNetCore
+build_property.ProjectDir = E:\TouchSocket\src\TouchSocket.AspNetCore\

@@ -1,0 +1,50 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "Server.Data/1.0.0": {
+        "dependencies": {
+          "Server.Core": "1.0.0",
+          "Server.Packages": "1.0.0"
+        },
+        "runtime": {
+          "Server.Data.dll": {}
+        }
+      },
+      "Server.Core/1.0.0": {
+        "dependencies": {
+          "Server.Packages": "1.0.0"
+        },
+        "runtime": {
+          "Server.Core.dll": {}
+        }
+      },
+      "Server.Packages/1.0.0": {
+        "runtime": {
+          "Server.Packages.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Server.Data/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Server.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Server.Packages/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

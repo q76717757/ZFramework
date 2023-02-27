@@ -1,0 +1,13 @@
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\Server.Data.deps.json
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\Server.Data.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\bin\Debug\net6.0\Server.Data.pdb
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\Server.Data.csproj.AssemblyReference.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\Server.Data.GeneratedMSBuildEditorConfig.editorconfig
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\Server.Data.AssemblyInfoInputs.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\Server.Data.AssemblyInfo.cs
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\Server.Data.csproj.CoreCompileInputs.cache
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\Server.Data.csproj.CopyComplete
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\Server.Data.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\refint\Server.Data.dll
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\Server.Data.pdb
+E:\MetaCJ2\Assets\ZFramework\.Server\Data\obj\Debug\net6.0\ref\Server.Data.dll
