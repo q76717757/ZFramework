@@ -5,7 +5,7 @@
 	  <RootNamespace>ZFramework</RootNamespace>
 	  <BaseOutputPath>..\bin</BaseOutputPath>
   </PropertyGroup>
-
+	
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>$(DefineConstants)TRACE;SERVER</DefineConstants>
   </PropertyGroup>

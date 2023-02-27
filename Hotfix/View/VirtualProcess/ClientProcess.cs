@@ -8,6 +8,7 @@ using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System;
 
+
 namespace ZFramework
 {
     public class TempAUpdate : OnUpdateImpl<TempA>
@@ -27,80 +28,58 @@ namespace ZFramework
 
     public class ClientProcess : VirtualProcess
     {
-        public static UserInterface userInterface;//临时用一下
         public override void Start()
         {
             Game.AddSingleComponent<TempA>();
             TempA.action += KeyACall;
-            Exp().Invoke();
-            return;
+            
+            Exp().Invoke();//开协程 不带取消
 
-            Log.Info("ClientProcess");
-            Screen.autorotateToPortrait = false;
-            Screen.autorotateToPortraitUpsideDown = false;
-            Screen.autorotateToLandscapeLeft = true;
-            Screen.autorotateToLandscapeRight = true;
-            Application.targetFrameRate = 60;
-
-            Game.AddSingleComponent<ZEventTemp>();//临时给Zevent接一下update生命周期
-            Game.AddSingleComponent<TcpClientComponent>();
-            Game.AddSingleComponent<WebRequestComponent>();
-            Game.AddSingleComponent<ProtocolHandleComponent>();
-            Game.AddSingleComponent<ScenePlayerHandleComponent>();
-            Game.AddSingleComponent<JoyStickComponent>();
-
-            var ui = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>("User Interface"));
-            userInterface = ui.AddComponent<UserInterface>();
-            UIManager.Instance.Push(new StartPanel());
+            //Exp().Invoke(new CancelToken());  //开协程 带取消token
+            //TestCalcel2().Invoke(new CancelToken<int>()); //带取消 带返回
         }
         public override void Stop()
         {
         }
-        public async ATask CallTest()//带async关键字的方法 会被编译器编译成状态机构造器 并直接返回AsyncVoid
-        {
-            Log.Error("Delay");
-            await ATask.Delay(100);
-            
-            Log.Error("一般执行");
-            //await Test1();
 
-            //Log.Error("不执行");
-            //var aa = Test2();//这个不执行  执行async方法会创建状态机实例  但是其他拓展的异步操作调用的时候就开始执行了  为了保持一直还是执行吧???还是学协程不执行?
-            ////要执行还是不执行?
-
-            //Log.Error("串行执行1");
-            //int value = await aa;//等待已建任务
-            //Log.Error("串行执行2");
-            //int value2 = await aa;//执行完成的任务可以重新执行 可以串行  不能并行??或者全部并行
-            //Log.Error(value + ":" + value2);
-
-
-            Log.Info("完成");
-            //Log.Error("延迟执行");
-            //aa.Invoke();
-            //Log.Error("并行执行");
-            //aa.Invoke();//并行执行无效 //抛异常?还是跳过? 除非这个任务是同步的 直接完成的
-
-            var atexta = Resources.LoadAsync<TextAsset>("");
-            atexta.GetAwaiter().GetResult();
-
-            Log.Info("完成---------->");
-        }
-
-        CancelToken token;
+        TaskWatcher watcher;
         void KeyACall()
         { 
             Log.Info("key A");
-            token.Cancel();
+            watcher.Cancel();
         }
-        void OnCalcel(TaskCancelType type)
+
+        public async ATask TestCancel()
         {
-            Log.Info("CancelType --> " + type);
+            Log.Info("A");
+            await Task.Delay(5000);
+            Log.Info("B");
         }
-        public async ATask Exp()
+        public async ATask<int> TestCalcel2()
         {
+            Log.Info("C");
+            await Task.Delay(5000);
+            Log.Info("D");
+            return 22;
+        }
+        public async ATask Exp() //异步方法的源是 AsyncMethod 其他源都是子源
+        {
+            #region 基本用法
+            //await TestCancel();//简单用法 等任务执行 直到任务完成或者任务异常   完成往下走  异常往上返  异常了没必要往下走了
+            //ATask dt = TestCancel();
+            //await dt;
+            //await dt;//重复等待怎么处理   onCompleted不使用=赋MoveNext  用+= 这样完成的时候可以同时让多个状态机走下一状态
+            #endregion
+
+            #region 特殊任务
             //空任务
             //await ATask.CompletedTask;
+            //中断任务
+            //await ATask.Break(); //类似协程中的yield break
+            //结果任务
+            //ATask.FromResult();
+            #endregion
+
             #region Unity异步
             //GameObject gameobject = await Resources.LoadAsync<GameObject>("MapCamera") as GameObject;
             //Log.Info("Resources.LoadAsync-->" + gameobject);
@@ -119,26 +98,50 @@ namespace ZFramework
             //Log.Info("SceneManager.LoasSceneAsync-->");
             #endregion
 
-            ////取消操作-----------------------------
-            token = new CancelToken();
-            token.OnCancel(OnCalcel);
-            await TestCancel().SetCancelToken(token);
-            await TestCalcel2().SetCancelToken(token);
 
-            //token.WithDestory(GameObject obj);
-            //token.withDestort(Component com);
-            //token.withTimeout(10);
+            //取消操作-----------------------------
+            watcher = new TaskWatcher();
+            TaskWatcher watcher2 = new TaskWatcher(); //多个wacther看同一个task呢?
+            watcher.TimeOut = 0.5f;
+            watcher.OnCountDown += (t, p) =>
+            {
+                Log.Info($"剩余时间{t} : 流逝进度{p}");
+            };
+            watcher.Cancel();//手动取消  //取消命令直接将任务强制完成  task完成的时候状态机会调GerResult 这个方法里面检查token如果是取消token 则抛出异常 这样外部就知道是被取消了
 
-            //token.OnCancel(() => { });
-            //token.Cancel();
+            //子任务异常/超时  逐层上报到始祖任务 抛异常  直到有token那一层的父为止
+            //子任务取消 父任务不用取消
+            //父任务取消  子任务肯定取消 如何实现token遗传?
+            ATask target = TestCancel();
+            target.Invoke();
 
-            //CancellationToken ct = new CancellationToken();
-            //processToken.addCALLBACK((float t) => { Log.Info("进度 == " + t)});
-            //Task A = new Task(() => { });
-            //Task b = new Task(() => { });
-            //Task c = new Task(() => { }, processToken);
-            //ct.ThrowIfCancellationRequested();
 
+            WatcherResult wactherResult = await target.SetWatcher(ref watcher);//也可以后绑定的方式  观察一个已启动的任务
+            WatcherResult wactherResult2 = await target.SetWatcher(ref watcher2); //支持多个wacther看同一个task  但watcher是一次性的
+
+            //await TestCancel().SetWatcher(ref watcher);//异步的可取消调用
+            //TestCancel().SetWatcher(watcher).Invoke(); //同步的可取消调用
+            //TestCancel().SetWatcher(watcher).SetWatcher(watcher).Invoke();//错误套娃用法 先不处理
+
+            Log.Info("R1->" + wactherResult.CompletionType);
+            Log.Info("R2->" + wactherResult2.CompletionType);
+
+            switch (wactherResult.CompletionType)  //可以根据任务的完成情况  做逻辑分发  处理取消  超时  异常等
+            {
+                case TaskCompletionType.Success://任务完成  结果有效
+                    //tokenResult.result
+                    break;
+                case TaskCompletionType.Cancel://手动取消
+                    break;
+                case TaskCompletionType.Timeout://任务超时
+                    break;
+                case TaskCompletionType.Exception://异常  异常对象
+                    //tokenResult.exception
+                    break;
+                default:
+                    break;
+            }
+            #region Other
 
             //进度-------------------------------
             //设置进度回调  每帧回调一次/仅当改变
@@ -173,12 +176,19 @@ namespace ZFramework
             //}
             //await IE();
 
+            //异常处理
+            //可以正常抛异常
+            //也可以FromException(ex);//抛异常
+
             ////原生Task-----------------------------------
             //await Task.Run(() => 1234);
             //await Task.Delay(1000);
             //await Task.FromException(new System.Exception("异常"));
             //await Task.FromResult(1234);
             //await Task.FromCanceled(new CancellationToken());
+            //CancellationToken ct = new CancellationToken();      //原生取消怎么处理 ???  如果等待一个带token原生task 原生taks被取消
+            //Task A = new Task(() => { }, ct);
+            //ct.ThrowIfCancellationRequested();
 
             ////From
             //await Task.FromException(new System.Exception("异常"));
@@ -186,10 +196,8 @@ namespace ZFramework
             //await Task.FromCanceled(new CancellationToken());
 
             ////线程切换---------------------------------
-
-
-
-
+            // await SwitchToMain();      //切换到主线程
+            // await SwitchToThreadPool();     //切换到子线程
 
             ////All Any------------------------------------
             //await Task.WhenAll();
@@ -201,23 +209,8 @@ namespace ZFramework
             ////Key
             ////Click
             ////Video
-            ////Auidio
-
-
-        }
-
-        public async ATask TestCancel()
-        {
-            Log.Info("A");
-            await Task.Delay(5000);
-            Log.Info("B");
-        }
-        public async ATask<int> TestCalcel2()
-        {
-            Log.Info("C");
-            await Task.Delay(5000);
-            Log.Info("D");
-            return 22;
+            ////Auidio 
+            #endregion
         }
     }
 }
@@ -246,7 +239,7 @@ namespace ZFramework.Temp
 
             // yield return null 替代方案
             await UniTask.Yield();
-            await UniTask.NextFrame(); 
+            await UniTask.NextFrame();
 
             // WaitForEndOfFrame 替代方案 (需要 MonoBehaviour(CoroutineRunner))
             await UniTask.WaitForEndOfFrame(this); // this 是一个 MonoBehaviour
@@ -285,7 +278,7 @@ namespace ZFramework.Temp
 
             // 构造一个async-wait，并通过元组语义轻松获取所有结果
             var (google, bing, yahoo) = await UniTask.WhenAll(task1, task2, task3);
-            var index = await UniTask.WhenAny(task1, task2);
+            var (winArgumentIndex, result1, result2) = await UniTask.WhenAny(task1, task2);
 
             // WhenAll简写形式
             var (google2, bing2, yahoo2) = await (task1, task2, task3);

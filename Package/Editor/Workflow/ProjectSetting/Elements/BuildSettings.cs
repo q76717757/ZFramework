@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using HybridCLR.Editor.Installer;
+using UnityEditor.Build.Reporting;
+using UnityEditor.WindowsStandalone;
 
 #if ENABLE_HYBRIDCLR
-using HybridCLR.Editor.Installer;
 using HybridCLR.Editor;
 using HybridCLR.Editor.Commands;
 #endif
@@ -40,9 +42,7 @@ namespace ZFramework.Editor
                 EditorGUILayout.LabelField("步骤一:打包前的准备工作", EditorStyles.boldLabel);
                 if (GUILayout.Button("GenerateAll"))
                 {
-#if ENABLE_HYBRIDCLR
                     PrebuildCommand.GenerateAll();//这里编译AOT时按BuildSetting的设置来的
-#endif
                 }
                 EditorGUILayout.HelpBox("1.编译JIT;2.生成IL2CPP宏;3.生成Link.xml;4.仅脚本构建编译AOT;5.生成桥接函数;6.生成反向回调;7.生成AOT启发文档", MessageType.Info);
 
@@ -66,9 +66,7 @@ namespace ZFramework.Editor
                 EditorGUILayout.HelpBox("补全AOT引用(根据注释文档的提示手动添加AOT引用,再重新编译AOT可以提升性能)", MessageType.Warning);
                 if (GUILayout.Button("完成AOT引用添加,重新编译AOT"))
                 {
-#if ENABLE_HYBRIDCLR
                     StripAOTDllCommand.GenerateStripedAOTDlls(target, targetGroup);
-#endif
                     CopyAOTAssembliesToStreamingAssets(); 
                 }
 
@@ -126,7 +124,6 @@ namespace ZFramework.Editor
         }
         void CopyAOTAssembliesToStreamingAssets()
         {
-#if ENABLE_HYBRIDCLR
             var target = EditorUserBuildSettings.activeBuildTarget;
             string aotAssembliesSrcDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
             string aotAssembliesDstDir = Defines.AOTMetaAssemblyLoadDir;
@@ -143,7 +140,6 @@ namespace ZFramework.Editor
                 File.Copy(srcDllPath, dllBytesPath, true);
             }
             AssetDatabase.Refresh();
-#endif
         }
 
         void BuildBootScene(string name, string[] scenePaths, string outputPath)

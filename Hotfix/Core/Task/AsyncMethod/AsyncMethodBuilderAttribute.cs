@@ -13,6 +13,7 @@ namespace System.Runtime.CompilerServices
 }
 #endif
 
+
 namespace ZFramework
 {
     using System.Runtime.CompilerServices;
@@ -26,5 +27,5 @@ namespace ZFramework
     public readonly partial struct ATask<TResult>
     {
     }
-
 }
+

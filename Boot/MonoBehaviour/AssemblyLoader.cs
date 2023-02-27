@@ -116,14 +116,12 @@ namespace ZFramework
             }
             else
             {
-#if ENABLE_HYBRIDCLR
                 byte[] assetData = www.downloadHandler.data;
                 HybridCLR.LoadImageErrorCode err = HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(assetData, HybridCLR.HomologousImageMode.Consistent);
                 if (err != HybridCLR.LoadImageErrorCode.OK)
                 {
                     Log.Error(err + "-->" + path);
                 }
-#endif
             }
         }
 

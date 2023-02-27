@@ -140,7 +140,6 @@ namespace ZFramework.Editor
         }
         bool IsFullInstall()
         {
-#if ENABLE_HYBRIDCLR
             var isFull = new InstallerController().HasInstalledHybridCLR();
             if (!isFull)//未完整安装
             {
@@ -152,13 +151,9 @@ namespace ZFramework.Editor
                 }
             }
             return isFull;
-#else
-            return false;
-#endif
         }
         bool IsEnable()
         {
-#if ENABLE_HYBRIDCLR
             if (SettingsUtil.Enable)
             {
                 return true;
@@ -172,13 +167,9 @@ namespace ZFramework.Editor
                 }
                 return false;
             }
-#else
-            return false;
-#endif
         }
         bool IsDisable()
         {
-#if ENABLE_HYBRIDCLR
             if (!SettingsUtil.Enable)
             {
                 return true;
@@ -192,14 +183,10 @@ namespace ZFramework.Editor
                 }
                 return false;
             }
-#else
-            return true;
-#endif
-
+            
         }
         bool CheckTargetPlatfrom()
         {
-#if ENABLE_HYBRIDCLR
             var target = Defines.TargetRuntimePlatform;
             var select =  (HotUpdateType)hotUpdateType.enumValueIndex;
             switch (select)
@@ -239,7 +226,6 @@ namespace ZFramework.Editor
                 case HotUpdateType.Not:
                     return true;
             }
-#endif
             return false;
 
             void Show(string label)
@@ -335,7 +321,6 @@ namespace ZFramework.Editor
                 assemblyNameValues[i] = assemblyNames.GetArrayElementAtIndex(i).stringValue;
             }
             List<string> clr = new List<string>();
-#if ENABLE_HYBRIDCLR
             clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblies);
             clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions.Where((a) => a != null).Select((a) => a.name));
 
@@ -352,7 +337,6 @@ namespace ZFramework.Editor
                 }
                 EditorGUILayout.EndHorizontal();
             }
-#endif
         }
         void ResetAssembly(SerializedProperty assembly, string[] defVals)
         {
