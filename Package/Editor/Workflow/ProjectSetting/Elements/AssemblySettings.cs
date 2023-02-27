@@ -321,8 +321,11 @@ namespace ZFramework.Editor
                 assemblyNameValues[i] = assemblyNames.GetArrayElementAtIndex(i).stringValue;
             }
             List<string> clr = new List<string>();
-            clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblies);
-            clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions.Where((a) => a != null).Select((a) => a.name));
+            if (HybridCLRSettings.Instance.hotUpdateAssemblies != null)
+                clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblies);
+            if (HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions != null)
+                clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions.Where((a) => a != null).Select((a) => a.name));
+
 
             if (!ComparisonArray(clr, assemblyNameValues))
             {
