@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public readonly partial struct ATask
+    public partial struct ATask
     {
-        public Task ToTask(ATask self) => new Task(() => { self.GetAwaiter(); });
-       
+        public static ATask CompletedTask => default;
 
-        public static ATask CompletedTask => new ATask();
+
+        public static ATask Delay(float seconds, bool ignoreTimeScale = false) => DD();
+        public static ATask NextFrame() => default;
         public static ATask WhenAll() => default;
         public static ATask WhenAny() => default;
         public static ATask SwitchToThreadPool() => default;
@@ -19,10 +20,8 @@ namespace ZFramework
         public static IEnumerator ToIEnumerator() => default;//异步转IEnumerator
         public static ATask ToATask(IEnumerator enumerator) => default;//IEnumerator转异步
         public static ATask ToATask(Task task) => default;//Task转ATask
-        public static ATask Break() => default;//中断任务 //从里面中断任务的话抛一个token标记异常传递出去 //取消自己好像用不上??
 
-
-
+        static async ATask DD() => await Task.Delay(2000);
 
 
         public static ATask<TResult> FromResult<TResult>(TResult result)
@@ -38,6 +37,7 @@ namespace ZFramework
             return new ATask(source);
         }
 
+        //public Task ToTask(ATask self) => new Task(() => { self.GetAwaiter(); });
     }
 
 

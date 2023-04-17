@@ -4,6 +4,11 @@ using System.Reflection;
 
 namespace ZFramework
 {
+    public abstract class BaseAttribute : Attribute
+    {
+        public Type AttributeType { get => GetType(); }
+    }
+
     internal class AttributeMap
     {
         private readonly Dictionary<Type, List<Type>> attributeMap = new Dictionary<Type, List<Type>>();//特性-类型映射表

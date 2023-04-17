@@ -5,11 +5,9 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using HybridCLR.Editor.Installer;
-using UnityEditor.Build.Reporting;
-using UnityEditor.WindowsStandalone;
 
 #if ENABLE_HYBRIDCLR
+using HybridCLR.Editor.Installer;
 using HybridCLR.Editor;
 using HybridCLR.Editor.Commands;
 #endif
@@ -24,56 +22,56 @@ namespace ZFramework.Editor
         {
 
             SerializedProperty buildInScenes = EdtiorSettings.FindProperty("buildInScenes");
-            EditorGUILayout.HelpBox("ÈÈ¸üÄ£Ê½ÏÂ,½ö´ò°üÒıµ¼³¡¾°,¼´¹ÒÔØBootStrapµÄ³¡¾°\r\n·ÇÈÈ¸üÄ£Ê½ÏÂ,ÔòĞèÒª°ÑËùÓĞĞèÒªµÄ³¡¾°¶¼Ìí¼Ó½øÀ´", MessageType.Info);
+            EditorGUILayout.HelpBox("çƒ­æ›´æ¨¡å¼ä¸‹,ä»…æ‰“åŒ…å¼•å¯¼åœºæ™¯,å³æŒ‚è½½BootStrapçš„åœºæ™¯\r\néçƒ­æ›´æ¨¡å¼ä¸‹,åˆ™éœ€è¦æŠŠæ‰€æœ‰éœ€è¦çš„åœºæ™¯éƒ½æ·»åŠ è¿›æ¥", MessageType.Info);
 
             int len = buildInScenes.arraySize;
-            EditorGUI.BeginChangeCheck();//Í¨¹ıÍÏ×§µ½±êÌâµÄ·½Ê½Ìí¼ÓÊı×éÔªËØ ¼ì²é²»µ½±ä»¯ ¼ÇÂ¼Êı×éÊıÁ¿ĞŞÕıÕâ¸öBUG
+            EditorGUI.BeginChangeCheck();//é€šè¿‡æ‹–æ‹½åˆ°æ ‡é¢˜çš„æ–¹å¼æ·»åŠ æ•°ç»„å…ƒç´  æ£€æŸ¥ä¸åˆ°å˜åŒ– è®°å½•æ•°ç»„æ•°é‡ä¿®æ­£è¿™ä¸ªBUG
             EditorGUILayout.PropertyField(buildInScenes);
             if (EditorGUI.EndChangeCheck() || len != buildInScenes.arraySize)
             {
                 ZFrameworkEditorSettings.Save();
             }
-
+#if ENABLE_HYBRIDCLR
             if (CheckUnityBuildSettings())
             {
                 BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
                 BuildTargetGroup targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
 
-                EditorGUILayout.LabelField("²½ÖèÒ»:´ò°üÇ°µÄ×¼±¸¹¤×÷", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("æ­¥éª¤ä¸€:æ‰“åŒ…å‰çš„å‡†å¤‡å·¥ä½œ", EditorStyles.boldLabel);
                 if (GUILayout.Button("GenerateAll"))
                 {
-                    PrebuildCommand.GenerateAll();//ÕâÀï±àÒëAOTÊ±°´BuildSettingµÄÉèÖÃÀ´µÄ
+                    PrebuildCommand.GenerateAll();//è¿™é‡Œç¼–è¯‘AOTæ—¶æŒ‰BuildSettingçš„è®¾ç½®æ¥çš„
                 }
-                EditorGUILayout.HelpBox("1.±àÒëJIT;2.Éú³ÉIL2CPPºê;3.Éú³ÉLink.xml;4.½ö½Å±¾¹¹½¨±àÒëAOT;5.Éú³ÉÇÅ½Óº¯Êı;6.Éú³É·´Ïò»Øµ÷;7.Éú³ÉAOTÆô·¢ÎÄµµ", MessageType.Info);
+                EditorGUILayout.HelpBox("1.ç¼–è¯‘JIT;2.ç”ŸæˆIL2CPPå®;3.ç”ŸæˆLink.xml;4.ä»…è„šæœ¬æ„å»ºç¼–è¯‘AOT;5.ç”Ÿæˆæ¡¥æ¥å‡½æ•°;6.ç”Ÿæˆåå‘å›è°ƒ;7.ç”ŸæˆAOTå¯å‘æ–‡æ¡£", MessageType.Info);
 
 
                 EditorGUILayout.Space();
-                EditorGUILayout.LabelField("²½Öè¶ş:²¹È«AOTÒıÓÃ(¿ÉÑ¡,ÌáÉıĞÔÄÜ)", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("æ­¥éª¤äºŒ:è¡¥å…¨AOTå¼•ç”¨", EditorStyles.boldLabel);
                 EditorGUI.BeginDisabledGroup(true);
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("×Ô¶¯Éú³ÉµÄÆô·¢ÎÄµµ");
+                EditorGUILayout.LabelField("è‡ªåŠ¨ç”Ÿæˆçš„å¯å‘æ–‡æ¡£");
                 var aotGeneric = AssetDatabase.LoadAssetAtPath<MonoScript>("Assets/HybridCLRData/Generated/AOTGenericReferences.cs");
                 EditorGUILayout.ObjectField(aotGeneric, typeof(MonoScript), false);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("ÊÖ¶¯ÊµÏÖµÄAOTÒıÓÃ");
+                EditorGUILayout.LabelField("æ‰‹åŠ¨å®ç°çš„AOTå¼•ç”¨");
                 var aorRef = AssetDatabase.LoadAssetAtPath<MonoScript>("Assets/ZFramework/Boot/Base/AOTReferences.cs");
                 EditorGUILayout.ObjectField(aorRef, typeof(MonoScript), false);
                 EditorGUILayout.EndHorizontal();
                 EditorGUI.EndDisabledGroup();
 
-                EditorGUILayout.HelpBox("²¹È«AOTÒıÓÃ(¸ù¾İ×¢ÊÍÎÄµµµÄÌáÊ¾ÊÖ¶¯Ìí¼ÓAOTÒıÓÃ,ÔÙÖØĞÂ±àÒëAOT¿ÉÒÔÌáÉıĞÔÄÜ)", MessageType.Warning);
-                if (GUILayout.Button("Íê³ÉAOTÒıÓÃÌí¼Ó,ÖØĞÂ±àÒëAOT"))
+                EditorGUILayout.HelpBox("è¡¥å…¨AOTå¼•ç”¨(æ ¹æ®æ³¨é‡Šæ–‡æ¡£çš„æç¤ºæ‰‹åŠ¨æ·»åŠ AOTå¼•ç”¨,å†é‡æ–°ç¼–è¯‘AOTå¯ä»¥æå‡æ€§èƒ½)", MessageType.Warning);
+                if (GUILayout.Button("é‡æ–°ç¼–è¯‘AOT,å¹¶å°†è£å‰ªAOTå¤åˆ¶åˆ°StreamingAssets/AOT"))
                 {
                     StripAOTDllCommand.GenerateStripedAOTDlls(target, targetGroup);
-                    CopyAOTAssembliesToStreamingAssets(); 
+                    CopyAOTAssembliesToStreamingAssets();
                 }
 
                 EditorGUILayout.Space();
-                EditorGUILayout.LabelField("²½ÖèÈı:ÕıÊ½´ò°ü", EditorStyles.boldLabel);
-                
-                if (GUILayout.Button("´òÕıÊ½°ü"))
+                EditorGUILayout.LabelField("æ­¥éª¤ä¸‰:æ­£å¼æ‰“åŒ…", EditorStyles.boldLabel);
+
+                if (GUILayout.Button("æ‰“æ­£å¼åŒ…"))
                 {
                     string name = PlayerSettings.productName;
 
@@ -81,12 +79,17 @@ namespace ZFramework.Editor
                     var scenes = values.Where(value => value != null).Select(value => AssetDatabase.GetAssetPath(value)).ToArray();
 
                     string outputPath = $"{Directory.GetParent(Application.dataPath)}/Build/{target}_{DateTime.Now:MMdd}";
-                    BuildBootScene(name,scenes, outputPath);
+                    BuildBootScene(name, scenes, outputPath);
+                }
+
+                if (GUILayout.Button("ç¼–è¯‘JITç¨‹åºé›†+å¤åˆ¶åˆ°å·¥ç¨‹å†…+æ„å»ºJIT.ABåŒ…"))
+                {
+                    ComplitJIT();
                 }
             }
 
+#endif
 
-            
 
 
         }
@@ -108,8 +111,8 @@ namespace ZFramework.Editor
 
             if (!ComparisonArray(runtimeValue, editorValue))
             {
-                EditorGUILayout.HelpBox("´ò°ü³¡¾°µÄÉèÖÃºÍBuild Setting²»Ò»ÖÂ", MessageType.Error);
-                if (GUILayout.Button("Í¬²½ÉèÖÃµ½Build Settings"))
+                EditorGUILayout.HelpBox("æ‰“åŒ…åœºæ™¯çš„è®¾ç½®å’ŒBuild Settingä¸ä¸€è‡´", MessageType.Error);
+                if (GUILayout.Button("åŒæ­¥è®¾ç½®åˆ°Build Settings"))
                 {
                     var temp = new EditorBuildSettingsScene[runtimeValue.Length];
                     for (int i = 0; i < runtimeValue.Length; i++)
@@ -122,6 +125,8 @@ namespace ZFramework.Editor
             }
             return true;
         }
+
+#if ENABLE_HYBRIDCLR
         void CopyAOTAssembliesToStreamingAssets()
         {
             var target = EditorUserBuildSettings.activeBuildTarget;
@@ -133,7 +138,7 @@ namespace ZFramework.Editor
                 string srcDllPath = $"{aotAssembliesSrcDir}/{dll}.dll";
                 if (!File.Exists(srcDllPath))
                 {
-                    Debug.LogError("AOT DLL:" + srcDllPath + "²»´æÔÚ");
+                    Debug.LogError("AOT DLL:" + srcDllPath + "ä¸å­˜åœ¨");
                     continue;
                 }
                 string dllBytesPath = $"{aotAssembliesDstDir}/{dll}.dll.bytes";
@@ -141,6 +146,7 @@ namespace ZFramework.Editor
             }
             AssetDatabase.Refresh();
         }
+#endif
 
         void BuildBootScene(string name, string[] scenePaths, string outputPath)
         {
@@ -150,7 +156,7 @@ namespace ZFramework.Editor
                 locationPathName = $"{outputPath}/{name}",
                 options = BuildOptions.CompressWithLz4,
                 target = EditorUserBuildSettings.activeBuildTarget,
-                targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup,  
+                targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup,
             };
 
 
@@ -159,8 +165,50 @@ namespace ZFramework.Editor
             {
                 Application.OpenURL(outputPath);
             }
-            Log.Info("¹¹½¨½á¹û" + report.summary.result);
+            Log.Info("æ„å»ºç»“æœ" + report.summary.result);
         }
+
+#if ENABLE_HYBRIDCLR
+        void ComplitJIT()
+        {
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            CompileDllCommand.CompileDll(target);
+            var buildDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
+
+            var jitBytesDir = $"Assets/AssetBundle/{target}/Assembly/DllBytes";
+            Directory.CreateDirectory(jitBytesDir);
+
+
+            var assetNames = new List<string>();
+            var jitNames = ZFrameworkRuntimeSettings.Get().AssemblyNames;
+            for (int i = 0; i < jitNames.Length; i++)
+            {
+                var jitName = jitNames[i] + ".dll";
+                var jitPath = Path.Combine(buildDir, jitName);
+                if (File.Exists(jitPath))
+                {
+                    Log.Info(jitPath);
+                    File.Copy(jitPath, $"{jitBytesDir}/{jitName}.bytes", true);
+                    assetNames.Add($"{jitBytesDir}/{jitName}.bytes");
+                }
+                else
+                {
+                    Log.Error(jitPath + ":Missing");
+                }
+            }
+            AssetDatabase.Refresh();
+
+            AssetBundleBuild build = default;
+            build.assetBundleName = "jitcode";
+            build.assetNames = assetNames.ToArray();
+
+            Directory.CreateDirectory($"Assets/AssetBundle/{target}/Assembly/Bundle");
+            BuildPipeline.BuildAssetBundles($"Assets/AssetBundle/{target}/Assembly/Bundle", new AssetBundleBuild[] { build }, BuildAssetBundleOptions.None, target);
+            AssetDatabase.Refresh();
+
+            EditorGUIUtility.PingObject(AssetImporter.GetAtPath($"Assets/AssetBundle/{target}/Assembly/Bundle/jitcode").GetInstanceID());
+        }
+#endif
 
 
 

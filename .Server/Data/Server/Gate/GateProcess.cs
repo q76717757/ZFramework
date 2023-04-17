@@ -8,9 +8,5 @@ namespace ZFramework
         {
             Log.Info("GateProcess Start");
         }
-        public override void Stop()
-        {
-
-        }
     }
 }

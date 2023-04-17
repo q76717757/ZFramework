@@ -268,38 +268,34 @@ namespace ZFramework
     }
 
 
-
-
-
-    public readonly partial struct ATask
+    public partial struct ATask
     {
-        public ATask<WatcherResult> SetWatcher(ref TaskWatcher watcher)
+        public ATask<WatcherResult> SetWatcher(out TaskWatcher watcher)
         {
-            if (watcher.Status != WatcherStatus.CanUse)
-            {
-                throw new Exception("不可用的观察者,使用中或者过期了");
-            }
+            watcher = new TaskWatcher();
+
             if (IsCompleted) //空任务或者已终结的任务  (不一定是完成终结 可能是异常终结或者取消终结 但肯定终结了)
             {
                 Log.Error("已完成任务,忽略监听直接返回结果");//源过期了 this是只读结构体又没有缓存结果  这个result一直是default...
                 var ex = source.GetException();
                 if (ex != null)
                 {
-                    if (ex is OperationCanceledException)
+                    if (ex is TimeoutException)
+                    {
+                        return ATask.FromResult(new WatcherResult(TaskCompletionType.Timeout, null));
+                    }
+                    if (ex is CanceledException)
                     {
                         return ATask.FromResult(new WatcherResult(TaskCompletionType.Cancel, null));
                     }
-                    else
-                    {
-                        return ATask.FromResult(new WatcherResult(TaskCompletionType.Exception, ex));
-                    }
+                    return ATask.FromResult(new WatcherResult(TaskCompletionType.Exception, ex));
                 }
                 else
                 {
                     return ATask.FromResult(new WatcherResult(TaskCompletionType.Success, null));
                 }
             }
-            else //新任务 或者 执行中任务  支持多watcher对一task
+            else //新任务 或者 执行中任务  支持多watcher对一task?? 还是一watcher对多task??
             {
                 var target = new TaskWatcherSource(source);//池化
                 watcher.SetTarget(target);
@@ -307,31 +303,28 @@ namespace ZFramework
             }
         }
     }
-
-    public readonly partial struct ATask<TResult>
+    public partial struct ATask<TResult>
     {
-        public ATask<WatcherResult<TResult>> SetWatcher(TaskWatcher<TResult> watcher)
+        public ATask<WatcherResult<TResult>> SetWatcher(out TaskWatcher<TResult> watcher)
         {
             //TestCancel().SetWatcher(watcher).SetWatcher(watcher).Invoke(); //错误的套娃用法  如何处理???
 
-            if (watcher.Status != WatcherStatus.CanUse)
-            {
-                throw new Exception("不可用的观察者,使用中或者过期了");
-            }
+            watcher = new TaskWatcher<TResult>();
             if (IsCompleted)
             {
                 var ex = source.GetException();
 
                 if (ex != null)
                 {
-                    if (ex is OperationCanceledException)
+                    if (ex is TimeoutException)
+                    {
+                        return ATask.FromResult(new WatcherResult<TResult>(TaskCompletionType.Timeout, null, default));
+                    }
+                    if (ex is CanceledException)
                     {
                         return ATask.FromResult(new WatcherResult<TResult>(TaskCompletionType.Cancel, null, default));
                     }
-                    else
-                    {
-                        return ATask.FromResult(new WatcherResult<TResult>(TaskCompletionType.Exception, ex, default));
-                    }
+                    return ATask.FromResult(new WatcherResult<TResult>(TaskCompletionType.Exception, ex, default));
                 }
                 else
                 {

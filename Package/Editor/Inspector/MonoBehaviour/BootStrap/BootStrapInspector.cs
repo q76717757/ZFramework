@@ -15,6 +15,8 @@ namespace ZFramework.Editor
             {
                 DrawProjectSettings();
             }
+
+            base.OnInspectorGUI();
         }
 
         void DrawBanner()

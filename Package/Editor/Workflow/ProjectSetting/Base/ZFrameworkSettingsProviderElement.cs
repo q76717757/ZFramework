@@ -13,6 +13,7 @@ namespace ZFramework.Editor
         public ZFrameworkSettingsProviderElement() : base($"{ZFrameworkSettingProvider.Path}/{typeof(T).Name.Replace("Settings", "")}", SettingsScope.Project) { }
         protected static T GetInstance() => new T();
 
+        private bool enableIsCalled;
         private SerializedObject _runtimeSettings;
         private SerializedObject _editorSettings;
         protected SerializedObject RuntimeSettings
@@ -38,8 +39,6 @@ namespace ZFramework.Editor
                 return _editorSettings;
             }
         }
-
-        private bool enableIsCalled;
 
         public sealed override void OnGUI(string searchContext)
         {

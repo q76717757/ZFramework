@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace ZFramework
 {
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    internal class GameLoopAttribute : BaseAttribute
+    {
+    }
+
     internal sealed class GameLoopSystem
     {
         //生命周期映射表    ComponentType -- GameLoopType -- List<GameLoopImpl> 
@@ -169,57 +174,6 @@ namespace ZFramework
                     try
                     {
                         (gameloops[i] as IAwake).OnAwake(component);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e);
-                    }
-                }
-            }
-        }
-        internal void CallAwake<A>(Component component, A a)
-        {
-            if (GetGameLoops(component, typeof(IAwake<A>), out List<IGameLoop> gameloops))
-            {
-                for (int i = 0; i < gameloops.Count; i++)
-                {
-                    try
-                    {
-                        (gameloops[i] as IAwake<A>).OnAwake(component, a);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e);
-                    }
-                }
-            }
-        }
-        internal void CallAwake<A, B>(Component component, A a, B b)
-        {
-            if (GetGameLoops(component, typeof(IAwake<A, B>), out List<IGameLoop> gameloops))
-            {
-                for (int i = 0; i < gameloops.Count; i++)
-                {
-                    try
-                    {
-                        (gameloops[i] as IAwake<A, B>).OnAwake(component, a, b);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e);
-                    }
-                }
-            }
-        }
-        internal void CallAwake<A, B, C>(Component component, A a, B b, C c)
-        {
-            if (GetGameLoops(component, typeof(IAwake<A, B, C>), out List<IGameLoop> gameloops))
-            {
-                for (int i = 0; i < gameloops.Count; i++)
-                {
-                    try
-                    {
-                        (gameloops[i] as IAwake<A, B, C>).OnAwake(component, a, b, c);
                     }
                     catch (Exception e)
                     {

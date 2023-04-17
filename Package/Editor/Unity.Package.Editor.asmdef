@@ -8,7 +8,8 @@
         "Unity.Hotfix.Data",
         "Unity.Hotfix.Func",
         "Unity.Hotfix.View",
-        "HybridCLR.Editor"
+        "HybridCLR.Editor",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [
         "Editor"

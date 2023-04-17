@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ZFramework
 {
@@ -19,9 +15,9 @@ namespace ZFramework
 
     public readonly struct WatcherResult<TResult>
     {
-        public readonly TaskCompletionType CompletionType { get ; }
+        public readonly TaskCompletionType CompletionType { get; }
         public readonly Exception Exception { get; }
-        public readonly TResult Result { get ; }
+        public readonly TResult Result { get; }
         internal WatcherResult(TaskCompletionType completionType, Exception exception, TResult result)
         { 
             CompletionType = completionType;

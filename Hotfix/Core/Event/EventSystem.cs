@@ -3,18 +3,45 @@ using System;
 
 namespace ZFramework
 {
-    public sealed class EventSystem
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    internal class EventAttribute : BaseAttribute
+    {
+
+    }
+
+    class EventSystemAwake : OnAwakeImpl<EventSystem>
+    {
+        public override void OnAwake(EventSystem self)
+        {
+            self.Load();
+        }
+    }
+    class EventSystemUpdate : OnUpdateImpl<EventSystem>
+    {
+        public override void OnUpdate(EventSystem self)
+        {
+            self.Update();
+        }
+    }
+    class EventSystemLateUpdate : OnLateUpdateImpl<EventSystem>
+    {
+        public override void OnLateUpdate(EventSystem self)
+        {
+            self.LateUpdate();
+        }
+    }
+
+    public sealed class EventSystem : SingleComponent<EventSystem>
     {
         //事件映射表   订阅发布模型的事件 //再分同步和异步事件 异步事件做取消  
-        private readonly Dictionary<Type, List<IEvent>> allEvents = new Dictionary<Type, List<IEvent>>();
-        private readonly Dictionary<Type, List<IEvent>> allAsyncEvents = new Dictionary<Type, List<IEvent>>();//未实现..
+        private readonly static Dictionary<Type, List<IEvent>> allEvents = new Dictionary<Type, List<IEvent>>();
+        private readonly static Dictionary<Type, List<IEvent>> allAsyncEvents = new Dictionary<Type, List<IEvent>>();//未实现..
 
-        internal EventSystem() { }
-
-        internal void Load(Type[] allTypes)
+        internal void Load()
         {
             allEvents.Clear();
-            foreach (Type type in allTypes)
+            foreach (Type type in Game.GetTypesByAttribute<EventAttribute>())
             {
                 if (Activator.CreateInstance(type) is IEvent obj)
                 {
@@ -34,11 +61,10 @@ namespace ZFramework
         {
         }
 
-
         //订阅-发布模型
         public static void Call<T>(T eventArg)
         {
-            if (!Game.instance.EventSystem.allEvents.TryGetValue(typeof(IEventCallback<T>), out List<IEvent> iEvents))
+            if (!allEvents.TryGetValue(typeof(IEventCallback<T>), out List<IEvent> iEvents))
             {
                 return;
             }

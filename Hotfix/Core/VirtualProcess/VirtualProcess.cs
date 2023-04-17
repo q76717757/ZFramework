@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace ZFramework
 {
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    public class ProcessType : BaseAttribute
+    {
+    }
+
     /// <summary>
     /// 分布式的最小单位  Entity节点树的根节点   原则上VP和VP之间是孤岛
     /// </summary>
@@ -29,11 +35,9 @@ namespace ZFramework
         internal void Close()
         {
             ZObject.Destory(Root);
-            Stop();
         }
 
         public abstract void Start();
-        public abstract void Stop();
 
         internal static VirtualProcess[] Load(Type[] types)
         {

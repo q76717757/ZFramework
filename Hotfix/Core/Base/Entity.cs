@@ -92,7 +92,7 @@ namespace ZFramework
             }
             var component = Component.Create(type, this);
             components.Add(component.GetType(), component);
-            Game.instance.GameLoopSystem.CallAwake(component);
+            Game.GameLoopSystem.CallAwake(component);
             return component;
         }
         public T AddComponent<T>() where T : Component
@@ -104,47 +104,8 @@ namespace ZFramework
             }
             var component = Component.Create<T>(this);
             components.Add(component.GetType(), component);
-            Game.instance.GameLoopSystem.AddComponent(component);
-            Game.instance.GameLoopSystem.CallAwake(component);
-            return component;
-        }
-        public T AddComponent<T, A>(A a) where T : Component
-        {
-            if (components.TryGetValue(typeof(T),out Component value))
-            {
-                Log.Error("一个entity下 每种component只能挂一个");
-                return value as T;
-            }
-            var component = Component.Create<T>(this);
-            components.Add(component.GetType(), component);
-            Game.instance.GameLoopSystem.AddComponent(component);
-            Game.instance.GameLoopSystem.CallAwake(component, a);
-            return component;
-        }
-        public T AddComponent<T, A, B>(A a, B b) where T : Component
-        {
-            if (components.ContainsKey(typeof(T)))
-            {
-                Log.Error("一个entity下 每种component只能挂一个");
-                return null;
-            }
-            var component = Component.Create<T>(this);
-            components.Add(component.GetType(), component);
-            Game.instance.GameLoopSystem.AddComponent(component);
-            Game.instance.GameLoopSystem.CallAwake(component, a, b);
-            return component;
-        }
-        public T AddComponent<T, A, B, C>(A a, B b, C c) where T : Component
-        {
-            if (components.ContainsKey(typeof(T)))
-            {
-                Log.Error("一个entity下 每种component只能挂一个");
-                return null;
-            }
-            var component = Component.Create<T>(this);
-            components.Add(component.GetType(), component);
-            Game.instance.GameLoopSystem.AddComponent(component);
-            Game.instance.GameLoopSystem.CallAwake(component, a, b, c);
+            Game.GameLoopSystem.AddComponent(component);
+            Game.GameLoopSystem.CallAwake(component);
             return component;
         }
         public T AddComponentWithNewChild<T>()
@@ -245,7 +206,7 @@ namespace ZFramework
         {
             if (components.TryGetValue(component.GetType(), out Component target))
             {
-                Game.instance.GameLoopSystem.DestoryComponent(target);
+                Game.GameLoopSystem.DestoryComponent(target);
             }
             
         }
@@ -253,7 +214,7 @@ namespace ZFramework
         {
             if (components.TryGetValue(typeof(T),out Component component))
             {
-                Game.instance.GameLoopSystem.DestoryComponent(component);
+                Game.GameLoopSystem.DestoryComponent(component);
             }
         }
 

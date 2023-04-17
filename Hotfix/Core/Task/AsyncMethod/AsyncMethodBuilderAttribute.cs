@@ -19,12 +19,12 @@ namespace ZFramework
     using System.Runtime.CompilerServices;
 
     [AsyncMethodBuilder(typeof(AsyncTaskMethodBuilder))]
-    public readonly partial struct ATask
+    public partial struct ATask
     {
     }
 
     [AsyncMethodBuilder(typeof(AsyncTaskMethodBuilder<>))]
-    public readonly partial struct ATask<TResult>
+    public partial struct ATask<TResult>
     {
     }
 }

@@ -35,8 +35,6 @@ namespace ZFramework
         void ITaskCompletionSource.TryStart()
         {
             //因为观察源Status等于目标源Status  所以当目标源已启动  就不会调观察源Start了  否则观察源将通过这个间接Start目标源
-
-            Log.Info("监听源Start");
             //如果多个监听源看同一个任务  就存在多次启动的问题?
             targetSource.TryStart();
         }

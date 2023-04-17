@@ -28,7 +28,7 @@ namespace ZFramework
         //文件名字按照PPT名称+页数,先检查服务器是否存在这个文件,如果存在的话就不需要上传。
         private IEnumerator UploadFile(List<byte[]> fileData, Action<bool, List<string>> onComplete)
         {
-            string host = $"http://{Game.InnerHost}:7887/upload";
+            string host = "";// $"http://{Game.InnerHost}:7887/upload";
             List<string> paths = new List<string>();
             int count = 3;
             long currentTime = System.DateTime.Now.Ticks;
@@ -89,8 +89,7 @@ namespace ZFramework
             int count = 3;
             for (int i = 0; i < filePath.Count; i++)
             {
-                //string host = $"http://{Game.ServerHost}:7887/download?file=" + filePath;
-                string host = $"http://{Game.InnerHost}:7887/download?file=" + filePath[i];
+                string host = "";// $"http://{Game.InnerHost}:7887/download?file=" + filePath[i];
 
                 UnityWebRequest request = new UnityWebRequest(host, UnityWebRequest.kHttpVerbGET);
                 request.downloadHandler = new DownloadHandlerBuffer();

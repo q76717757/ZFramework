@@ -11,7 +11,7 @@ namespace ZFramework
 
         protected ZObject()
         {
-            instanceID = Game.instance.IdGenerater.GenerateInstanceId();
+            instanceID = Game.GenerateInstanceId();
         }
 
         public static bool operator ==(ZObject obj1, ZObject obj2)

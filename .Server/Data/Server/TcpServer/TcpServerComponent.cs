@@ -32,7 +32,7 @@ namespace ZFramework
             m_service.Received += this.Service_Received;
 
             m_service.Setup(new TouchSocketConfig()//载入配置
-               .SetListenIPHosts(new IPHost[] { new IPHost($"{Game.InnerHost}:7789"), new IPHost(7790) })//同时监听两个地址
+               //.SetListenIPHosts(new IPHost[] { new IPHost($"{Game.InnerHost}:7789"), new IPHost(7790) })//同时监听两个地址
                .SetMaxCount(10000).SetBufferLength(1024 * 64)
                .SetThreadCount(10)
                .UsePlugin()

@@ -12,18 +12,6 @@ namespace ZFramework
     {
         void OnAwake(Component self);
     }
-    internal interface IAwake<A> : IGameLoop
-    {
-        void OnAwake(Component self, A a);
-    }
-    internal interface IAwake<A, B> : IGameLoop
-    {
-        void OnAwake(Component self, A a, B b);
-    }
-    internal interface IAwake<A, B, C> : IGameLoop
-    {
-        void OnAwake(Component self, A a, B b, C c);
-    }
     internal interface IReLoad : IGameLoop
     {
         void OnReload(Component self);

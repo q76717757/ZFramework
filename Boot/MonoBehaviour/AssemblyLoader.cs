@@ -14,38 +14,64 @@ namespace ZFramework
     [AddComponentMenu("")]
     internal class AssemblyLoader : MonoBehaviour
     {
-        Dictionary<string, byte[]> dllAssetBytes = new Dictionary<string, byte[]>();
-        Action<List<Type>> onCompletion;
-
-        internal void Load(Action<List<Type>> onCompletion)
+        internal static void LoadAssembly() => new GameObject() { hideFlags = HideFlags.HideInHierarchy }.AddComponent<AssemblyLoader>().Load();
+        void Load()
         {
-            this.onCompletion = onCompletion;
+            switch (ZFrameworkRuntimeSettings.Get().AssemblyLoadType)
+            {
+                case Defines.UpdateType.Not:
+                    LoadFromAppDomain();
+                    break;
+                case Defines.UpdateType.Online:
+                    StartCoroutine(LoadFromOnline());
+                    break;
+                case Defines.UpdateType.Offline:
+                    StartCoroutine(LoadFromOffline());
+                    break;
+            }
+        }
+        void LoadCompleted(List<Type> allTypes)
+        {
+            var game = allTypes.First(type => type.FullName == "ZFramework.Game")
+                .GetMethod("CreateInstance", BindingFlags.Static | BindingFlags.NonPublic)
+                .Invoke(null, Array.Empty<object>()) as IGameInstance;
+            game.Init(allTypes.ToArray());
 
-            if (Defines.IsEditor)
-            { 
-                LoadNot();
+            gameObject.AddComponent<TractionEngine>().StartGame(game);
+            Destroy(this);
+        }
+
+
+        void LoadFromAppDomain()
+        {
+            string[] targetDlls = ZFrameworkRuntimeSettings.Get().AssemblyNames;
+            var allTypes = new List<Type>();
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (targetDlls.Contains(assembly.GetName().Name))
+                {
+                    allTypes.AddRange(assembly.GetTypes());
+                }
+            }
+            LoadCompleted(allTypes);
+        }
+
+        IEnumerator LoadFromOnline()
+        {
+            //AOT补充元数据
+            yield return LoadMetadataForAOTAssembly();
+
+            var settings = ZFrameworkRuntimeSettings.Get();
+            if (settings.MustNew /*  || 自动更新  */)
+            {
+                //版本对比
+                //---> 远程加载程序集
             }
             else
             {
-                switch (ZFrameworkRuntimeSettings.Get().AssemblyLoadType)
-                {
-                    case HotUpdateType.Online:
-                        StartCoroutine(LoadOnline());
-                        break;
-                    case HotUpdateType.Offline:
-                        StartCoroutine(LoadOffline());
-                        break;
-                    case HotUpdateType.Not:
-                        LoadNot();
-                        break;
-                }
+                //本地加载程序集缓存
             }
-        }
 
-        IEnumerator LoadOnline()
-        {
-            //AOT补充
-            yield return LoadAOTFromStreamAssets();
             //获取本地程序集版本
             var localVersion = GetLocalAssemblyVersion();
             //获取远程程序集版本
@@ -65,64 +91,42 @@ namespace ZFramework
             //加载程序集//写到JIT协程内
            
             yield return DownloadJIT();
-            Loading();
-        }
-        IEnumerator LoadOffline()
-        {
-            //AOT补充
-            yield return LoadAOTFromStreamAssets();
 
-            yield return DownloadJIT();
-
-
-        }
-        void LoadNot()
-        {
-            string[] targetDlls = ZFrameworkRuntimeSettings.Get().AssemblyNames;
-            List<Type> types = new List<Type>();
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            var jitPath = ZFrameworkRuntimeSettings.Get().AssemblyNames;
+            //Load JIT
+            List<Type> allTypes = new List<Type>();
+            foreach (var item in jitPath)
             {
-                if (targetDlls.Contains(assembly.GetName().Name))
-                {
-                    types.AddRange(assembly.GetTypes());
-                }
+                byte[] dllBytes = default;// dllAssetBytes[item];
+                var type = Assembly.Load(dllBytes).GetTypes();
+                allTypes.AddRange(type);
             }
-            LoadComlplition(types);
-        }
-        void LoadComlplition(List<Type> allTypes)
-        {
-            onCompletion(allTypes);
-            Destroy(this);
+            LoadCompleted(allTypes);
         }
 
-        IEnumerator LoadAOTFromStreamAssets()
+        IEnumerator LoadFromOffline()
         {
-            var aotPath = Defines.AOTMetaAssemblyLoadDir;
-            var aotNames = ZFrameworkRuntimeSettings.Get().AotMetaAssemblyNames;
-            foreach (var item in aotNames)
-            {
-                var aotFileDir = $"file://{aotPath}/{item}.dll.bytes";
-                Log.Info("Load Aot From ->" + aotFileDir);
-                yield return LoadAOTFiles(aotFileDir);
-            }
-        }
-        IEnumerator LoadAOTFiles(string path)
-        {
-            UnityWebRequest www = UnityWebRequest.Get(path);
+            //AOT补充元数据
+            yield return LoadMetadataForAOTAssembly();
+            //从本地加载JIT AB包
+            UnityWebRequest www = UnityWebRequest.Get($"file://{Application.streamingAssetsPath}/JIT.unity3d");
             yield return www.SendWebRequest();
             if (www.result != UnityWebRequest.Result.Success)
             {
-                Log.Info(www.error + "-->" + path);
+                Log.Error($"JIT包读取失败:{www.error}");
+                yield break;
             }
-            else
+            //从AB包读取程序集
+            var ab = AssetBundle.LoadFromMemory(www.downloadHandler.data);
+            var allTypes = new List<Type>();
+            foreach (var jitName in ZFrameworkRuntimeSettings.Get().AssemblyNames)
             {
-                byte[] assetData = www.downloadHandler.data;
-                HybridCLR.LoadImageErrorCode err = HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(assetData, HybridCLR.HomologousImageMode.Consistent);
-                if (err != HybridCLR.LoadImageErrorCode.OK)
-                {
-                    Log.Error(err + "-->" + path);
-                }
+                //加载程序集
+                var dllBytes = ab.LoadAsset<TextAsset>($"{jitName}.dll.bytes").bytes;
+                var type = Assembly.Load(dllBytes).GetTypes();
+                allTypes.AddRange(type);
             }
+            LoadCompleted(allTypes);
         }
 
         //远程下载JIT DLL
@@ -130,20 +134,6 @@ namespace ZFramework
         {
             var jitPath = ZFrameworkRuntimeSettings.Get().AssemblyNames;
             yield return null;
-        }
-
-        void Loading()
-        {
-            var jitPath = ZFrameworkRuntimeSettings.Get().AssemblyNames;
-            //Load JIT
-            List<Type> types = new List<Type>();
-            foreach (var item in jitPath)
-            {
-                byte[] dllBytes = dllAssetBytes[item];
-                var type = Assembly.Load(dllBytes).GetTypes();
-                types.AddRange(type);
-            }
-            LoadComlplition(types);
         }
 
 
@@ -164,6 +154,39 @@ namespace ZFramework
 
 
 
+
+
+        IEnumerator LoadMetadataForAOTAssembly()
+        {
+#if UNITY_EDITOR
+            yield break;
+#endif
+
+#if ENABLE_HYBRIDCLR
+            foreach (var aotName in ZFrameworkRuntimeSettings.Get().AotMetaAssemblyNames)
+            {
+                UnityWebRequest www = UnityWebRequest.Get($"file://{Defines.AOTMetaAssemblyLoadDir}/{aotName}.dll.bytes");
+                yield return www.SendWebRequest();
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    Log.Error($"{aotName}读取失败:{www.error}");
+                }
+                else
+                {
+                    byte[] assetData = www.downloadHandler.data;
+                    HybridCLR.LoadImageErrorCode error = HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(assetData, HybridCLR.HomologousImageMode.Consistent);
+                    if (error != HybridCLR.LoadImageErrorCode.OK)
+                    {
+                        Log.Error($"{aotName}元数据补充失败:{error}");
+                    }
+                    else
+                    {
+                        Log.Info("AOT补充元数据->" + aotName);
+                    }
+                }
+            }
+#endif
+        }
 
 
         public static string FileMD5(string filePath)

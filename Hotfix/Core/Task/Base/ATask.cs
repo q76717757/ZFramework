@@ -21,7 +21,7 @@ namespace ZFramework
     {
         private readonly ITaskCompletionSource source;
         private readonly ushort ver;
-
+        private readonly Exception ex;
 
         internal ATask(ITaskCompletionSource source)
         {
@@ -29,8 +29,13 @@ namespace ZFramework
             this.source = source;
             ver = source.Ver;
         }
+        internal ATask(Exception exception)
+        { 
+            this = default;
+            this.ex = exception;
+        }
 
-        bool CheckSource() => source != null && source.Ver == ver;
+        private bool CheckSource() => source != null && source.Ver == ver;
 
         public void Invoke() => GetAwaiter();
         public ATask GetAwaiter()
@@ -42,10 +47,14 @@ namespace ZFramework
             return this;
         }
 
-        //下面的实现是成为Awaiter的条件    //注意 如果分布等待  就会多次调下面的方法了  确保查询方法是无害的  回调注册用+=方式  以满足多方等待同一任务的需要?
-        public bool IsCompleted => CheckSource() == false || source.GetStatus() == TaskProcessStatus.Completion;
+        //下面的实现是成为Awaiter的条件
+        public bool IsCompleted => (CheckSource() == false) || source.GetStatus() == TaskProcessStatus.Completion;
         public void GetResult()
         {
+            if (ex != null)
+            {
+                throw ex;
+            }
             if (CheckSource())
             {
                 source.GetResultWithNotReturn();
@@ -53,6 +62,8 @@ namespace ZFramework
         }
         void INotifyCompletion.OnCompleted(Action continuation) => source.OnCompleted(continuation);
         void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation) => source.OnCompleted(continuation);
+
+        public override int GetHashCode() => CheckSource() ? 0 : source.GetHashCode();
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -61,11 +72,17 @@ namespace ZFramework
         private readonly ITaskCompletionSource<TResult> source;
         private readonly ushort ver;
         private readonly TResult result;
+        private readonly Exception ex;
 
         internal ATask(TResult result)
         {
             this = default;
             this.result = result;
+        }
+        internal ATask(Exception exception)
+        { 
+            this = default;
+            this.ex = exception;
         }
         internal ATask(ITaskCompletionSource<TResult> source)
         {
@@ -74,7 +91,7 @@ namespace ZFramework
             ver = source.Ver;
         }
 
-        bool CheckSource() => source != null && source.Ver == ver;
+        private bool CheckSource() => source != null && source.Ver == ver;
 
         public void Invoke() => GetAwaiter();
         public ATask<TResult> GetAwaiter()
@@ -86,9 +103,13 @@ namespace ZFramework
             return this;
         }
 
-        public bool IsCompleted => CheckSource() == false || source.GetStatus() == TaskProcessStatus.Completion;
+        public bool IsCompleted => (CheckSource() == false) || source.GetStatus() == TaskProcessStatus.Completion;
         public TResult GetResult()
         {
+            if (ex != null)
+            {
+                throw ex;
+            }
             if (CheckSource())
             {
                 return source.GetResult();
@@ -101,7 +122,9 @@ namespace ZFramework
         void INotifyCompletion.OnCompleted(Action continuation) => source.OnCompleted(continuation);
         void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation) => source.OnCompleted(continuation);
 
-        public ATask ToATask() => new ATask(source);
-    }
+        public override int GetHashCode() => CheckSource() ? 0 : source.GetHashCode();
 
+        //隐式转换
+        public static implicit operator ATask(ATask<TResult> task) => task.CheckSource() ? new ATask(task.source) : new ATask();
+    }
 }

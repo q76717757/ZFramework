@@ -7,8 +7,6 @@ namespace ZFramework
 {
     public static class ATaskUtility //分布类不能跨程序集
     {
-        public static ATask Delay(float seconds, bool ignoreTimeScale = false) => default;
-        public static ATask NextFrame() => default;
         public static ATask WaitForEndOfFrame() => default;
         public static ATask WaitForFixedUpdate() => default;
         public static ATask WaitUntil(Func<bool> predicate) => default;

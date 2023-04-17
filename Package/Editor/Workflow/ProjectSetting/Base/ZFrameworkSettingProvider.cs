@@ -18,7 +18,7 @@ namespace ZFramework.Editor
         {
             if (ZFrameworkRuntimeSettingsEditor.CheckExistsAndDrawCreateBtnIfNull())
             {
-                var readme = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/ZFramework/readme.txt");
+                var readme = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/ZFramework/README.md");
                 if (readme == null) return;
 
                 var text = readme.text;

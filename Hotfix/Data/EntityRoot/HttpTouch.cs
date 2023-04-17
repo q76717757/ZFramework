@@ -31,7 +31,7 @@ namespace ZFramework
             httpService = new HttpService();
 
             httpService.Setup(new TouchSocketConfig()//载入配置
-              .SetListenIPHosts(new IPHost[] { new IPHost($"{Game.InnerHost}:7887") })
+              //.SetListenIPHosts(new IPHost[] { new IPHost($"{Game.InnerHost}:7887") })
               .SetMaxCount(10000)
               .SetThreadCount(10)
               ).Start();//启动

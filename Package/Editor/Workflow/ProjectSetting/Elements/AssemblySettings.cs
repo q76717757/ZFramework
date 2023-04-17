@@ -15,48 +15,46 @@ namespace ZFramework.Editor
     public class AssemblySettings : ZFrameworkSettingsProviderElement<AssemblySettings>
     {
         [SettingsProvider] public static SettingsProvider Register() => GetInstance();
-        GUILayoutOption titleWidth = GUILayout.Width(100);
 
-        SerializedProperty hotUpdateType;
+        SerializedProperty updateType;
         SerializedProperty assemblyNames;
         SerializedProperty aotMetaAssemblyNames;
 
         public override void OnEnable()
         {
-            hotUpdateType = RuntimeSettings.FindProperty("hotUpdateType");
+            updateType = RuntimeSettings.FindProperty("updateType");
             assemblyNames = RuntimeSettings.FindProperty("assemblyNames");
             aotMetaAssemblyNames = RuntimeSettings.FindProperty("aotMetaAssemblyNames");
         }
         public override void OnDisable()
         {
-            hotUpdateType.Dispose();
+            updateType.Dispose();
             assemblyNames.Dispose();
             aotMetaAssemblyNames.Dispose();
         }
 
         public override void OnGUI()
         {
-            EditorGUILayout.LabelField("´úÂëÈÈ¸üĞÂ·½°¸: HybridCLR", EditorStyles.boldLabel);
-            if (GUILayout.Button("¹Ù·½ÎÄµµ:https://focus-creative-games.github.io/hybridclr/"))
+            EditorGUILayout.LabelField("ä»£ç çƒ­æ›´æ–°æ–¹æ¡ˆ: HybridCLR", EditorStyles.boldLabel);
+            if (GUILayout.Button("å®˜æ–¹æ–‡æ¡£:https://focus-creative-games.github.io/hybridclr/"))
             {
                 Application.OpenURL("https://focus-creative-games.github.io/hybridclr/");
             }
             EditorGUILayout.Space();
 
-            HotUpdateType type = EnumPopup();
-            switch (type)
+            switch (EnumPopup())
             {
-                case HotUpdateType.Online:
-                    ShowModInfo("ÔÚÏß¸üĞÂĞèÒªÄ¿±êÆ½Ì¨Ö§³ÖÈÈ¸ü,ĞèÒªÓĞÍøÂç»·¾³,ĞèÒª²¿ÊğÈÈ¸ü·şÎñ,Èç°æ±¾²éÑ¯,²¹¶¡ÏÂÔØµÈ");
+                case Defines.UpdateType.Not:
+                    Info("é’ˆå¯¹ä¸å…·å¤‡çƒ­æ›´æ–°æ¡ä»¶çš„,æˆ–è€…ä¸´æ—¶å¼€å‘çš„é¡¹ç›®ä¸æƒ³èµ°çƒ­æ›´æµç¨‹");
+                    Not();
+                    break;
+                case Defines.UpdateType.Online:
+                    Info("åœ¨çº¿æ›´æ–°éœ€è¦ç›®æ ‡å¹³å°æ”¯æŒçƒ­æ›´,éœ€è¦æœ‰ç½‘ç»œç¯å¢ƒ,éœ€è¦éƒ¨ç½²çƒ­æ›´æœåŠ¡,å¦‚ç‰ˆæœ¬æŸ¥è¯¢,è¡¥ä¸ä¸‹è½½ç­‰");
                     Remote();
                     break;
-                case HotUpdateType.Offline:
-                    ShowModInfo("ÀëÏß¸üĞÂ½öÖ§³ÖWindows,²»ĞèÒªÍøÂç»·¾³ºÍÈÈ¸ü·şÎñ,Windows²Ù×÷ÎÄ¼ş·½±ã,Ö±½Ó¿½²¹¶¡½øÈ¥");
+                case Defines.UpdateType.Offline:
+                    Info("ç¦»çº¿æ›´æ–°ä»…æ”¯æŒWindows,ä¸éœ€è¦ç½‘ç»œç¯å¢ƒå’Œçƒ­æ›´æœåŠ¡,Windowsæ“ä½œæ–‡ä»¶æ–¹ä¾¿,ç›´æ¥æ‹·è¡¥ä¸è¿›å»");
                     Local();
-                    break;
-                case HotUpdateType.Not:
-                    ShowModInfo("Õë¶Ô²»¾ß±¸ÈÈ¸üĞÂÌõ¼şµÄ,»òÕßÁÙÊ±¿ª·¢µÄÏîÄ¿²»Ïë×ßÈÈ¸üÁ÷³Ì");
-                    Not();
                     break;
             }
 
@@ -65,89 +63,88 @@ namespace ZFramework.Editor
                 AssetDatabase.SaveAssets();
             }
         }
-        HotUpdateType EnumPopup()
+        Defines.UpdateType EnumPopup()
         {
             string[] displayNames = new string[]
             {
-                "ÔÚÏß¸üĞÂ",
-                "ÀëÏß¸üĞÂ",
-                "²»¸üĞÂ",
+                "ä¸æ›´æ–°",
+                "åœ¨çº¿æ›´æ–°",
+                "ç¦»çº¿æ›´æ–°",
             };
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("ÈÈ¸üĞÂÄ£Ê½:", EditorStyles.boldLabel, titleWidth);
-            hotUpdateType.enumValueIndex = EditorGUILayout.Popup(hotUpdateType.enumValueIndex, displayNames/* loadType.enumDisplayNames*/);
+            EditorGUILayout.LabelField("çƒ­æ›´æ–°æ¨¡å¼:", EditorStyles.boldLabel, GUILayout.Width(100));
+            updateType.enumValueIndex = EditorGUILayout.Popup(updateType.enumValueIndex, displayNames);
             EditorGUILayout.EndHorizontal();
 
-            return (HotUpdateType)hotUpdateType.enumValueIndex;
+            return (Defines.UpdateType)updateType.enumValueIndex;
         }
-        void ShowModInfo(string info)
+        void Info(string info)
         {
             EditorGUILayout.HelpBox(info, MessageType.Info);
             EditorGUILayout.Space();
         }
 
+        void Not()
+        {
+#if ENABLE_HYBRIDCLR
+            if (!IsDisable())
+            {
+                return;
+            }
+#endif
+            DrawAssembly(assemblyNames);
+            if (GUILayout.Button("é‡ç½®åˆ°é»˜è®¤"))
+            {
+                ResetAssembly(assemblyNames, Defines.DefaultAssemblyNames);
+            }
+        }
         void Remote()
         {
             if (CheckHybridCLR())
             {
+#if ENABLE_HYBRIDCLR
                 CheckAssemblySetting();
+#endif
             }
         }
         void Local()
         {
             if (CheckHybridCLR())
             {
+#if ENABLE_HYBRIDCLR
                 CheckAssemblySetting();
+#endif
             }
         }
-        void Not()
-        {
-            if (!Defines.HybridCLRPackageIsInstalled || IsDisable())
-            {
-                DrawAssembly(assemblyNames);
-                if (GUILayout.Button("ÖØÖÃµ½Ä¬ÈÏ"))
-                {
-                    ResetAssembly(assemblyNames, Defines.DefaultAssemblyNames);
-                }
-            }
-            
-        }
-
 
 
         bool CheckHybridCLR()
         {
-            return CheckPackage() && IsFullInstall() && IsEnable() && CheckTargetPlatfrom() && CheckOtherSettings();//ÅĞ¶ÏÊÇÓĞË³ĞòµÄ
-        }
-        bool CheckPackage()
-        {
-            if (Defines.HybridCLRPackageIsInstalled)
-            {
-                return true;
-            }
-            else
-            {
-                EditorGUILayout.LabelField("HybridCLR Package(Î´°²×°)",EditorStyles.boldLabel);
-                EditorGUILayout.HelpBox("¿ÉÒÔÍ¨¹ıPackage ManagerµÄAdd package from git URL°²×°", MessageType.Error);
+#if ENABLE_HYBRIDCLR
+            return IsFullInstall() && IsEnable() && CheckTargetPlatfrom() && CheckGC() && CheckIL2CPP() && CheckAPILevel();//åˆ¤æ–­æ˜¯æœ‰é¡ºåºçš„
+#else
+            EditorGUILayout.LabelField("HybridCLR Package(æœªå®‰è£…)", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("å¯ä»¥é€šè¿‡Package Managerçš„Add package from git URLå®‰è£…", MessageType.Error);
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("URL:", GUILayout.Width(50));
-                EditorGUILayout.TextField("git@gitee.com:focus-creative-games/hybridclr_unity.git");
-                EditorGUILayout.EndHorizontal();
-
-                return false;
-            }
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("URL:", GUILayout.Width(50));
+            EditorGUILayout.TextField("git@gitee.com:focus-creative-games/hybridclr_unity.git");
+            EditorGUILayout.EndHorizontal();
+            return false;
+#endif
         }
+
+#if ENABLE_HYBRIDCLR
+
         bool IsFullInstall()
         {
             var isFull = new InstallerController().HasInstalledHybridCLR();
-            if (!isFull)//Î´ÍêÕû°²×°
+            if (!isFull)//æœªå®Œæ•´å®‰è£…
             {
-                EditorGUILayout.HelpBox("HybridCLR·ÖÎª3²¿·Ö\r\n1.Package(ÒÑ°²×°)\r\n2.HybrldCLR(Î´°²×°)\r\n3.Il2CPP Plus(Î´°²×°)", MessageType.Error);
-                if (GUILayout.Button("´ò¿ªHybridCLR Installer¼ÌĞøÍê³É°²×°"))
+                EditorGUILayout.HelpBox("HybridCLRåˆ†ä¸º3éƒ¨åˆ†\r\n1.Package(å·²å®‰è£…)\r\n2.HybrldCLR(æœªå®‰è£…)\r\n3.Il2CPP Plus(æœªå®‰è£…)", MessageType.Error);
+                if (GUILayout.Button("æ‰“å¼€HybridCLR Installerç»§ç»­å®Œæˆå®‰è£…"))
                 {
-                    InstallerWindow window = EditorWindow.GetWindow<InstallerWindow>("HybridCLR Installer", true);
-                    window.minSize = new Vector2(800f, 500f);
+                    EditorWindow.GetWindow<InstallerWindow>("HybridCLR Installer", true).minSize = new Vector2(500, 200);
                 }
             }
             return isFull;
@@ -160,8 +157,8 @@ namespace ZFramework.Editor
             }
             else
             {
-                EditorGUILayout.HelpBox("HybridCLRÎ´¿ªÆô,ÈçÑ¡ÔñÈÈ¸üÄ£Ê½ÔòĞèÒª¿ªÆôHybridCLR", MessageType.Error);
-                if (GUILayout.Button("µã»÷ÆôÓÃ"))
+                EditorGUILayout.HelpBox("HybridCLRæœªå¼€å¯,å¦‚é€‰æ‹©çƒ­æ›´æ¨¡å¼åˆ™éœ€è¦å¼€å¯HybridCLR", MessageType.Error);
+                if (GUILayout.Button("ç‚¹å‡»å¯ç”¨"))
                 {
                     SettingsUtil.Enable = true;
                 }
@@ -176,54 +173,53 @@ namespace ZFramework.Editor
             }
             else
             {
-                EditorGUILayout.HelpBox("HybridCLRÒÑ¿ªÆô,ÈçÑ¡Ôñ²»ÈÈ¸üÄ£Ê½ÔòĞèÒª¹Ø±ÕHybridCLR", MessageType.Error);
-                if (GUILayout.Button("µã»÷¹Ø±Õ"))
+                EditorGUILayout.HelpBox("HybridCLRå·²å¼€å¯,å¦‚é€‰æ‹©ä¸çƒ­æ›´æ¨¡å¼åˆ™éœ€è¦å…³é—­HybridCLR", MessageType.Error);
+                if (GUILayout.Button("ç‚¹å‡»å…³é—­"))
                 {
                     SettingsUtil.Enable = false;
                 }
                 return false;
             }
-            
         }
         bool CheckTargetPlatfrom()
         {
             var target = Defines.TargetRuntimePlatform;
-            var select =  (HotUpdateType)hotUpdateType.enumValueIndex;
+            var select = (Defines.UpdateType)updateType.enumValueIndex;
             switch (select)
             {
-                case HotUpdateType.Online:
-                    if (target == (target & PlatformType.OnlineSupported))
+                case Defines.UpdateType.Online:
+                    if (target == (target & Defines.PlatformType.OnlineSupported))
                     {
                         return true;
                     }
                     else
                     {
                         Show(target.ToString());
-                        EditorGUILayout.HelpBox("Ä¿±êÆ½Ì¨²»Ö§³ÖÔÚÏß¸üĞÂÄ£Ê½,Ä¬ÈÏÖ»Ö§³ÖWindows/Android/iOS", MessageType.Error);
-                        if (GUILayout.Button("¹Ø±ÕÈÈ¸üĞÂ¹¦ÄÜ"))
+                        EditorGUILayout.HelpBox("ç›®æ ‡å¹³å°ä¸æ”¯æŒåœ¨çº¿æ›´æ–°æ¨¡å¼,é»˜è®¤åªæ”¯æŒWindows/Android/iOS", MessageType.Error);
+                        if (GUILayout.Button("å…³é—­çƒ­æ›´æ–°åŠŸèƒ½"))
                         {
-                            hotUpdateType.enumValueIndex = (int)HotUpdateType.Not;
+                            updateType.enumValueIndex = (int)Defines.UpdateType.Not;
                             SettingsUtil.Enable = false;
                         }
                     }
                     break;
-                case HotUpdateType.Offline:
-                    if (target == (target & PlatformType.OfflineSupported))
+                case Defines.UpdateType.Offline:
+                    if (target == (target & Defines.PlatformType.OfflineSupported))
                     {
                         return true;
                     }
                     else
                     {
                         Show(target.ToString());
-                        EditorGUILayout.HelpBox("Ä¿±êÆ½Ì¨²»Ö§³ÖÀëÏß¸üĞÂ,Ä¬ÈÏÖ»Ö§³ÖWindows", MessageType.Error);
-                        if (GUILayout.Button("¹Ø±ÕÈÈ¸üĞÂ¹¦ÄÜ"))
+                        EditorGUILayout.HelpBox("ç›®æ ‡å¹³å°ä¸æ”¯æŒç¦»çº¿æ›´æ–°,é»˜è®¤åªæ”¯æŒWindows", MessageType.Error);
+                        if (GUILayout.Button("å…³é—­çƒ­æ›´æ–°åŠŸèƒ½"))
                         {
-                            hotUpdateType.enumValueIndex = (int)HotUpdateType.Not;
+                            updateType.enumValueIndex = (int)Defines.UpdateType.Not;
                             SettingsUtil.Enable = false;
                         }
                     }
                     break;
-                case HotUpdateType.Not:
+                case Defines.UpdateType.Not:
                     return true;
             }
             return false;
@@ -231,17 +227,10 @@ namespace ZFramework.Editor
             void Show(string label)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Ä¿±êÆ½Ì¨:", EditorStyles.boldLabel, titleWidth);
+                EditorGUILayout.LabelField("ç›®æ ‡å¹³å°:", EditorStyles.boldLabel, GUILayout.Width(100));
                 EditorGUILayout.LabelField(label);
                 EditorGUILayout.EndHorizontal();
             }
-        }
-        bool CheckOtherSettings()//¼ì²éHybridÒªÇóµÄÉèÖÃ
-        {
-            CheckGC();
-            CheckIL2CPP();
-            //CheckAPILevel();
-            return true;
         }
         bool CheckGC()
         {
@@ -249,12 +238,12 @@ namespace ZFramework.Editor
             if (gc)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("ÔöÁ¿GC:", EditorStyles.boldLabel, titleWidth);
-                EditorGUILayout.LabelField("ÒÑ¿ªÆô");
+                EditorGUILayout.LabelField("å¢é‡GC:", EditorStyles.boldLabel, GUILayout.Width(100));
+                EditorGUILayout.LabelField("å·²å¼€å¯");
                 EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.HelpBox("HybridCLRÔİ²»Ö§³ÖÔöÁ¿GC,ĞèÒª¹Ø±ÕÔöÁ¿GC¹¦ÄÜ", MessageType.Error);
-                if (GUILayout.Button("¹Ø±ÕÔöÁ¿GC¹¦ÄÜ"))
+                EditorGUILayout.HelpBox("HybridCLRæš‚ä¸æ”¯æŒå¢é‡GC,éœ€è¦å…³é—­å¢é‡GCåŠŸèƒ½", MessageType.Error);
+                if (GUILayout.Button("å…³é—­å¢é‡GCåŠŸèƒ½"))
                 {
                     PlayerSettings.gcIncremental = false;
                 }
@@ -267,53 +256,46 @@ namespace ZFramework.Editor
             if (il2cpp != ScriptingImplementation.IL2CPP)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("±àÒëºó¶Ë:", EditorStyles.boldLabel, titleWidth);
+                EditorGUILayout.LabelField("ç¼–è¯‘åç«¯:", EditorStyles.boldLabel, GUILayout.Width(100));
                 EditorGUILayout.LabelField(il2cpp.ToString());
                 EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.HelpBox("HybridCLRÊÇ»ùÓÚIL2CPPµÄ,ĞèÒª½«±àÒëºó¶Ë¸ÄÎªIL2CPP", MessageType.Error);
-                if (GUILayout.Button("ÇĞ»»µ½IL2CPP"))
+                EditorGUILayout.HelpBox("HybridCLRæ˜¯åŸºäºIL2CPPçš„,éœ€è¦å°†ç¼–è¯‘åç«¯æ”¹ä¸ºIL2CPP", MessageType.Error);
+                if (GUILayout.Button("åˆ‡æ¢åˆ°IL2CPP"))
                 {
                     PlayerSettings.SetScriptingBackend(EditorUserBuildSettings.selectedBuildTargetGroup, ScriptingImplementation.IL2CPP);
                 }
             }
             return il2cpp == ScriptingImplementation.IL2CPP;
         }
-        //void CheckAPILevel()
-        //{
-        //    var apiLevel = PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup);
-        //    if (apiLevel != ApiCompatibilityLevel.NET_4_6)
-        //    {
-        //        EditorGUILayout.BeginHorizontal();
-        //        EditorGUILayout.LabelField("Ä¿±ê¿ò¼Ü:", EditorStyles.boldLabel, titleWidth);
-        //        EditorGUILayout.LabelField(apiLevel.ToString());
-        //        EditorGUILayout.EndHorizontal();
+        bool CheckAPILevel()
+        {
+            var apiLevel = PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup);
+            if (apiLevel != ApiCompatibilityLevel.NET_4_6)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("ç›®æ ‡æ¡†æ¶:", EditorStyles.boldLabel, GUILayout.Width(100));
+                EditorGUILayout.LabelField(apiLevel.ToString());
+                EditorGUILayout.EndHorizontal();
 
-        //        EditorGUILayout.HelpBox("Ö÷¹¤³Ì¿ÉÒÔÑ¡ÔñStandard 2.0»òÕß4.x,µ«±àÒëÈÈ¸ü³ÌĞò¼¯±ØĞëÊ¹ÓÃ4.x,ÈçÎŞ±ØÒª½¨ÒéÍ³Ò»µ½4.x", MessageType.Warning);
-        //    }
-        //}
-
+                EditorGUILayout.HelpBox("ä¸»å·¥ç¨‹å¯ä»¥é€‰æ‹©Standard 2.0æˆ–è€…4.x,ä½†ç¼–è¯‘çƒ­æ›´ç¨‹åºé›†å¿…é¡»ä½¿ç”¨4.x,å¦‚æ— å¿…è¦å»ºè®®ç»Ÿä¸€åˆ°4.x", MessageType.Warning);
+            }
+            return true;
+        }
         void CheckAssemblySetting()
         {
             DrawAssembly(assemblyNames);
-            CheckAssembly();
+            CheckAssemblyConsistency();
             DrawAssembly(aotMetaAssemblyNames);
-            if (GUILayout.Button("ÖØÖÃµ½Ä¬ÈÏ"))
+
+            EditorGUILayout.Space();
+            if (GUILayout.Button("é‡ç½®åˆ°é»˜è®¤"))
             {
                 ResetAssembly(assemblyNames, Defines.DefaultAssemblyNames);
                 ResetAssembly(aotMetaAssemblyNames, Defines.DefaultAOTMetaAssemblyNames);
             }
         }
-        void DrawAssembly(SerializedProperty assembly)
-        {
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(assembly);
-            if (EditorGUI.EndChangeCheck())
-            {
-                AssetDatabase.SaveAssets();
-            }
-        }
-        void CheckAssembly()
+        void CheckAssemblyConsistency()
         {
             string[] assemblyNameValues = new string[assemblyNames.arraySize];
             for (int i = 0; i < assemblyNameValues.Length; i++)
@@ -329,16 +311,27 @@ namespace ZFramework.Editor
 
             if (!ComparisonArray(clr, assemblyNameValues))
             {
-                EditorGUILayout.HelpBox("ÈÈ¸ü³ÌĞò¼¯ÁĞ±íÓëHybridCLR²»Ò»ÖÂ", MessageType.Error);
+                EditorGUILayout.HelpBox("çƒ­æ›´ç¨‹åºé›†åˆ—è¡¨ä¸HybridCLRä¸ä¸€è‡´", MessageType.Error);
 
                 EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("±£´æÖÁHybridCLR"))
+                if (GUILayout.Button("ä¿å­˜è‡³HybridCLR"))
                 {
                     HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions = new UnityEditorInternal.AssemblyDefinitionAsset[0];
                     HybridCLRSettings.Instance.hotUpdateAssemblies = assemblyNameValues;
                     HybridCLRSettings.Save();
                 }
                 EditorGUILayout.EndHorizontal();
+            }
+        }
+#endif
+
+        void DrawAssembly(SerializedProperty assembly)
+        {
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(assembly);
+            if (EditorGUI.EndChangeCheck())
+            {
+                AssetDatabase.SaveAssets();
             }
         }
         void ResetAssembly(SerializedProperty assembly, string[] defVals)
@@ -350,15 +343,6 @@ namespace ZFramework.Editor
                 assembly.GetArrayElementAtIndex(i).stringValue = defVals[i];
             }
         }
-
-        void AssemblyBytesLoadPath()
-        {
-
-        }
-
-
-
-
         bool ComparisonArray(IEnumerable<string> item1, IEnumerable<string> item2)
         {
             if (item1 == item2) return true;
@@ -380,7 +364,6 @@ namespace ZFramework.Editor
                 {
                     return true;
                 }
-               
             }
         }
     }

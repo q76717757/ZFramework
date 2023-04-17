@@ -4,6 +4,12 @@ namespace ZFramework
 {
     public class UnityLogger : ILog
     {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        public static void Initialize()
+        {
+            Log.ILog = new UnityLogger();
+        }
+
         public void Info(object obj)
         {
             Debug.Log(obj);

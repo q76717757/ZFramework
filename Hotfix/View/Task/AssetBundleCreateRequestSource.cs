@@ -12,6 +12,7 @@ namespace ZFramework
     {
         AssetBundleCreateRequest request;
         Action moveNext;
+        AssetBundle bundle;
 
         ushort ITaskCompletionSource.Ver { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

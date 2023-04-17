@@ -26,7 +26,7 @@ namespace ZFramework
             //测试数据 自动注册
             var newAccount = new Account()
             {
-                id = Game.GetID(),
+                id = Game.GenerateInstanceId(),
                 phoneNum = phoneNum,
                 username = "新用户" + (DateTime.UtcNow.Ticks / 10000).ToString("X2"),
                 roles = new List<long>()
@@ -36,7 +36,7 @@ namespace ZFramework
             {
                 var newRole = new Role()
                 {
-                    id = Game.GetID(),
+                    id = Game.GenerateInstanceId(),
                     accountID = newAccount.id,
                     gender = i%2,
                     modelIndex = i,

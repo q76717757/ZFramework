@@ -1,7 +1,9 @@
 {
     "name": "Unity.Package.Runtime",
     "rootNamespace": "ZFramework",
-    "references": [],
+    "references": [
+        "Unity.RenderPipelines.Universal.Runtime"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
