@@ -2,7 +2,7 @@
 
 namespace ZFramework
 {
-    public class TimeInfo
+    internal class TimeInfo
     {
         private readonly DateTime dt1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private DateTime dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);//EcoTime

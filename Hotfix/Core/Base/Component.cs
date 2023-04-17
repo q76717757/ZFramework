@@ -29,11 +29,11 @@ namespace ZFramework
             this.isEnable = enable;
             if (enable)
             {
-                Game.GameLoopSystem.CallEnable(this);
+                Game.CallEnable(this);
             }
             else
             {
-                Game.GameLoopSystem.CallDisable(this);
+                Game.CallDisable(this);
             }
         }
         internal void SetEntity(Entity entity)

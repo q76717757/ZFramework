@@ -71,5 +71,8 @@ namespace ZFramework
         {
             return virtualProcesses[0].Root.AddComponent<T>();
         }
+
+        internal static void CallEnable(Component component) => GameLoopSystem.CallEnable(component);
+        internal static void CallDisable(Component component) => GameLoopSystem.CallDisable(component);
     }
 }

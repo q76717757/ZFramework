@@ -15,14 +15,10 @@ namespace ZFramework
     {
         public override void Start()
         {
-            Log.Info("Start -->");
             Application.targetFrameRate = 60;
-            //Game.AddSingleComponent<ZEventTemp>();
-            //Game.AddSingleComponent<EventSystem>();
 
-
-            //var uiCam = BootStrap.instance.GetComponent<References>().Get<Camera>("UICamera");
-            //Root.AddComponent<UIComponent, Camera>(uiCam);
+            //GameObject CAR = GameObject.Find("T2X (1)");
+            //Root.AddChild().AddComponent<Car>().Awake(CAR);
         }
     }
 }

@@ -139,7 +139,7 @@ namespace ZFramework
         }
     }
 
-    public class IdGenerater
+    internal class IdGenerater
     {
         public const int Mask18bit = 0x03ffff;
 
