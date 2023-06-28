@@ -3,6 +3,8 @@
  * 
  **/
 
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
@@ -174,5 +176,40 @@ public class GUIStyleView : EditorWindow
         Debug.Log("Style lineHeight: " + tmp.lineHeight);
         Debug.Log("Style Font: " + tmp.font);
         Debug.Log("Style Font Size: " + tmp.fontSize);
+    }
+}
+
+
+
+public class MyWindows22 : EditorWindow
+{
+
+    static List<GUIStyle> styles = null;
+    [MenuItem("ZFramework/GUIStyle 效果查看器2")]
+    public static void Test()
+    {
+        EditorWindow.GetWindow<MyWindows22>("styles");
+
+        styles = new List<GUIStyle>();
+        foreach (PropertyInfo fi in typeof(EditorStyles).GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            object o = fi.GetValue(null, null);
+            if (o.GetType() == typeof(GUIStyle))
+            {
+                styles.Add(o as GUIStyle);
+            }
+        }
+    }
+
+    public Vector2 scrollPosition = Vector2.zero;
+    void OnGUI()
+    {
+        scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+        for (int i = 0; i < styles.Count; i++)
+        {
+            //GUILayout.Label("EditorStyles." + styles[i].name, styles[i]);
+            GUILayout.Button("EditorStyles." + styles[i].name, styles[i]);
+        }
+        GUILayout.EndScrollView();
     }
 }
