@@ -9,21 +9,21 @@ namespace ZFramework
     {
         public static ushort GetCRC(byte[] data, int offset, int count)
         {
-            ushort crc = 0xFFFF; // CRC³õÊ¼Öµ
-            ushort polynomial = 0xA001;  // CRCĞ£Ñé¶àÏîÊ½
+            ushort crc = 0xFFFF; // CRCåˆå§‹å€¼
+            ushort polynomial = 0xA001;  // CRCæ ¡éªŒå¤šé¡¹å¼
 
             for (int i = offset; i < count; i++)
             {
-                crc ^= data[i];   // µÍ8Î»ÓëCRCÒì»ò
+                crc ^= data[i];   // ä½8ä½ä¸CRCå¼‚æˆ–
                 for (ushort j = 0; j < 8; j++)
                 {
-                    if ((crc & 0x0001) != 0) //crc×îºóÒ»Î»²»ÎªÁã
+                    if ((crc & 0x0001) != 0) //crcæœ€åä¸€ä½ä¸ä¸ºé›¶
                     {
-                        crc = (ushort)((ushort)(crc >> 1) ^ polynomial);   //ÓÒÒÆÒ»Î»  Òì»ò¶àÏîÊ½
+                        crc = (ushort)((ushort)(crc >> 1) ^ polynomial);   //å³ç§»ä¸€ä½  å¼‚æˆ–å¤šé¡¹å¼
                     }
-                    else   //CRCµÄ×îºóÒ»Î»Îª0
+                    else   //CRCçš„æœ€åä¸€ä½ä¸º0
                     {
-                        crc = (ushort)(crc >> 1);   // ÓÒÒÆÒ»Î»
+                        crc = (ushort)(crc >> 1);   // å³ç§»ä¸€ä½
                     }
                 }
             }
@@ -43,7 +43,7 @@ namespace ZFramework
         }
 
 
-        //´óĞ¡¶Ë×ª»»
+        //å¤§å°ç«¯è½¬æ¢
         public static ushort Swap(ushort input)
         {
             return (ushort)((ushort)((input & 0x00ff) << 8) | ((ushort)(input & 0xff00) >> 8));
