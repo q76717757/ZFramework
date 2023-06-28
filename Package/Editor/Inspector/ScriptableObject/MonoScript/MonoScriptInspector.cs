@@ -49,11 +49,14 @@ namespace ZFramework.Editor
                 {
                     encoding = GetFileEncoding(assetPath);
                 }
-                EditorGUILayout.LabelField("ÎÄ¼þ±àÂë:" + encoding.EncodingName);
-                if (GUILayout.Button("×ª»»ÎªUTF8"))
+                EditorGUILayout.LabelField("æ–‡ä»¶ç¼–ç :" + encoding.EncodingName);
+
+                EditorGUI.BeginDisabledGroup(encoding.CodePage == Encoding.UTF8.CodePage);
+                if (GUILayout.Button("è½¬æ¢ä¸ºUTF8"))
                 {
                     ConvertToUTF8(assetPath);
                 }
+                EditorGUI.EndDisabledGroup();
             }
 
             
@@ -102,7 +105,7 @@ namespace ZFramework.Editor
             byte[] buffer = new byte[4];
             fs.Read(buffer, 0, 4);
 
-            //´øbom
+            //å¸¦bom
             //UTF8    --> EF BB BF
             //UTF16LE --> FF FE
             //UTF16BE --> FE FF
@@ -127,7 +130,7 @@ namespace ZFramework.Editor
                     output = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage);
                 }
             }
-            else//²»´øbom
+            else//ä¸å¸¦bom
             {
                 fs.Position = 0;
                 if (IsUTF8Bytes(fs))//UTF8
@@ -145,36 +148,36 @@ namespace ZFramework.Editor
 
         private bool IsUTF8Bytes(FileStream stream)
         {
-            //UTF8±àÂë¹æÔò
-            //1×Ö½Ú 0xxxxxxx   
-            //2×Ö½Ú 110xxxxx 10xxxxxx
-            //3×Ö½Ú 1110xxxx 10xxxxxx 10xxxxxx
-            //4×Ö½Ú 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-            //5×Ö½Ú 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-            //6×Ö½Ú 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+            //UTF8ç¼–ç è§„åˆ™
+            //1å­—èŠ‚ 0xxxxxxx   
+            //2å­—èŠ‚ 110xxxxx 10xxxxxx
+            //3å­—èŠ‚ 1110xxxx 10xxxxxx 10xxxxxx
+            //4å­—èŠ‚ 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+            //5å­—èŠ‚ 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+            //6å­—èŠ‚ 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 
             byte[] bytes = new byte[1];
             while (stream.Read(bytes, 0, 1) > 0)
             {
-                //µ¥×Ö½Ú    ASCII
+                //å•å­—èŠ‚    ASCII
                 if (bytes[0] < 0b1000_0000)
                     continue;
 
-                //¶à×Ö½Ú
+                //å¤šå­—èŠ‚
                 int cnt = 0;
-                byte b = bytes[0]; //ÅÐ¶ÏÊ××Ö½Ú1µÄ¸öÊý
+                byte b = bytes[0]; //åˆ¤æ–­é¦–å­—èŠ‚1çš„ä¸ªæ•°
                 while ((b & 0b1000_0000) == 0b1000_0000)
                 {
                     cnt++;
                     b <<= 1;
                 }
-                cnt -= 1;//¼õÈ¥Ê××Ö½Ú  µÃµ½ºóÐø×Ö½ÚµÄ¸öÊý
+                cnt -= 1;//å‡åŽ»é¦–å­—èŠ‚  å¾—åˆ°åŽç»­å­—èŠ‚çš„ä¸ªæ•°
 
                 for (int i = 0; i < cnt; i++)
                 {
-                    if (stream.Read(bytes, 0, 1) <= 0)//ºóÐø×Ö½Ú²»¹» ²»Âú×ãUTF8±àÂë
+                    if (stream.Read(bytes, 0, 1) <= 0)//åŽç»­å­—èŠ‚ä¸å¤Ÿ ä¸æ»¡è¶³UTF8ç¼–ç 
                         return false;
-                    if ((bytes[0] & 0b1100_0000) != 0b1000_0000)//ºóÐø×Ö½ÚµÄÍ·Á½Î»²»ÊÇ10  ²»Âú×ãUTF8±àÂë
+                    if ((bytes[0] & 0b1100_0000) != 0b1000_0000)//åŽç»­å­—èŠ‚çš„å¤´ä¸¤ä½ä¸æ˜¯10  ä¸æ»¡è¶³UTF8ç¼–ç 
                         return false;
                 }
             }
@@ -183,7 +186,7 @@ namespace ZFramework.Editor
 
         private void ConvertToUTF8(string assetPath)
         {
-            if (encoding == null || encoding == Encoding.UTF8)
+            if (encoding == null || encoding.CodePage == Encoding.UTF8.CodePage)
             {
                 return;
             }
