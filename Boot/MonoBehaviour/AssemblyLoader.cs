@@ -161,6 +161,7 @@ namespace ZFramework
 #if UNITY_EDITOR
             yield break;
 #endif
+            yield break;
 
 #if ENABLE_HYBRIDCLR
             foreach (var aotName in ZFrameworkRuntimeSettings.Get().AotMetaAssemblyNames)
