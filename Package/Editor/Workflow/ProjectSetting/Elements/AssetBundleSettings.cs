@@ -15,17 +15,20 @@ namespace ZFramework.Editor
         public override void OnGUI()
         {
             SerializedProperty hotUpdateScenes = EdtiorSettings.FindProperty("hotUpdateScenes");
-            EditorGUILayout.HelpBox("ÈÈ¸üÄ£Ê½ÏÂ,½ö´ò°üÒıµ¼³¡¾°,¼´¹ÒÔØBootStrapµÄ³¡¾°\r\n·ÇÈÈ¸üÄ£Ê½ÏÂ,ÔòĞèÒª°ÑËùÓĞĞèÒªµÄ³¡¾°¶¼Ìí¼Ó½øÀ´", MessageType.Info);
+            EditorGUILayout.HelpBox("çƒ­æ›´æ¨¡å¼ä¸‹,ä»…æ‰“åŒ…å¼•å¯¼åœºæ™¯,å³æŒ‚è½½BootStrapçš„åœºæ™¯\r\néçƒ­æ›´æ¨¡å¼ä¸‹,åˆ™éœ€è¦æŠŠæ‰€æœ‰éœ€è¦çš„åœºæ™¯éƒ½æ·»åŠ è¿›æ¥", MessageType.Info);
 
             int len = hotUpdateScenes.arraySize;
-            EditorGUI.BeginChangeCheck();//Í¨¹ıÍÏ×§µ½±êÌâµÄ·½Ê½Ìí¼ÓÊı×éÔªËØ ¼ì²é²»µ½±ä»¯ ¼ÇÂ¼Êı×éÊıÁ¿ĞŞÕıÕâ¸öBUG
+            EditorGUI.BeginChangeCheck();//é€šè¿‡æ‹–æ‹½åˆ°æ ‡é¢˜çš„æ–¹å¼æ·»åŠ æ•°ç»„å…ƒç´  æ£€æŸ¥ä¸åˆ°å˜åŒ– è®°å½•æ•°ç»„æ•°é‡ä¿®æ­£è¿™ä¸ªBUG
             EditorGUILayout.PropertyField(hotUpdateScenes);
+
             if (EditorGUI.EndChangeCheck() || len != hotUpdateScenes.arraySize)
             {
+                EdtiorSettings.ApplyModifiedProperties();
                 ZFrameworkEditorSettings.Save();
+
             }
 
-            if (GUILayout.Button("ÁÙÊ±Êä³öAB°üµ½StreamingAssets"))
+            if (GUILayout.Button("ä¸´æ—¶è¾“å‡ºABåŒ…åˆ°StreamingAssets"))
             {
                 BuildPipeline.BuildAssetBundles(Application.streamingAssetsPath, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
             }

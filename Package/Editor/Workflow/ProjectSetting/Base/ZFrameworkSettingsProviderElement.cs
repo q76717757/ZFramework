@@ -34,7 +34,7 @@ namespace ZFramework.Editor
                 if (_editorSettings == null || _editorSettings.targetObject == null)//在打包的时候targetObject报空引用
                 {
                     _editorSettings?.Dispose();
-                    _editorSettings = new SerializedObject(ZFrameworkEditorSettings.Instance);
+                    _editorSettings = new SerializedObject(ZFrameworkEditorSettings.instance);
                 }
                 return _editorSettings;
             }

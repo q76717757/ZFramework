@@ -75,7 +75,7 @@ namespace ZFramework.Editor
                 {
                     string name = PlayerSettings.productName;
 
-                    SceneAsset[] values = ZFrameworkEditorSettings.Instance.buildInScenes;
+                    SceneAsset[] values = ZFrameworkEditorSettings.instance.buildInScenes;
                     var scenes = values.Where(value => value != null).Select(value => AssetDatabase.GetAssetPath(value)).ToArray();
 
                     string outputPath = $"{Directory.GetParent(Application.dataPath)}/Build/{target}_{DateTime.Now:MMdd}";
