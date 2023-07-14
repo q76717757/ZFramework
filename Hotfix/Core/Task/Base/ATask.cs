@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    //[IL2CPP Bug]´Ó½á¹¹ÌåÖĞµ÷ÓÃÍâ²¿ÀàµÄ·½·¨Ê±£¬½á¹û²»ÕıÈ·  ĞŞ¸´ÓÚ2021.1.24f1
-    //ÔİÊ±ĞŞ¸´·½·¨ ½«Íâ²¿Àà·½·¨×¢²áÔÚÎ¯ÍĞÉÏ ²¢½«Î¯ÍĞ´Ó½á¹¹ÌåÖĞ´«³ö ¸øÍâ²¿Àà¶ÔÏóÈ¥µ÷ÓÃÎ¯ÍĞ
+    //[IL2CPP Bug]ä»ç»“æ„ä½“ä¸­è°ƒç”¨å¤–éƒ¨ç±»çš„æ–¹æ³•æ—¶ï¼Œç»“æœä¸æ­£ç¡®  ä¿®å¤äº2021.1.24f1
+    //æš‚æ—¶ä¿®å¤æ–¹æ³• å°†å¤–éƒ¨ç±»æ–¹æ³•æ³¨å†Œåœ¨å§”æ‰˜ä¸Š å¹¶å°†å§”æ‰˜ä»ç»“æ„ä½“ä¸­ä¼ å‡º ç»™å¤–éƒ¨ç±»å¯¹è±¡å»è°ƒç”¨å§”æ‰˜
     //Issue is tracked on https://issuetracker.unity3d.com/issues/il2cpp-incorrect-results-when-calling-a-method-from-outside-class-in-a-struct
 
-    //ATaskµÄ¹¹Ôì·½·¨·ÖÁ½ÖÖ
-    //Ò»ÖÖÊÇAsync·½·¨ ±»±àÒëÆ÷±àÒë³ÉBuilderµÄÊµÀı·½·¨ ÔÚBuilderÖĞµ÷CreateÈ»ºó·µ»ØTask
-    //ÁíÒ»ÖÖÊÇ×Ô¼ºnew ATask³öÀ´µÄ ³£¼ûÓÚ¾²Ì¬ATaskÈÎÎñ, ÈçµÈÊ±¼ä µÈÖ¡ µÈ»Øµ÷µÈ..  ´ó¶àÊıÀ©Õ¹µÄ¶¼ÊÇÕâ¸ö,²¢²»»á×ßBuilderÂ·¾¶,¹Ø¼üÔÚGetAwaiter()ÔõÃ´ÊµÏÖ
-    //new Atask()µÈÓÚ¿ÕÈÎÎñ  source == null  IsCompleted = true  Ö±½ÓÍê³É
+    //ATaskçš„æ„é€ æ–¹æ³•åˆ†ä¸¤ç§
+    //ä¸€ç§æ˜¯Asyncæ–¹æ³• è¢«ç¼–è¯‘å™¨ç¼–è¯‘æˆBuilderçš„å®ä¾‹æ–¹æ³• åœ¨Builderä¸­è°ƒCreateç„¶åè¿”å›Task
+    //å¦ä¸€ç§æ˜¯è‡ªå·±new ATaskå‡ºæ¥çš„ å¸¸è§äºé™æ€ATaskä»»åŠ¡, å¦‚ç­‰æ—¶é—´ ç­‰å¸§ ç­‰å›è°ƒç­‰..  å¤§å¤šæ•°æ‰©å±•çš„éƒ½æ˜¯è¿™ä¸ª,å¹¶ä¸ä¼šèµ°Builderè·¯å¾„,å…³é”®åœ¨GetAwaiter()æ€ä¹ˆå®ç°
+    //new Atask()ç­‰äºç©ºä»»åŠ¡  source == null  IsCompleted = true  ç›´æ¥å®Œæˆ
 
     [StructLayout(LayoutKind.Auto)]
     public readonly partial struct ATask : ICriticalNotifyCompletion
@@ -47,7 +47,7 @@ namespace ZFramework
             return this;
         }
 
-        //ÏÂÃæµÄÊµÏÖÊÇ³ÉÎªAwaiterµÄÌõ¼ş
+        //ä¸‹é¢çš„å®ç°æ˜¯æˆä¸ºAwaiterçš„æ¡ä»¶
         public bool IsCompleted => (CheckSource() == false) || source.GetStatus() == TaskProcessStatus.Completion;
         public void GetResult()
         {
@@ -124,7 +124,7 @@ namespace ZFramework
 
         public override int GetHashCode() => CheckSource() ? 0 : source.GetHashCode();
 
-        //ÒşÊ½×ª»»
+        //éšå¼è½¬æ¢
         public static implicit operator ATask(ATask<TResult> task) => task.CheckSource() ? new ATask(task.source) : new ATask();
     }
 }

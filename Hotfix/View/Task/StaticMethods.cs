@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    public static class ATaskUtility //·Ö²¼Àà²»ÄÜ¿ç³ÌĞò¼¯
+    public static class ATaskUtility //åˆ†å¸ƒç±»ä¸èƒ½è·¨ç¨‹åºé›†
     {
         public static ATask WaitForEndOfFrame() => default;
         public static ATask WaitForFixedUpdate() => default;
@@ -17,7 +17,7 @@ namespace ZFramework
         //await audio/video
         //await process
 
-        //UnityÒì²½²Ù×÷AO
+        //Unityå¼‚æ­¥æ“ä½œAO
         //public static ATask WithCancelToken(this ref ATask task, int token) => default;
         //public static ATask WitchConcelCallback(this ref ATask task, Action callback) => default;
 

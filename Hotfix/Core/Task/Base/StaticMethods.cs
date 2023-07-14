@@ -17,9 +17,9 @@ namespace ZFramework
         public static ATask SwitchToThreadPool() => default;
         public static ATask SwitchToMainThread() => default;
 
-        public static IEnumerator ToIEnumerator() => default;//�첽תIEnumerator
-        public static ATask ToATask(IEnumerator enumerator) => default;//IEnumeratorת�첽
-        public static ATask ToATask(Task task) => default;//TaskתATask
+        public static IEnumerator ToIEnumerator() => default;//异步转IEnumerator
+        public static ATask ToATask(IEnumerator enumerator) => default;//IEnumerator转异步
+        public static ATask ToATask(Task task) => default;//Task转ATask
 
         static async ATask DD() => await Task.Delay(2000);
 
