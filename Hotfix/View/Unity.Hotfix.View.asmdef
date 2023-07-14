@@ -8,7 +8,8 @@
         "Unity.Hotfix.Data",
         "Unity.Hotfix.Func",
         "Unity.TextMeshPro",
-        "Unity.RenderPipelines.Universal.Runtime"
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.XR.Management",
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -22,6 +23,11 @@
             "name": "com.unity.render-pipelines.universal",
             "expression": "",
             "define": "ENABLE_URP"
+        },
+        {
+            "name": "com.unity.xr.management",
+            "expression": "",
+            "define": "ENABLE_XR"
         }
     ],
     "noEngineReferences": false
