@@ -3,40 +3,40 @@ using System;
 namespace ZFramework
 {
     /// <summary>
-    /// ÎÞ·µ»ØµÄÈÎÎñÔ´
+    /// æ— è¿”å›žçš„ä»»åŠ¡æº
     /// </summary>
-    public interface ITaskCompletionSource //´ÓÓÐ·µ»ØµÄÔ´³éÏó³öÀ´  ÎªÁËÈÃÓÐ·µ»ØµÄÔ´¿ÉÒÔÒþÊ½×ª»»µ½ÎÞ·µ»ØÔ´, µ«·´¹ýÀ´²»ÐÐ
+    public interface ITaskCompletionSource //ä»Žæœ‰è¿”å›žçš„æºæŠ½è±¡å‡ºæ¥  ä¸ºäº†è®©æœ‰è¿”å›žçš„æºå¯ä»¥éšå¼è½¬æ¢åˆ°æ— è¿”å›žæº, ä½†åè¿‡æ¥ä¸è¡Œ
     {
         ushort Ver { get; set; }
         //void Recycle();
         Exception GetException();
 
         /// <summary>
-        /// ¿ÉÄÜ»á±»¶à´Îµ÷ÓÃ  ÊµÏÖÊ±ÒªÈ·±£½öÄÜÖ´ÐÐÒ»´Î
+        /// å¯èƒ½ä¼šè¢«å¤šæ¬¡è°ƒç”¨  å®žçŽ°æ—¶è¦ç¡®ä¿ä»…èƒ½æ‰§è¡Œä¸€æ¬¡
         /// </summary>
         void TryStart();
         /// <summary>
-        /// ÓÃÓÚ×¢²á±¾ÈÎÎñÍê³ÉºóµÄ»Øµ÷ continuation == ¸¸ÈÎÎñµÄMoveNext  ´æÔÚ·Ö²¼µÈ´ýµÄÇé¿ö   Ò»¸öÈÎÎñ¿ÉÄÜÓÐ¶à¸ö¸¸ ÓÃ+=?
+        /// ç”¨äºŽæ³¨å†Œæœ¬ä»»åŠ¡å®ŒæˆåŽçš„å›žè°ƒ continuation == çˆ¶ä»»åŠ¡çš„MoveNext  å­˜åœ¨åˆ†å¸ƒç­‰å¾…çš„æƒ…å†µ   ä¸€ä¸ªä»»åŠ¡å¯èƒ½æœ‰å¤šä¸ªçˆ¶ ç”¨+=?
         /// </summary>
         void OnCompleted(Action continuation);
         TaskProcessStatus GetStatus();
         /// <summary>
-        /// µ÷ÓÃ·½ÊÇ¸¸ÈÎÎñ  ±¾ÈÎÎñÍê³É»áCall¸¸ÈÎÎñMoveNext   ¸¸ÈÎÎñµÄMoveNext·´¹ýÀ´Call this.GetResult Ò²¿ÉÄÜ±»ÊÖ¶¯ÖØ¸´µ÷ÓÃ
+        /// è°ƒç”¨æ–¹æ˜¯çˆ¶ä»»åŠ¡  æœ¬ä»»åŠ¡å®Œæˆä¼šCallçˆ¶ä»»åŠ¡MoveNext   çˆ¶ä»»åŠ¡çš„MoveNextåè¿‡æ¥Call this.GetResult ä¹Ÿå¯èƒ½è¢«æ‰‹åŠ¨é‡å¤è°ƒç”¨
         /// </summary>
         void GetResultWithNotReturn();
         /// <summary>
-        /// Í¨¹ýÒì³£Ç¿ÖÆÍê³É±¾ÈÎÎñ
+        /// é€šè¿‡å¼‚å¸¸å¼ºåˆ¶å®Œæˆæœ¬ä»»åŠ¡
         /// </summary>
         void Break(Exception exception);
     }
 
     /// <summary>
-    /// ÓÐ·µ»ØµÄÈÎÎñÔ´
+    /// æœ‰è¿”å›žçš„ä»»åŠ¡æº
     /// </summary>
     public interface ITaskCompletionSource<TResult> : ITaskCompletionSource
     {
         /// <summary>
-        /// µ÷ÓÃ·½ÊÇ¸¸ÈÎÎñ  ±¾ÈÎÎñÍê³É»áCall¸¸ÈÎÎñMoveNext   ¸¸ÈÎÎñµÄMoveNext·´¹ýÀ´Call this.GetResult
+        /// è°ƒç”¨æ–¹æ˜¯çˆ¶ä»»åŠ¡  æœ¬ä»»åŠ¡å®Œæˆä¼šCallçˆ¶ä»»åŠ¡MoveNext   çˆ¶ä»»åŠ¡çš„MoveNextåè¿‡æ¥Call this.GetResult
         /// </summary>
         TResult GetResult();
     }

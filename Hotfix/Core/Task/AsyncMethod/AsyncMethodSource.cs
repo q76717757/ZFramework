@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace ZFramework
 {
-    //×´Ì¬»ú´úÀí  ÕâÊÇ±È½ÏÌØÊâµÄÒ»ÀàÈÎÎñÔ´  ÄÜ¹»±»±àÒëÆ÷±àÒë³É×´Ì¬»ú  ¸ºÔğÏÎ½Ó¶à¸öÈÎÎñµ¥Ôª  Í¬Ê±Ëû×Ô¼ºÒ²¿ÉÒÔ×÷Îª×ÓÈÎÎñÔ´
+    //çŠ¶æ€æœºä»£ç†  è¿™æ˜¯æ¯”è¾ƒç‰¹æ®Šçš„ä¸€ç±»ä»»åŠ¡æº  èƒ½å¤Ÿè¢«ç¼–è¯‘å™¨ç¼–è¯‘æˆçŠ¶æ€æœº  è´Ÿè´£è¡”æ¥å¤šä¸ªä»»åŠ¡å•å…ƒ  åŒæ—¶ä»–è‡ªå·±ä¹Ÿå¯ä»¥ä½œä¸ºå­ä»»åŠ¡æº
     internal class AsyncMethodSource<TResult> : IAsyncMethodRunner<TResult>
     {
         ATask<TResult> task;
@@ -26,7 +26,7 @@ namespace ZFramework
         }
         void ITaskCompletionSource.OnCompleted(Action continuation)
         {
-            this.continuation += continuation; //¶àÈÎÎñµÈÒ»¸öÈÎÎñ ??  Õâ¸öÈÎÎñÍê³É´¥·¢¶à¸ö»Øµ÷
+            this.continuation += continuation; //å¤šä»»åŠ¡ç­‰ä¸€ä¸ªä»»åŠ¡ ??  è¿™ä¸ªä»»åŠ¡å®Œæˆè§¦å‘å¤šä¸ªå›è°ƒ
         }
         TaskProcessStatus ITaskCompletionSource.GetStatus()
         {
@@ -36,7 +36,7 @@ namespace ZFramework
         {
             if (ex != null)
             {
-                //ÕâÀïÅ×Òì³£ ÉÏ¼¶ÈÎÎñ¾Í»á²¶»ñµ½
+                //è¿™é‡ŒæŠ›å¼‚å¸¸ ä¸Šçº§ä»»åŠ¡å°±ä¼šæ•è·åˆ°
                 throw ex;
             }
             return result;
@@ -47,14 +47,14 @@ namespace ZFramework
             ex = exception;
             state = TaskProcessStatus.Completion;
 
-            //ÌáÇ°Íê³ÉÈÎÎñ..... 
+            //æå‰å®Œæˆä»»åŠ¡..... 
 
             var temp =  this.continuation;
             continuation = null;
             temp?.Invoke();
 
-            //ÉÏÃæÊÇ±¾»úÈÎÎñÌáÇ°Íê³É  Å×Æú½á¹û
-            //ÔõÃ´´«µİ¸ø×ÓÈÎÎñ ÈÃ×ÓÈÎÎñÅ×Òì³£??
+            //ä¸Šé¢æ˜¯æœ¬æœºä»»åŠ¡æå‰å®Œæˆ  æŠ›å¼ƒç»“æœ
+            //æ€ä¹ˆä¼ é€’ç»™å­ä»»åŠ¡ è®©å­ä»»åŠ¡æŠ›å¼‚å¸¸??
             //childRunner.Break(exception);
         }
 
@@ -68,20 +68,20 @@ namespace ZFramework
         }
         void IAsyncMethodRunner<TResult>.MoveNext()
         {
-            //Ôö¼ÓÒ»Ğ©²½Öè ÅĞ¶Ïµ½µ××´Ì¬»úÒª²»ÒªÍùÏÂ×ß È¡ÏûµÄÊ±ºòÊÇ²»ÍùÏÂ×ßµÄ
+            //å¢åŠ ä¸€äº›æ­¥éª¤ åˆ¤æ–­åˆ°åº•çŠ¶æ€æœºè¦ä¸è¦å¾€ä¸‹èµ° å–æ¶ˆçš„æ—¶å€™æ˜¯ä¸å¾€ä¸‹èµ°çš„
             if (ex != null)
             {
                 if (ex is OperationCanceledException)
                 {
-                    Log.Error("±¾ÈÎÎñ±»È¡Ïû,·ÅÆú·µ»ØÖµ²¢Í£Ö¹×´Ì¬»ú"); //Ö±½Ó»ØÊÕÔ´  ²»¿É¿ØµÄÔ´(Êµ¼ÊÉÏ²»ÄÜÈ¡ÏûµÄÔ´)  ·µ»ØµÄ½á¹ûÖ±½Ó·ÅÆú ÖÕÖ¹×´Ì¬»ú
+                    Log.Error("æœ¬ä»»åŠ¡è¢«å–æ¶ˆ,æ”¾å¼ƒè¿”å›å€¼å¹¶åœæ­¢çŠ¶æ€æœº"); //ç›´æ¥å›æ”¶æº  ä¸å¯æ§çš„æº(å®é™…ä¸Šä¸èƒ½å–æ¶ˆçš„æº)  è¿”å›çš„ç»“æœç›´æ¥æ”¾å¼ƒ ç»ˆæ­¢çŠ¶æ€æœº
                     return;
                 }
                 if (ex is TimeoutException)
                 {
-                    Log.Error("±¾ÈÎÎñ³¬Ê±,·ÅÆú·µ»ØÖµ²¢Í£Ö¹×´Ì¬»ú");
+                    Log.Error("æœ¬ä»»åŠ¡è¶…æ—¶,æ”¾å¼ƒè¿”å›å€¼å¹¶åœæ­¢çŠ¶æ€æœº");
                     return;
                 }
-                Log.Info("ÖĞ¶Ï×´Ì¬»ú" + ex);
+                Log.Info("ä¸­æ–­çŠ¶æ€æœº" + ex);
             }
             else
             {
@@ -90,29 +90,29 @@ namespace ZFramework
         }
         void IAsyncMethodRunner<TResult>.SetException(Exception exception)
         {
-            //ÕâÊÇ±¾¼¶²¶»ñµ½µÄÒì³£ Èç¹ûÕâÀï save ex ÉÏ¼¶Get¾Í»áÄÃµ½ ²¢²»»á×ßÏÂ¼¶×´Ì¬»ú
+            //è¿™æ˜¯æœ¬çº§æ•è·åˆ°çš„å¼‚å¸¸ å¦‚æœè¿™é‡Œ save ex ä¸Šçº§Getå°±ä¼šæ‹¿åˆ° å¹¶ä¸ä¼šèµ°ä¸‹çº§çŠ¶æ€æœº
             ex = exception;
-            if (ex is CanceledException)//È¡ÏûÒì³£
+            if (ex is CanceledException)//å–æ¶ˆå¼‚å¸¸
             {
-                Log.Error("È¡ÏûÒì³£");
+                Log.Error("å–æ¶ˆå¼‚å¸¸");
                 return;
             }
-            if (ex is TimeoutException)//³¬Ê±Òì³£
+            if (ex is TimeoutException)//è¶…æ—¶å¼‚å¸¸
             {
-                Log.Error("³¬Ê±Òì³£");
+                Log.Error("è¶…æ—¶å¼‚å¸¸");
                 return;
             }
 
-            //ÆäËûÒì³£....
-            Log.Error("ÆäËûÒì³£" + exception);
+            //å…¶ä»–å¼‚å¸¸....
+            Log.Error("å…¶ä»–å¼‚å¸¸" + exception);
             throw ex;
         }
-        void IAsyncMethodRunner<TResult>.SetResult(TResult result)// ×´Ì¬»ú×îºóÒ»ÌõÖ´ĞĞµÄ·½·¨ try catchÃ»ÓĞ²¶»ñµ½Òì³£  ²Å»á×ßÕâ¸ö 
+        void IAsyncMethodRunner<TResult>.SetResult(TResult result)// çŠ¶æ€æœºæœ€åä¸€æ¡æ‰§è¡Œçš„æ–¹æ³• try catchæ²¡æœ‰æ•è·åˆ°å¼‚å¸¸  æ‰ä¼šèµ°è¿™ä¸ª 
         {
             this.result = result;
             state = TaskProcessStatus.Completion;
 
-            var continuation = this.continuation; //¸¸ÈÎÎñµÄMoveNext
+            var continuation = this.continuation; //çˆ¶ä»»åŠ¡çš„MoveNext
             this.continuation = null;
             continuation?.Invoke();
         }
