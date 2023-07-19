@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEditor.PackageManager;
 
 #if ENABLE_HYBRIDCLR
 using HybridCLR.Editor;
@@ -25,7 +26,10 @@ namespace ZFramework.Editor
             updateType = RuntimeSettings.FindProperty("updateType");
             assemblyNames = RuntimeSettings.FindProperty("assemblyNames");
             aotMetaAssemblyNames = RuntimeSettings.FindProperty("aotMetaAssemblyNames");
+
+            list = Client.List();
         }
+        UnityEditor.PackageManager.Requests.ListRequest list;
         public override void OnDisable()
         {
             updateType.Dispose();
@@ -130,9 +134,19 @@ namespace ZFramework.Editor
             EditorGUILayout.LabelField("URL:", GUILayout.Width(50));
             EditorGUILayout.TextField("git@gitee.com:focus-creative-games/hybridclr_unity.git");
             EditorGUILayout.EndHorizontal();
+
+            if (GUILayout.Button("从git安装"))
+            {
+                a =  Client.Add("git@gitee.com:focus-creative-games/hybridclr_unity.git");
+            }
+            if (a != null)
+            {
+                EditorGUILayout.LabelField(a.Status.ToString());
+            }
             return false;
 #endif
         }
+        UnityEditor.PackageManager.Requests.AddRequest a;
 
 #if ENABLE_HYBRIDCLR
 
