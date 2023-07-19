@@ -99,57 +99,58 @@ namespace ZFramework.Editor
 
         private Encoding GetFileEncoding(string filePath)
         {
-            Encoding output;
-
-            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            byte[] buffer = new byte[4];
-            fs.Read(buffer, 0, 4);
-
-            //带bom
-            //UTF8    --> EF BB BF
-            //UTF16LE --> FF FE
-            //UTF16BE --> FE FF
-            //UTF32LE --> FF FE 00 00
-            //UTF32BE --> 00 00 FE FF
-            if (buffer[0] >= 0xEF)
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
+                Encoding output;
+                byte[] buffer = new byte[4];
+                fs.Read(buffer, 0, 4);
+
+                //带bom
+                //UTF8    --> EF BB BF
+                //UTF16LE --> FF FE
+                //UTF16BE --> FE FF
+                //UTF32LE --> FF FE 00 00
+                //UTF32BE --> 00 00 FE FF
+                if (buffer[0] >= 0xEF)
                 {
-                    output = Encoding.UTF8;
+                    if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
+                    {
+                        output = Encoding.UTF8;
+                    }
+                    else if (buffer[0] == 0xFE && buffer[1] == 0xFF)
+                    {
+                        output = Encoding.BigEndianUnicode;
+                    }
+                    else if (buffer[0] == 0xFF && buffer[1] == 0xFE)
+                    {
+                        output = Encoding.Unicode;
+                    }
+                    else
+                    {
+                        output = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage);
+                    }
+                    //
                 }
-                else if (buffer[0] == 0xFE && buffer[1] == 0xFF)
+                else//不带bom
                 {
-                    output = Encoding.BigEndianUnicode;
+                    fs.Position = 0;
+                    if (IsUTF8Bytes(fs))//UTF8
+                    {
+                        output = Encoding.UTF8;
+                    }
+                    else//ANSI
+                    {
+                        output = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage);
+                    }
                 }
-                else if (buffer[0] == 0xFF && buffer[1] == 0xFE)
-                {
-                    output = Encoding.Unicode;
-                }
-                else
-                {
-                    output = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage);
-                }
+                return output;
             }
-            else//不带bom
-            {
-                fs.Position = 0;
-                if (IsUTF8Bytes(fs))//UTF8
-                {
-                    output = Encoding.UTF8;
-                }
-                else//ANSI
-                {
-                    output = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage);
-                }
-            }
-            fs.Close();
-            return output;
         }
 
         private bool IsUTF8Bytes(FileStream stream)
         {
             //UTF8编码规则
-            //1字节 0xxxxxxx   
+            //1字节 0xxxxxxx
             //2字节 110xxxxx 10xxxxxx
             //3字节 1110xxxx 10xxxxxx 10xxxxxx
             //4字节 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
@@ -171,9 +172,8 @@ namespace ZFramework.Editor
                     cnt++;
                     b <<= 1;
                 }
-                cnt -= 1;//减去首字节  得到后续字节的个数
 
-                for (int i = 0; i < cnt; i++)
+                for (int i = 1; i < cnt; i++)//除首字节外的后续字节
                 {
                     if (stream.Read(bytes, 0, 1) <= 0)//后续字节不够 不满足UTF8编码
                         return false;
