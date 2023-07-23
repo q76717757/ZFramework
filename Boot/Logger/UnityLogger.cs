@@ -4,21 +4,25 @@ namespace ZFramework
 {
     public class UnityLogger : ILog
     {
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoadMethod]
+#else
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-        public static void Initialize()
+#endif
+        static void Initialize()
         {
             Log.ILog = new UnityLogger();
         }
 
-        public void Info(object obj)
+        void ILog.Info(object obj)
         {
             Debug.Log(obj);
         }
-        public void Warning(object obj)
+        void ILog.Warning(object obj)
         {
             Debug.LogWarning(obj);
         }
-        public void Error(object obj)
+        void ILog.Error(object obj)
         {
             Debug.LogError(obj);
         }
