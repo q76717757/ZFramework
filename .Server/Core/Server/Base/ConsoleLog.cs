@@ -2,7 +2,7 @@
 
 namespace ZFramework
 {
-    public class ConsoleLog : ILog
+    public class ConsoleLog : ILogger
     {
         public void Info(object obj)
         {

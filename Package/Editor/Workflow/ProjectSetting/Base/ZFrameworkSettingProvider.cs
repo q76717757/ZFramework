@@ -16,7 +16,7 @@ namespace ZFramework.Editor
         Vector2 pos;
         public override void OnGUI(string searchContext)
         {
-            if (ZFrameworkRuntimeSettingsEditor.CheckExistsAndDrawCreateBtnIfNull())
+            if (BootConfig.IsExists)
             {
                 var readme = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/ZFramework/README.md");
                 if (readme == null) return;

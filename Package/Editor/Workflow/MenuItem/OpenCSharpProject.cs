@@ -18,7 +18,7 @@ namespace ZFramework.Editor
             }
             else
             {
-                EditorUtility.DisplayDialog("Open C# Project","文件路径错误,请确认框架目录在Assets/ZFramework","OK");
+                EditorUtility.DisplayDialog("Open C# Project","鏂囦欢璺緞閿欒,璇风‘璁ゆ鏋剁洰褰曞湪Assets/ZFramework","OK");
             }
         }
 

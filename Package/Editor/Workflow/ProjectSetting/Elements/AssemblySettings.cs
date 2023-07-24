@@ -17,32 +17,12 @@ namespace ZFramework.Editor
     {
         [SettingsProvider] public static SettingsProvider Register() => GetInstance();
 
-        SerializedProperty updateType;
-        SerializedProperty assemblyNames;
-        SerializedProperty aotMetaAssemblyNames;
-
-        public override void OnEnable()
-        {
-            updateType = RuntimeSettings.FindProperty("updateType");
-            assemblyNames = RuntimeSettings.FindProperty("assemblyNames");
-            aotMetaAssemblyNames = RuntimeSettings.FindProperty("aotMetaAssemblyNames");
-
-            list = Client.List();
-        }
-        UnityEditor.PackageManager.Requests.ListRequest list;
-        public override void OnDisable()
-        {
-            updateType.Dispose();
-            assemblyNames.Dispose();
-            aotMetaAssemblyNames.Dispose();
-        }
-
         public override void OnGUI()
         {
             EditorGUILayout.LabelField("代码热更新方案: HybridCLR", EditorStyles.boldLabel);
-            if (GUILayout.Button("官方文档:https://focus-creative-games.github.io/hybridclr/"))
+            if (GUILayout.Button("官方文档:https://hybridclr.doc.code-philosophy.com/docs/intro"))
             {
-                Application.OpenURL("https://focus-creative-games.github.io/hybridclr/");
+                Application.OpenURL("https://hybridclr.doc.code-philosophy.com/docs/intro");
             }
             EditorGUILayout.Space();
 
@@ -61,11 +41,7 @@ namespace ZFramework.Editor
                     Local();
                     break;
             }
-
-            if (RuntimeSettings.ApplyModifiedProperties())
-            {
-                AssetDatabase.SaveAssets();
-            }
+            BootConfig.Instance.SaveIfDirty();
         }
         Defines.UpdateType EnumPopup()
         {
@@ -77,10 +53,10 @@ namespace ZFramework.Editor
             };
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("热更新模式:", EditorStyles.boldLabel, GUILayout.Width(100));
-            updateType.enumValueIndex = EditorGUILayout.Popup(updateType.enumValueIndex, displayNames);
+            //updateType.enumValueIndex = EditorGUILayout.Popup(updateType.enumValueIndex, displayNames);
             EditorGUILayout.EndHorizontal();
 
-            return (Defines.UpdateType)updateType.enumValueIndex;
+            return BootConfig.Instance.AssemblyLoadType;
         }
         void Info(string info)
         {
@@ -96,10 +72,10 @@ namespace ZFramework.Editor
                 return;
             }
 #endif
-            DrawAssembly(assemblyNames);
+            DrawAssembly(BootConfig.Instance.AssemblyNames);
             if (GUILayout.Button("重置到默认"))
             {
-                ResetAssembly(assemblyNames, Defines.DefaultAssemblyNames);
+                ResetAssembly(Defines.DefaultAssemblyNames);
             }
         }
         void Remote()
@@ -146,7 +122,6 @@ namespace ZFramework.Editor
             return false;
 #endif
         }
-        UnityEditor.PackageManager.Requests.AddRequest a;
 
 #if ENABLE_HYBRIDCLR
 
@@ -198,7 +173,7 @@ namespace ZFramework.Editor
         bool CheckTargetPlatfrom()
         {
             var target = Defines.TargetRuntimePlatform;
-            var select = (Defines.UpdateType)updateType.enumValueIndex;
+            var select = BootConfig.Instance.AssemblyLoadType;
             switch (select)
             {
                 case Defines.UpdateType.Online:
@@ -212,7 +187,7 @@ namespace ZFramework.Editor
                         EditorGUILayout.HelpBox("目标平台不支持在线更新模式,默认只支持Windows/Android/iOS", MessageType.Error);
                         if (GUILayout.Button("关闭热更新功能"))
                         {
-                            updateType.enumValueIndex = (int)Defines.UpdateType.Not;
+                            //updateType.enumValueIndex = (int)Defines.UpdateType.Not;
                             SettingsUtil.Enable = false;
                         }
                     }
@@ -228,7 +203,7 @@ namespace ZFramework.Editor
                         EditorGUILayout.HelpBox("目标平台不支持离线更新,默认只支持Windows", MessageType.Error);
                         if (GUILayout.Button("关闭热更新功能"))
                         {
-                            updateType.enumValueIndex = (int)Defines.UpdateType.Not;
+                            //updateType.enumValueIndex = (int)Defines.UpdateType.Not;
                             SettingsUtil.Enable = false;
                         }
                     }
@@ -298,23 +273,23 @@ namespace ZFramework.Editor
         }
         void CheckAssemblySetting()
         {
-            DrawAssembly(assemblyNames);
+            DrawAssembly(BootConfig.Instance.AssemblyNames);
             CheckAssemblyConsistency();
-            DrawAssembly(aotMetaAssemblyNames);
+            DrawAssembly(BootConfig.Instance.AotMetaAssemblyNames);
 
             EditorGUILayout.Space();
             if (GUILayout.Button("重置到默认"))
             {
-                ResetAssembly(assemblyNames, Defines.DefaultAssemblyNames);
-                ResetAssembly(aotMetaAssemblyNames, Defines.DefaultAOTMetaAssemblyNames);
+                ResetAssembly(Defines.DefaultAssemblyNames);
+                ResetAssembly(Defines.DefaultAOTMetaAssemblyNames);
             }
         }
         void CheckAssemblyConsistency()
         {
-            string[] assemblyNameValues = new string[assemblyNames.arraySize];
+            string[] assemblyNameValues = BootConfig.Instance.AssemblyNames;
             for (int i = 0; i < assemblyNameValues.Length; i++)
             {
-                assemblyNameValues[i] = assemblyNames.GetArrayElementAtIndex(i).stringValue;
+                assemblyNameValues[i] = BootConfig.Instance.AssemblyNames[i];
             }
             List<string> clr = new List<string>();
             if (HybridCLRSettings.Instance.hotUpdateAssemblies != null)
@@ -339,23 +314,21 @@ namespace ZFramework.Editor
         }
 #endif
 
-        void DrawAssembly(SerializedProperty assembly)
+        void DrawAssembly(string[] assemblyNames)
         {
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(assembly);
-            if (EditorGUI.EndChangeCheck())
+            for (int i = 0; i < assemblyNames.Length; i++)
             {
-                AssetDatabase.SaveAssets();
+                EditorGUILayout.LabelField(assemblyNames[i]);
             }
+            EditorGUILayout.HelpBox("画一下数组,暂未实现", MessageType.Error);
         }
-        void ResetAssembly(SerializedProperty assembly, string[] defVals)
+        void ResetAssembly(string[] defVals)
         {
-            assembly.ClearArray();
-            for (int i = 0; i < defVals.Length; i++)
-            {
-                assembly.InsertArrayElementAtIndex(i);
-                assembly.GetArrayElementAtIndex(i).stringValue = defVals[i];
-            }
+            //for (int i = 0; i < defVals.Length; i++)
+            //{
+            //    assembly.InsertArrayElementAtIndex(i);
+            //    assembly.GetArrayElementAtIndex(i).stringValue = defVals[i];
+            //}
         }
         bool ComparisonArray(IEnumerable<string> item1, IEnumerable<string> item2)
         {

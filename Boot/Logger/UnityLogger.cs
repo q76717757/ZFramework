@@ -2,23 +2,27 @@ using UnityEngine;
 
 namespace ZFramework
 {
-    public class UnityLogger : ILog
+    public class UnityLogger : ILogger
     {
+#if UNITY_EDITOR
+        [UnityEditor.InitializeOnLoadMethod]
+#else
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-        public static void Initialize()
+#endif
+        static void Initialize()
         {
             Log.ILog = new UnityLogger();
         }
 
-        public void Info(object obj)
+        void ILogger.Info(object obj)
         {
             Debug.Log(obj);
         }
-        public void Warning(object obj)
+        void ILogger.Warning(object obj)
         {
             Debug.LogWarning(obj);
         }
-        public void Error(object obj)
+        void ILogger.Error(object obj)
         {
             Debug.LogError(obj);
         }
