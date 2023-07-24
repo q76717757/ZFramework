@@ -6,7 +6,7 @@ namespace ZFramework
 {
     public static class Log
     {
-        public static ILog ILog { get; set; }
+        public static ILogger ILog { get; set; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Info(object obj)

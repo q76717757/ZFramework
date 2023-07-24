@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ZFramework
 {
-    public class UnityLogger : ILog
+    public class UnityLogger : ILogger
     {
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoadMethod]
@@ -14,15 +14,15 @@ namespace ZFramework
             Log.ILog = new UnityLogger();
         }
 
-        void ILog.Info(object obj)
+        void ILogger.Info(object obj)
         {
             Debug.Log(obj);
         }
-        void ILog.Warning(object obj)
+        void ILogger.Warning(object obj)
         {
             Debug.LogWarning(obj);
         }
-        void ILog.Error(object obj)
+        void ILogger.Error(object obj)
         {
             Debug.LogError(obj);
         }

@@ -1,7 +1,7 @@
 
 namespace ZFramework
 {
-    public interface ILog
+    public interface ILogger
     {
         void Info(object obj);
         void Warning(object obj);
