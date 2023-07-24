@@ -11,12 +11,17 @@ namespace ZFramework.Editor
         public override void OnInspectorGUI()
         {
             DrawBanner();
-            if (ZFrameworkRuntimeSettingsEditor.CheckExistsAndDrawCreateBtnIfNull())
+            if (!BootConfig.IsExists)
+            {
+                if (GUILayout.Button("Create BootConfig"))
+                {
+                    BootConfig.Create();
+                }
+            }
+            else
             {
                 DrawProjectSettings();
             }
-
-            base.OnInspectorGUI();
         }
 
         void DrawBanner()
@@ -37,13 +42,11 @@ namespace ZFramework.Editor
         }
     }
 
-    
-
-
 #if UNITY_2020_3_OR_NEWER
     [InitializeOnLoad]
     public class BootStrapHierarchyColor
     {
+        static GUIStyle style;
         static BootStrapHierarchyColor()
         {
             EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemOnGUI;
@@ -54,19 +57,22 @@ namespace ZFramework.Editor
             {   
                 if (obj.TryGetComponent<BootStrap>(out _))
                 {
-                    var Style = new GUIStyle()
+                    if (style == null)
                     {
-                        padding =
+                        style = new GUIStyle()
                         {
-                            left = EditorStyles.label.padding.left + 17,
-                            top = EditorStyles.label.padding.top
-                        },
-                        normal =
-                        {
-                             textColor = ZFrameworkRuntimeSettings.Get() != null? Color.green :Color.red,
-                        }
-                    };
-                    GUI.Label(selectionRect, obj.name, Style);
+                            padding =
+                            {
+                                left = EditorStyles.label.padding.left + 17,
+                                top = EditorStyles.label.padding.top
+                            },
+                            normal =
+                            {
+                                textColor = BootConfig.IsExists? Color.green:Color.red,
+                            }
+                        };
+                    }
+                    GUI.Label(selectionRect, obj.name, style);
                 }
             }
         }

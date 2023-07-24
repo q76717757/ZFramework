@@ -16,22 +16,12 @@ namespace ZFramework.Editor
         private bool enableIsCalled;
         private SerializedObject _runtimeSettings;
         private SerializedObject _editorSettings;
-        protected SerializedObject RuntimeSettings
-        {
-            get
-            {
-                if (_runtimeSettings == null && ZFrameworkRuntimeSettings.Get() != null)
-                {
-                    _runtimeSettings = new SerializedObject(ZFrameworkRuntimeSettings.Get());
-                }
-                return _runtimeSettings;
-            }
-        }
+
         protected SerializedObject EdtiorSettings
         {
             get
             {
-                if (_editorSettings == null || _editorSettings.targetObject == null)//在打包的时候targetObject报空引用
+                if (_editorSettings == null || _editorSettings.targetObject == null)//鍦ㄦ墦鍖呯殑鏃跺�檛argetObject鎶ョ┖寮曠敤
                 {
                     _editorSettings?.Dispose();
                     _editorSettings = new SerializedObject(ZFrameworkEditorSettings.instance);
@@ -42,7 +32,7 @@ namespace ZFramework.Editor
 
         public sealed override void OnGUI(string searchContext)
         {
-            if (ZFrameworkRuntimeSettingsEditor.CheckExistsAndDrawCreateBtnIfNull())
+            if (BootConfig.IsExists)
             {
                 if (!enableIsCalled)
                 {
@@ -50,6 +40,13 @@ namespace ZFramework.Editor
                     OnEnable();
                 }
                 OnGUI();
+            }
+            else
+            {
+                if (GUILayout.Button("Create BootConfig"))
+                {
+                    BootConfig.Create();
+                }
             }
         }
         public sealed override void OnActivate(string searchContext, VisualElement rootElement)
