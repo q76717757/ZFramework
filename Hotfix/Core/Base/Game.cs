@@ -12,10 +12,6 @@ namespace ZFramework
         private static VirtualProcess[] virtualProcesses;
 
         private Game() { }//封闭构造
-#if !SERVER
-        [UnityEngine.Scripting.Preserve]
-#endif
-        static IGameInstance CreateInstance() => new Game();
 
         void Load(Type[] allTypes)
         {
@@ -67,11 +63,11 @@ namespace ZFramework
             return IdGenerater.GenerateInstanceId();
         }
 
+
         internal static SingleComponent<T> AddSingleComponent<T>() where T : SingleComponent<T>
         {
             return virtualProcesses[0].Root.AddComponent<T>();
         }
-
         internal static void CallEnable(Component component) => GameLoopSystem.CallEnable(component);
         internal static void CallDisable(Component component) => GameLoopSystem.CallDisable(component);
     }
