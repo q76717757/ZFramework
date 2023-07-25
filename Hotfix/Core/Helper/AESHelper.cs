@@ -11,7 +11,7 @@ namespace ZFramework
     /// <summary>
     /// AES加解密算法
     /// </summary>
-    public class AESHelper : MonoBehaviour
+    public class AESHelper
     {
         /// <summary>
         /// AES加密
