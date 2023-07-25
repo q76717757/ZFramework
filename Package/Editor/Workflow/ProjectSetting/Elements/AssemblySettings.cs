@@ -111,6 +111,7 @@ namespace ZFramework.Editor
             EditorGUILayout.TextField("git@gitee.com:focus-creative-games/hybridclr_unity.git");
             EditorGUILayout.EndHorizontal();
 
+            UnityEditor.PackageManager.Requests.AddRequest a = null;
             if (GUILayout.Button("从git安装"))
             {
                 a =  Client.Add("git@gitee.com:focus-creative-games/hybridclr_unity.git");
