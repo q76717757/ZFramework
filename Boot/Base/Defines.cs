@@ -43,10 +43,7 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 目标平台
-        /// </summary>
-        /// <summary>
-        /// 默认热更程序集
+        /// 目标运行时平台
         /// </summary>
         public static PlatformType TargetRuntimePlatform
         {
@@ -99,13 +96,13 @@ namespace ZFramework
         };
 
         /// <summary>
-        /// 随包资产的路径  ./StreamingAssets/ZFramework/Platform/
+        /// 随包资产的路径  ./StreamingAssets/ZFramework/{Platform}/
         /// </summary>
         public static string BuildInAssetAPath
         {
             get
             {
-                return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "ZFramework", TargetRuntimePlatform.ToString())).FullName;
+                return GetBuildInAssetsAPath(TargetRuntimePlatform);
             }
         }
 
@@ -127,23 +124,37 @@ namespace ZFramework
         {
             get
             {
-#if UNITY_EDITOR
-                DirectoryInfo directory = new DirectoryInfo(Path.Combine(Application.dataPath,"..", TargetRuntimePlatform.ToString(),"Bundles"));
-#else
-                DirectoryInfo directory;
-                if ((TargetRuntimePlatform & PlatformType.OfflineSupported) == TargetRuntimePlatform)
-                {
-                    //离线模式仅针对winpc 资产放在安装目录 让用户自己可以替换资产进行更新和修复
-                    directory = new DirectoryInfo(Application.dataPath + @"\..\Bundles\" + TargetRuntimePlatform.ToString());
-                }
-                else
-                {
-                    directory = new DirectoryInfo(Application.persistentDataPath + @"\Bundles\" + TargetRuntimePlatform.ToString());
-                }
-#endif
-                return directory.FullName;
+                return GetPresistenceDataAPath(TargetRuntimePlatform);
             }
         }
 
+
+        /// <summary>
+        /// 获取指定平台下的随包资源的存放路径
+        /// </summary>
+        /// <param name="platform">目标运行时平台</param>
+        /// <returns>返回../StreamingAssets/..绝对路径</returns>
+        public static string GetBuildInAssetsAPath(PlatformType platform)
+        { 
+            return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "ZFramework", platform.ToString())).FullName;
+        }
+        public static string GetPresistenceDataAPath(PlatformType platform)
+        {
+#if !UNITY_EDITOR
+            DirectoryInfo directory = new DirectoryInfo(Path.Combine(Application.dataPath, "..", platform.ToString(), "Bundles"));
+#else
+                DirectoryInfo directory;
+                if ((platform & PlatformType.OfflineSupported) == platform)
+                {
+                    //离线模式仅针对winpc 资产放在安装目录 让用户自己可以替换资产进行更新和修复
+                    directory = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "ZFramework", platform.ToString()));
+                }
+                else
+                {
+                    directory = new DirectoryInfo(Path.Combine(Application.persistentDataPath, @"ZFramework", platform.ToString()));
+                }
+#endif
+            return directory.FullName;
+        }
     }
 }
