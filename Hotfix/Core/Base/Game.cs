@@ -13,17 +13,14 @@ namespace ZFramework
 
         private Game() { }//封闭构造
 
-        void Load(Type[] allTypes)
+        //GameLoop
+        void IGameInstance.Init(Type[] allTypes)
         {
             AttributeMap.Load(allTypes);
             GameLoopSystem.Load(GetTypesByAttribute<GameLoopAttribute>());
         }
-
-        //GameLoop
-        void IGameInstance.Init(Type[] allTypes)
+        void IGameInstance.Start()
         {
-            Load(allTypes);
-
             virtualProcesses = VirtualProcess.Load(GetTypesByAttribute<ProcessType>());
             foreach (var vp in virtualProcesses)
             {
@@ -32,8 +29,7 @@ namespace ZFramework
         }
         void IGameInstance.Reload(Type[] allTypes) 
         {
-            Load(allTypes);
-            //入口限定了调用时机 必然在帧间隔中
+            (this as IGameInstance).Init(allTypes);
             GameLoopSystem.Reload();
         }
         void IGameInstance.Update()
@@ -68,7 +64,13 @@ namespace ZFramework
         {
             return virtualProcesses[0].Root.AddComponent<T>();
         }
-        internal static void CallEnable(Component component) => GameLoopSystem.CallEnable(component);
-        internal static void CallDisable(Component component) => GameLoopSystem.CallDisable(component);
+        internal static void CallEnable(Component component)
+        {
+            GameLoopSystem.CallEnable(component);
+        }
+        internal static void CallDisable(Component component)
+        {
+            GameLoopSystem.CallDisable(component);
+        }
     }
 }

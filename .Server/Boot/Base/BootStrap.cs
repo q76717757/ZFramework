@@ -32,6 +32,7 @@ namespace ZFramework
                     .Invoke(null, Array.Empty<object>()) as IGameInstance;
                 game.Init(types.ToArray());
 
+                game.Start();
                 Log.Info("=================Success=================");
 
                 ReadLine().Invoke();//给守护组件 其他组件不用提供命令行控制
@@ -40,7 +41,7 @@ namespace ZFramework
                     timeBeginPeriod(1);//时钟默认精度 win/15ms linux/1ms
                 }
 
-
+               
                 while (Running)
                 {
                     try
