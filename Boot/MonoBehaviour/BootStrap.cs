@@ -8,7 +8,7 @@ namespace ZFramework
     [DisallowMultipleComponent]
     public sealed class BootStrap : MonoBehaviour
     {
-        //流程图
+        //引导启动流程图
         //https://www.processon.com/view/link/64b9f2dda554064ccf306779
 
         void Start()
@@ -20,11 +20,14 @@ namespace ZFramework
             Type[] allTypes =  loader.LoadAssembly(bootConfig.AssemblyNames);
             IGameInstance game = GetGameInstance(allTypes);
 
-            gameObject.AddComponent<TractionEngine>().StartGame(game);
+            gameObject.AddComponent<UnityLinker>().StartGame(game);
         }
 
         IAssemblyLoader GetAssemblyLoader(Defines.UpdateType type)
         {
+#if UNITY_EDITOR
+            return new DomainLoader();
+#else
             switch (type)
             {
                 case Defines.UpdateType.Not:
@@ -36,6 +39,7 @@ namespace ZFramework
                 default:
                     throw new NotImplementedException();
             }
+#endif
         }
 
         IGameInstance GetGameInstance(Type[] allTypes)

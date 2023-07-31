@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ZFramework
 {
     [AddComponentMenu("")]
-    internal class TractionEngine : MonoBehaviour
+    internal class UnityLinker : MonoBehaviour
     {
         IGameInstance game;
         public void StartGame(IGameInstance game) => this.game = game;
