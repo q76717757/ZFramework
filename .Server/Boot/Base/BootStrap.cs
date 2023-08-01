@@ -27,11 +27,8 @@ namespace ZFramework
                 types.AddRange(typeof(EntityRoot).Assembly.GetTypes());//data  data依赖core
                 types.AddRange(AssemblyLoader.LoadFunction().GetTypes());//func   func依赖data+core
 
-                game = typeof(Game)
-                    .GetMethod("CreateInstance", BindingFlags.Static | BindingFlags.NonPublic)
-                    .Invoke(null, Array.Empty<object>()) as IGameInstance;
+                game = Activator.CreateInstance(typeof(Game),true) as IGameInstance;
                 game.Init(types.ToArray());
-
                 game.Start();
                 Log.Info("=================Success=================");
 
@@ -41,7 +38,6 @@ namespace ZFramework
                     timeBeginPeriod(1);//时钟默认精度 win/15ms linux/1ms
                 }
 
-               
                 while (Running)
                 {
                     try
@@ -54,7 +50,8 @@ namespace ZFramework
                     {
                         Log.Error(e.StackTrace);
                     }
-                }                                                                                                                                                                                                   
+                }
+                game.Close();
             }
             catch (Exception e)
             {
