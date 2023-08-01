@@ -5,7 +5,7 @@ namespace ZFramework
     public sealed class Game : IGameInstance
     {
         private readonly static AttributeMap AttributeMap = new AttributeMap();
-        internal readonly static GameLoopSystem GameLoopSystem = new GameLoopSystem();
+        private readonly static GameLoopSystem GameLoopSystem = new GameLoopSystem();
 
         private readonly static TimeInfo TimeInfo = new TimeInfo();
         private static IdGenerater IdGenerater = new IdGenerater(TimeInfo);
@@ -64,6 +64,10 @@ namespace ZFramework
         {
             return virtualProcesses[0].Root.AddComponent<T>();
         }
+        internal static void CallAwake(Component component)
+        { 
+            GameLoopSystem.CallAwake(component);
+        }
         internal static void CallEnable(Component component)
         {
             GameLoopSystem.CallEnable(component);
@@ -71,6 +75,14 @@ namespace ZFramework
         internal static void CallDisable(Component component)
         {
             GameLoopSystem.CallDisable(component);
+        }
+        internal static void AddComponent(Component component)
+        {
+            GameLoopSystem.AddComponent(component);
+        }
+        internal static void RemoveComponent(Component component)
+        {
+            GameLoopSystem.DestoryComponent(component);
         }
     }
 }

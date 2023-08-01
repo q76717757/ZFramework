@@ -92,7 +92,7 @@ namespace ZFramework
             }
             var component = Component.Create(type, this);
             components.Add(component.GetType(), component);
-            Game.GameLoopSystem.CallAwake(component);
+            Game.CallAwake(component);
             return component;
         }
         public T AddComponent<T>() where T : Component
@@ -104,8 +104,8 @@ namespace ZFramework
             }
             var component = Component.Create<T>(this);
             components.Add(component.GetType(), component);
-            Game.GameLoopSystem.AddComponent(component);
-            Game.GameLoopSystem.CallAwake(component);
+            Game.AddComponent(component);
+            Game.CallAwake(component);
             return component;
         }
         public T AddComponentWithNewChild<T>()
@@ -206,7 +206,7 @@ namespace ZFramework
         {
             if (components.TryGetValue(component.GetType(), out Component target))
             {
-                Game.GameLoopSystem.DestoryComponent(target);
+                Game.RemoveComponent(target);
             }
             
         }
@@ -214,7 +214,7 @@ namespace ZFramework
         {
             if (components.TryGetValue(typeof(T),out Component component))
             {
-                Game.GameLoopSystem.DestoryComponent(component);
+                Game.RemoveComponent(component);
             }
         }
 
