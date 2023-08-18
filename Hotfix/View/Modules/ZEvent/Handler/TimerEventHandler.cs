@@ -14,12 +14,6 @@ namespace ZFramework
 
         private TimerEventDataBase TransferContainer = new TimerEventDataBase();//传递容器
 
-        public TimerEventHandler()
-        {
-            ZEventTemp.Instance.callback += Update;//临时用一下
-        }
-
-
         internal void AddListener(TimerEventListenerBase newlistener)//计时器比较特殊 每次add都是new timer 所以wait不存在重复    计时器中途替换listener作为待开发项 有需要再改
         {
             for (int i = 0; i < WaitingForAdd.Count; i++)

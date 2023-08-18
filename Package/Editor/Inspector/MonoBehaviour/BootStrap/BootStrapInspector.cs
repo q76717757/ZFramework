@@ -2,6 +2,8 @@
 using UnityEditor;
 using System.IO;
 using System;
+using UnityEditor.IMGUI.Controls;
+using UnityEngine.UIElements;
 
 namespace ZFramework.Editor
 {
@@ -23,7 +25,6 @@ namespace ZFramework.Editor
                 DrawProjectSettings();
             }
         }
-
         void DrawBanner()
         {
             EditorGUILayout.BeginVertical("FrameBox");
@@ -32,7 +33,6 @@ namespace ZFramework.Editor
             EditorGUILayout.LabelField("--------------");
             EditorGUILayout.EndVertical();
         }
-
         void DrawProjectSettings()
         {
             if (GUILayout.Button("Project Settings"))
@@ -68,7 +68,7 @@ namespace ZFramework.Editor
                             },
                             normal =
                             {
-                                textColor = BootConfig.IsExists? Color.green:Color.red,
+                                textColor = Color.green//BootConfig.IsExists? Color.green:Color.red,
                             }
                         };
                     }

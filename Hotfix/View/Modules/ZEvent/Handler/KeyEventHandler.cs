@@ -14,12 +14,6 @@ namespace ZFramework
         public List<KeyEventListenerGroup> AllListennerGroup { get; } = new List<KeyEventListenerGroup>(32);
         private List<KeyEventListenerBase> WaitingForAdd { get; } = new List<KeyEventListenerBase>();
 
-        public KeyEventHandler()
-        {
-            ZEventTemp.Instance.callback += Update;//临时用一下
-        }
-
-
         internal void AddListener(KeyEventListenerBase newlistener)
         {
             int count = WaitingForAdd.Count;

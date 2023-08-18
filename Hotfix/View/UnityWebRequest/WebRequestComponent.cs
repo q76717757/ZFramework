@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace ZFramework
 {
-    public class WebRequestComponent :SingleComponent<WebRequestComponent>
+    public class WebRequestComponent :Component
     {
         public void Awake()
         {

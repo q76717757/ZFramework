@@ -32,7 +32,7 @@ namespace ZFramework
         }
     }
 
-    public sealed class EventSystem : SingleComponent<EventSystem>
+    public sealed class EventSystem : Component
     {
         //事件映射表   订阅发布模型的事件 //再分同步和异步事件 异步事件做取消  
         private readonly static Dictionary<Type, List<IEvent>> allEvents = new Dictionary<Type, List<IEvent>>();

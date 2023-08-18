@@ -21,9 +21,14 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <ProjectReference Include="..\Boot\Server.Boot.csproj" />
 	  <ProjectReference Include="..\Core\Server.Core.csproj" />
 	  <ProjectReference Include="..\Data\Server.Data.csproj" />
 	  <ProjectReference Include="..\Packages\Server.Packages.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Server\" />
 	</ItemGroup>
 	
 </Project>

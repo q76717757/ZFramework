@@ -11,16 +11,26 @@ namespace ZFramework
         //引导启动流程图
         //https://www.processon.com/view/link/64b9f2dda554064ccf306779
 
+        static IGameInstance game;
+
         void Start()
         {
+            if (game != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             DontDestroyOnLoad(gameObject);
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                Log.Error("UnhandledException:" + e.ExceptionObject);
+            };
 
             BootConfig bootConfig = BootConfig.Instance;
-            IAssemblyLoader loader = GetAssemblyLoader(bootConfig.AssemblyLoadType);
-            Type[] allTypes =  loader.LoadAssembly(bootConfig.AssemblyNames);
-            IGameInstance game = GetGameInstance(allTypes);
-
-            gameObject.AddComponent<UnityLinker>().StartGame(game);
+            IAssemblyLoader assemblyLoader = GetAssemblyLoader(bootConfig.AssemblyLoadType);
+            Type[] allTypes = assemblyLoader.LoadAssembly(bootConfig.AssemblyNames);
+            game = StartGame(allTypes);
         }
 
         IAssemblyLoader GetAssemblyLoader(Defines.UpdateType type)
@@ -41,15 +51,16 @@ namespace ZFramework
             }
 #endif
         }
-
-        IGameInstance GetGameInstance(Type[] allTypes)
+        IGameInstance StartGame(Type[] allTypes)
         {
             Type entryType = allTypes.First(type => type.FullName == "ZFramework.Game");
             IGameInstance game = Activator.CreateInstance(entryType, true) as IGameInstance;
-            game.Init(allTypes);
-
+            game.Start(allTypes);
             return game;
         }
 
+        void Update()=> game.Update();
+        void LateUpdate()=> game.LateUpdate();
+        void OnApplicationQuit() => game.Close();
     }
 }

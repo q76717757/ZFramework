@@ -2,26 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TouchSocket.Core.ByteManager;
 using TouchSocket.Core.Config;
 using TouchSocket.Core;
 using TouchSocket.Sockets;
+using System.Net;
 
 namespace ZFramework
 {
-    public class TcpServerAwake : OnAwakeImpl<TcpServerComponent>
-    {
-        public override void OnAwake(TcpServerComponent self)
-        {
-            self.StartServer();
-        }
-    }
-
-    public class TcpServerComponent : SingleComponent<TcpServerComponent>
+    public class TcpServerComponent : Component
     {
         private TcpService m_service;
-        public TcpService ServetInstance => m_service;
 
         public void StartServer()
         {
@@ -32,7 +23,7 @@ namespace ZFramework
             m_service.Received += this.Service_Received;
 
             m_service.Setup(new TouchSocketConfig()//载入配置
-               //.SetListenIPHosts(new IPHost[] { new IPHost($"{Game.InnerHost}:7789"), new IPHost(7790) })//同时监听两个地址
+               .SetListenIPHosts(new IPHost[] {new IPHost(IPAddress.Any,7789)})//同时监听两个地址
                .SetMaxCount(10000).SetBufferLength(1024 * 64)
                .SetThreadCount(10)
                .UsePlugin()
@@ -57,26 +48,24 @@ namespace ZFramework
         private void OnClientDisconnected(SocketClient client, ClientDisconnectedEventArgs e)
         {
             Log.Info("客户端断开连接 ->" + client.ID);
-            LoginServer.Instance.OnClientDisconnected(client.ID);
         }
 
         private void Service_Received(SocketClient client, ByteBlock byteBlock, IRequestInfo requestInfo)
         {
-            ProtocolHandleComponent.Instance.Client2Server(client, byteBlock.ToArray());
+            Log.Info("收到" + client.IP + ":" +  Encoding.UTF8.GetString(byteBlock.ToArray()));
         }
 
-        //发送给客户端
-        public void Send2ClientAsync(string clientID, INetSerialize msg)
+        ////发送给客户端
+        public void Send2ClientAsync(string clientID, byte[] msg)
         {
-            m_service.SendAsync(clientID, msg.GetMessage().AddCode(msg.Code));
+            m_service.SendAsync(clientID, msg);
         }
         //广播
-        public void SendAllClientAsync(INetSerialize msg)
+        public void SendAllClientAsync(byte[] msg)
         {
-            byte[] send = msg.GetMessage().AddCode(msg.Code);
             foreach (var client in m_service.GetClients())
-            { 
-                m_service.SendAsync(client.ID, send);
+            {
+                m_service.SendAsync(client.ID, msg);
             }
         }
         //发送并等待

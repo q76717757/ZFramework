@@ -2,9 +2,9 @@
 
 namespace ZFramework
 {
-    public class GateProcess : VirtualProcess
+    public class GateProcess : Domain
     {
-        public override void Start()
+        protected override void OnStart()
         {
             Log.Info("GateProcess Start");
         }
