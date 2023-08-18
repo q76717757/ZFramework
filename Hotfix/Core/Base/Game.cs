@@ -1,44 +1,39 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ZFramework
 {
     public sealed class Game : IGameInstance
     {
-        private readonly static AttributeMap AttributeMap = new AttributeMap();
-        internal readonly static GameLoopSystem GameLoopSystem = new GameLoopSystem();
+        private readonly static AttributeMapper AttributeMapper = new AttributeMapper();
+        private readonly static TimeTickSystem TimeTickSystem = new TimeTickSystem();
+        private readonly static IDCreateSystem IDCreateSystem = new IDCreateSystem(TimeTickSystem);
+        private readonly static GameLoopSystem GameLoopSystem = new GameLoopSystem();
+        private readonly static DomainSystem DomainSystem = new DomainSystem();
 
-        private readonly static TimeInfo TimeInfo = new TimeInfo();
-        private static IdGenerater IdGenerater = new IdGenerater(TimeInfo);
-        private static VirtualProcess[] virtualProcesses;
+        private IGameVisual gameVisual;//可视化组件
 
         private Game() { }//封闭构造
 
-        void Load(Type[] allTypes)
+        //GameLoop
+        void LoadAssembly(Type[] allTypes)
         {
-            AttributeMap.Load(allTypes);
+            AttributeMapper.Load(allTypes);
             GameLoopSystem.Load(GetTypesByAttribute<GameLoopAttribute>());
         }
-
-        //GameLoop
-        void IGameInstance.Init(Type[] allTypes)
+        void IGameInstance.Start(Type[] allTypes)
         {
-            Load(allTypes);
-
-            virtualProcesses = VirtualProcess.Load(GetTypesByAttribute<ProcessType>());
-            foreach (var vp in virtualProcesses)
-            {
-                vp.Start();
-            }
+            LoadAssembly(allTypes);
+            DomainSystem.Start();
         }
-        void IGameInstance.Reload(Type[] allTypes) 
+        void IGameInstance.Reload(Type[] allTypes)
         {
-            Load(allTypes);
-            //入口限定了调用时机 必然在帧间隔中
+            LoadAssembly(allTypes);
             GameLoopSystem.Reload();
         }
         void IGameInstance.Update()
         {
-            TimeInfo.Update();
+            TimeTickSystem.Update();
             GameLoopSystem.Update();
         }
         void IGameInstance.LateUpdate()
@@ -47,28 +42,53 @@ namespace ZFramework
         }
         void IGameInstance.Close()
         {
-            foreach (var item in virtualProcesses)
-            {
-                item.Close();
-            }
+            DomainSystem.Close();
         }
 
-        //public
+
+        internal static void WaitingAdd(Component component)
+        {
+            GameLoopSystem.WaitingAdd(component);
+        }
+        internal static void WaitingDestory(Component component)
+        {
+            GameLoopSystem.WaitingDestory(component);
+        }
+        internal static void WaitingDestory(Entity entity)
+        { 
+            GameLoopSystem.WaitingDestory(entity);
+        }
+        internal static void CallAwake(Component component)
+        { 
+            GameLoopSystem.CallAwake(component);
+        }
+        internal static void CallEnable(Component component)
+        {
+            GameLoopSystem.CallEnable(component);
+        }
+        internal static void CallDisable(Component component)
+        {
+            GameLoopSystem.CallDisable(component);
+        }
+
+
+        //Public static
         public static Type[] GetTypesByAttribute<T>() where T :BaseAttribute
         {
-            return AttributeMap.GetTypesByAttribute<T>();
+            return AttributeMapper.GetTypesByAttribute(typeof(T));
         }
-        public static long GenerateInstanceId()
+        public static Domain GetDomain(int domainID)
+        { 
+            return DomainSystem.GetDomain(domainID);
+        }
+        public static void LoadDomain(Domain domain)
         {
-            return IdGenerater.GenerateInstanceId();
+            DomainSystem.LoadDomain(domain);
+        }
+        public static void UnloadDomain(int domainID)
+        { 
+            DomainSystem.UnloadDomain(domainID);
         }
 
-
-        internal static SingleComponent<T> AddSingleComponent<T>() where T : SingleComponent<T>
-        {
-            return virtualProcesses[0].Root.AddComponent<T>();
-        }
-        internal static void CallEnable(Component component) => GameLoopSystem.CallEnable(component);
-        internal static void CallDisable(Component component) => GameLoopSystem.CallDisable(component);
     }
 }

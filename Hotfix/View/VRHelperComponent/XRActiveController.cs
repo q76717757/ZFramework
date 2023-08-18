@@ -21,6 +21,7 @@ namespace ZFramework
         {
             if (state)
             {
+                Application.quitting += Application_quitting;
                 if (!ManagerSetting.isInitializationComplete)
                 {
                     ManagerSetting.InitializeLoaderSync();
@@ -36,12 +37,18 @@ namespace ZFramework
             }
             else
             {
+                Application.quitting -= Application_quitting;
                 if (ManagerSetting.isInitializationComplete)
                 {
                     ManagerSetting.StopSubsystems();
                     ManagerSetting.DeinitializeLoader();
                 }
             }
+        }
+
+        private static void Application_quitting()
+        {
+            SetActive(false);
         }
     }
 }

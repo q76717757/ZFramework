@@ -1,18 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+#if ENABLE_HYBRIDCLR
+
 using UnityEngine.Networking;
+using HybridCLR;
+using System;
+using System.IO;
 
 namespace ZFramework
 {
-    public static class HybridCLR_API
+    internal static class HybridCLR_API
     {
-        public static void LoadMetadataForAOTAssembly(string[] aotAssemblyPath)
+        public static void LoadMetadataForAOTAssembly(string[] aotAssemblyNames, HomologousImageMode mode = HomologousImageMode.Consistent)
         {
-#if ENABLE_HYBRIDCLR
-            foreach (var aotName in aotAssemblyPath)
+            foreach (var aotName in aotAssemblyNames)
             {
-                UnityWebRequest www = UnityWebRequest.Get($"file://{Defines.AOTMetaAssemblyAPath}/{aotName}.dll.bytes");
+                Uri uri = new Uri(Path.Combine(Defines.AOTMetaAssemblyAPath, $"{aotName}.dll.bytes"));
+                UnityWebRequest www = UnityWebRequest.Get(uri);
                 www.SendWebRequest();
                 while (!www.isDone)
                 {
@@ -24,8 +26,8 @@ namespace ZFramework
                 else
                 {
                     byte[] assetData = www.downloadHandler.data;
-                    HybridCLR.LoadImageErrorCode error = HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(assetData, HybridCLR.HomologousImageMode.Consistent);
-                    if (error != HybridCLR.LoadImageErrorCode.OK)
+                    LoadImageErrorCode error = RuntimeApi.LoadMetadataForAOTAssembly(assetData, mode);
+                    if (error != LoadImageErrorCode.OK)
                     {
                         Log.Error($"{aotName}元数据补充失败:{error}");
                     }
@@ -35,7 +37,8 @@ namespace ZFramework
                     }
                 }
             }
-#endif
         }
     }
 }
+
+#endif

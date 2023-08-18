@@ -23,6 +23,7 @@
 	
 	
 	<ItemGroup>
+	  <ProjectReference Include="..\Boot\Server.Boot.csproj" />
 	  <ProjectReference Include="..\Core\Server.Core.csproj" />
 	  <ProjectReference Include="..\Packages\Server.Packages.csproj" />
 	</ItemGroup>

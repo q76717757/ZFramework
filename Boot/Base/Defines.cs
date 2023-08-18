@@ -8,7 +8,7 @@ using UnityEditor;
 namespace ZFramework
 {
     /// <summary>
-    /// 定义框架常量  基本每个工程都是一致的
+    /// 定义框架常量
     /// </summary>
     public static class Defines
     {
@@ -43,10 +43,7 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 目标平台
-        /// </summary>
-        /// <summary>
-        /// 默认热更程序集
+        /// 目标运行时平台
         /// </summary>
         public static PlatformType TargetRuntimePlatform
         {
@@ -93,19 +90,29 @@ namespace ZFramework
             "mscorlib",
             "System",
             "System.Core",
-            "UnityEngine.CoreModule.dll",
-            "Unity.Boot",
+            "UnityEngine.CoreModule",
             "Unity.Package.Runtime",
         };
 
         /// <summary>
-        /// 随包资产的路径  ./StreamingAssets/ZFramework/Platform/
+        /// 随包资产的路径  ./StreamingAssets/BuildInAssets/{Platform}
         /// </summary>
         public static string BuildInAssetAPath
         {
             get
             {
-                return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "ZFramework", TargetRuntimePlatform.ToString())).FullName;
+                return GetBuildInAssetsAPath(TargetRuntimePlatform);
+            }
+        }
+
+        /// <summary>
+        /// 数据持久化根目录  windows平台./Res/   其他平台返回./PersistentDataPath/Res
+        /// </summary>
+        public static string PersistenceDataAPath
+        {
+            get
+            {
+                return GetPresistenceDataAPath(TargetRuntimePlatform);
             }
         }
 
@@ -121,29 +128,37 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 数据持久化根目录
+        /// 获取指定平台下的随包资源的存放路径(只读目录)
         /// </summary>
-        public static string PersistenceDataAPath
+        /// <param name="platform">目标运行时平台</param>
+        /// <returns>返回./StreamingAssets/BuildInAssets/{platform}/</returns>
+        public static string GetBuildInAssetsAPath(PlatformType platform)
         {
-            get
-            {
-#if UNITY_EDITOR
-                DirectoryInfo directory = new DirectoryInfo(Path.Combine(Application.dataPath,"..", TargetRuntimePlatform.ToString(),"Bundles"));
-#else
-                DirectoryInfo directory;
-                if ((TargetRuntimePlatform & PlatformType.OfflineSupported) == TargetRuntimePlatform)
-                {
-                    //离线模式仅针对winpc 资产放在安装目录 让用户自己可以替换资产进行更新和修复
-                    directory = new DirectoryInfo(Application.dataPath + @"\..\Bundles\" + TargetRuntimePlatform.ToString());
-                }
-                else
-                {
-                    directory = new DirectoryInfo(Application.persistentDataPath + @"\Bundles\" + TargetRuntimePlatform.ToString());
-                }
-#endif
-                return directory.FullName;
-            }
+            return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "BuildInAssets", platform.ToString())).FullName;
         }
 
+        /// <summary>
+        /// 获取指定平台下的持久化资源的存放路径(可读写目录)
+        /// </summary>
+        /// <param name="platform">目标运行时平台</param>
+        /// <returns>windows平台./Res/   其他平台返回./PersistentDataPath/Res/ </returns>
+        public static string GetPresistenceDataAPath(PlatformType platform)
+        {
+#if UNITY_EDITOR
+            DirectoryInfo directory = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "AssetBundleCache", platform.ToString()));
+#else
+            DirectoryInfo directory;
+            if ((platform & PlatformType.OfflineSupported) == platform)
+            {
+                //离线模式仅针对winpc 资产放在安装目录 让用户自己可以替换ab包进行更新
+                directory = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "Res"));
+            }
+            else
+            {
+                directory = new DirectoryInfo(Path.Combine(Application.persistentDataPath, "Res"));
+            }
+#endif
+            return directory.FullName;
+        }
     }
 }

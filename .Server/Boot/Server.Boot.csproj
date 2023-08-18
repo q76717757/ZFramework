@@ -15,10 +15,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>$(DefineConstants)TRACE;SERVER</DefineConstants>
   </PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\Boot\Common\**\*.cs">
+			<Link>Common\%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Compile>
+	</ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\Core\Server.Core.csproj" />
-    <ProjectReference Include="..\Data\Server.Data.csproj" />
     <ProjectReference Include="..\Packages\Server.Packages.csproj" />
   </ItemGroup>
 

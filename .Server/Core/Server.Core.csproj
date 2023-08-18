@@ -19,19 +19,9 @@
 			<Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
 	</ItemGroup>
-	
-	<ItemGroup>
-		<Compile Include="..\..\Boot\Common\**\*.cs">
-			<Link>Boot\Common\%(RecursiveDir)%(FileName)%(Extension)</Link>
-		</Compile>
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <Compile Remove="..\..\Hotfix\Core\Unity\**" />
-	</ItemGroup>
-	
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Boot\Server.Boot.csproj" />
 	  <ProjectReference Include="..\Packages\Server.Packages.csproj" />
 	</ItemGroup>
 

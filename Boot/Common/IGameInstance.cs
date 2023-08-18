@@ -4,7 +4,7 @@ namespace ZFramework
 {
     public interface IGameInstance
     {
-        void Init(Type[] allTypes);
+        void Start(Type[] allTypes);
         void Reload(Type[] allTypes);
 
         void Update();

@@ -21,7 +21,7 @@ namespace ZFramework
         }
     }
      
-    public class HttpTouch : SingleComponent<HttpTouch>
+    public class HttpTouch : Component
     {
         HttpService httpService;
         HttpPlugn plugn;
@@ -112,7 +112,6 @@ namespace ZFramework
             }
             return Task.CompletedTask;
         }
-
         protected override Task OnGetAsync(ITcpClientBase client, HttpContextEventArgs e)//文件下载服务
         {
             var url = e.Context.Request.URL;
@@ -156,8 +155,6 @@ namespace ZFramework
             }
             return Task.CompletedTask;
         }
-
-
 
     }
 }

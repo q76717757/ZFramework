@@ -8,15 +8,19 @@ namespace ZFramework
     {
     }
 
+    /// <summary>
+    /// 生命周期管理系统
+    /// </summary>
     internal sealed class GameLoopSystem
     {
         //生命周期映射表    ComponentType -- GameLoopType -- List<GameLoopImpl> 
         private readonly Dictionary<Type, Dictionary<Type, List<IGameLoop>>> gameloopMaps = new Dictionary<Type, Dictionary<Type, List<IGameLoop>>>();
         //所有存活的组件    Component.ID    Component(instance)
         private readonly Dictionary<long, Component> aliveComponents = new Dictionary<long, Component>();
-
-        private List<Component> waitAddComponent = new List<Component>();//已经执行了awake 等待加入update队列
-        private List<Component> waitRemoveComponent = new List<Component>();//被调了destory  等到帧末在执行生命周期
+        //已经执行了awake 等待加入update/lateupdate队列
+        private readonly List<Component> waitingAdd = new List<Component>();
+        //被调了destory  等到帧末在执行destory生命周期
+        private readonly Queue<ZObject> waitingRemove = new Queue<ZObject>();//包括entity和component
 
         private Queue<Component> updates = new Queue<Component>();
         private Queue<Component> updates2 = new Queue<Component>();
@@ -80,22 +84,17 @@ namespace ZFramework
                 CallReload(item);
             }
         }
-
-
-        internal void AddComponent(Component component) => waitAddComponent.Add(component);
-        internal void DestoryComponent(Component component) => waitRemoveComponent.Add(component);
-
         internal void Update()
         {
             //Add
-            if (waitAddComponent.Count > 0)
+            if (waitingAdd.Count > 0)
             {
-                //应该提前统一入队列?  不然在本帧添加的组件 本帧会直接执行update 原则上本帧ADD的组件 应该在下一帧才开始走update 本帧就同步走个Awake
-                foreach (var component in waitAddComponent)
+                for (int i = 0; i < waitingAdd.Count; i++)
                 {
+                    Component component = waitingAdd[i];
                     if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, List<IGameLoop>> gameLoop))
                     {
-                        if (gameLoop.ContainsKey(typeof(IUpdate)))
+                        if (gameLoop.ContainsKey(typeof(IUpdate)))//如果有这个列表,则至少有一种实现
                         {
                             updates.Enqueue(component);
                         }
@@ -106,7 +105,7 @@ namespace ZFramework
                     }
                     aliveComponents.Add(component.InstanceID, component);
                 }
-                waitAddComponent.Clear();
+                waitingAdd.Clear();
             }
 
             //Update
@@ -114,9 +113,10 @@ namespace ZFramework
             {
                 while (updates.Count > 0)
                 {
-                    var component = updates.Dequeue();
-                    if (CallUpdate(component))
+                    Component component = updates.Dequeue();
+                    if (component != null)
                     {
+                        CallUpdate(component);
                         updates2.Enqueue(component);
                     }
                 }
@@ -130,9 +130,10 @@ namespace ZFramework
             {
                 while (lateupdate.Count > 0)
                 {
-                    var component = lateupdate.Dequeue();
-                    if (CallLateUpdate(component))
+                    Component component = lateupdate.Dequeue();
+                    if (component != null)//已经销毁或者是本帧销毁
                     {
+                        CallLateUpdate(component);
                         lateupdate2.Enqueue(component);
                     }
                 }
@@ -140,18 +141,38 @@ namespace ZFramework
             }
 
             //Destory
-            if (waitRemoveComponent.Count > 0)
+            while (waitingRemove.Count > 0)
             {
-                foreach (var item in waitRemoveComponent)
+                ZObject obj = waitingRemove.Dequeue();
+                if (obj is Component component)
                 {
-                    CallDestory(item);
-                    aliveComponents.Remove(item.InstanceID);
-                    item.instanceID = 0;
+                    CallDestory(component);
                 }
-                waitRemoveComponent.Clear();
+                obj.DisposedFinish();
+                aliveComponents.Remove(obj.InstanceID);
             }
         }
 
+        internal void WaitingAdd(Component component)
+        {
+            waitingAdd.Add(component);
+        }
+        internal void WaitingDestory(Component component)
+        {
+            for (int i = 0; i < waitingAdd.Count; i++)
+            {
+                if (waitingAdd[i] == component)
+                {
+                    waitingAdd.RemoveAt(i);
+                    break;
+                }
+            }
+            waitingRemove.Enqueue(component);
+        }
+        internal void WaitingDestory(Entity entity)
+        {
+            waitingRemove.Enqueue(entity);
+        }
 
         bool GetGameLoops(Component component, Type gameloopType, out List<IGameLoop> gameloops)
         {
@@ -233,11 +254,11 @@ namespace ZFramework
                 }
             }
         }
-        private bool CallUpdate(Component component)
+        private void CallUpdate(Component component)
         {
             if (GetGameLoops(component, typeof(IUpdate), out List<IGameLoop> gameloops))
             {
-                if (component.Enable && !component.IsDisposed)
+                if (component.Enable)
                 {
                     for (int i = 0; i < gameloops.Count; i++)
                     {
@@ -251,15 +272,13 @@ namespace ZFramework
                         }
                     }
                 }
-                return true;
             }
-            return false;
         }
-        private bool CallLateUpdate(Component component)
+        private void CallLateUpdate(Component component)
         {
             if (GetGameLoops(component, typeof(ILateUpdate), out List<IGameLoop> gameloops))
             {
-                if (component.Enable && !component.IsDisposed)
+                if (component.Enable)
                 {
                     for (int i = 0; i < gameloops.Count; i++)
                     {
@@ -273,9 +292,7 @@ namespace ZFramework
                         }
                     }
                 }
-                return true;
             }
-            return false;
         }
         private void CallDestory(Component component)
         {
@@ -294,5 +311,6 @@ namespace ZFramework
                 }
             }
         }
+
     }
 }
