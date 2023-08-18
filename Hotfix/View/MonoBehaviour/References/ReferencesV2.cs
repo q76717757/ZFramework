@@ -31,7 +31,7 @@ namespace ZFramework
         private Dictionary<string, float> dicFloat;
         private Dictionary<string, double> dicDouble;
         private Dictionary<string, bool> dicBool;
-        //Vector2、Vector3、Vector4、Rect、Quaternion、Matrix4x4、Color、Color32、LayerMask、AnimationCurve、Gradient、RectOffset、GUIStyle
+        //Vector2銆乂ector3銆乂ector4銆丷ect銆丵uaternion銆丮atrix4x4銆丆olor銆丆olor32銆丩ayerMask銆丄nimationCurve銆丟radient銆丷ectOffset銆丟UIStyle
 
         public T Get<T>(string key) where T : UnityEngine.Object
         {
@@ -41,7 +41,7 @@ namespace ZFramework
                 if (value is T)
                     return value as T;
                 else
-                    throw new ArgumentException($"[References]:Get[{key}]发生错误,请求的类型是{typeof(T)},但[{key}]的实际类型是{value.GetType()}");
+                    throw new ArgumentException($"[References]:Get[{key}]鍙戠敓閿欒,璇锋眰鐨勭被鍨嬫槸{typeof(T)},浣哰{key}]鐨勫疄闄呯被鍨嬫槸{value.GetType()}");
 #else
 				return value as T;
 #endif
@@ -53,7 +53,7 @@ namespace ZFramework
         {
 
         }
-        public void OnAfterDeserialize()//比AWAKE执行更早
+        public void OnAfterDeserialize()//姣擜WAKE鎵ц鏇存棭
         {
             dict = new Dictionary<string, UnityEngine.Object>();
             //foreach (ReferenceDataV2 referenceCollectorData in data)
