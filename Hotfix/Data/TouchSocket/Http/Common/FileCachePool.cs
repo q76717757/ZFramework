@@ -372,11 +372,7 @@ namespace TouchSocket.Http
                 // Iterate through all directory entries
                 foreach (var item in Directory.GetDirectories(path))
                 {
-#if SERVER
-                    string key = keyPrefix + HttpUtility.UrlDecode(Path.GetFileName(item));
-#else
-                    string key = keyPrefix + UnityEngine.Networking.UnityWebRequest.EscapeURL(Path.GetFileName(item));
-#endif
+                    string key = keyPrefix + ZFramework.UrlUtility.Decode(Path.GetFileName(item));
 
                     // Recursively insert sub-directory
                     if (!this.InsertPathInternal(root, item, key, timeout, handler))
@@ -385,12 +381,7 @@ namespace TouchSocket.Http
 
                 foreach (var item in Directory.GetFiles(path))
                 {
-#if SERVER
-                    string key = keyPrefix + HttpUtility.UrlDecode(Path.GetFileName(item));
-#else
-                    string key = keyPrefix + UnityEngine.Networking.UnityWebRequest.EscapeURL(Path.GetFileName(item));
-#endif
-
+                    string key = keyPrefix + ZFramework.UrlUtility.Decode(Path.GetFileName(item));
 
                     // Insert file into the cache
                     if (!this.InsertFileInternal(root, item, key, timeout, handler))

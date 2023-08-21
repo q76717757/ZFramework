@@ -368,11 +368,7 @@ namespace TouchSocket.Http
             {
                 response.SetContentTypeByExtension(Path.GetExtension(filePath));
                 var contentDisposition = "attachment;" + "filename=" +
-#if SERVER
-                    HttpUtility.UrlDecode
-#else
-                    UnityEngine.Networking.UnityWebRequest.EscapeURL
-#endif
+                    ZFramework.UrlUtility.Decode
                     (fileName == null ? Path.GetFileName(filePath) : fileName);
                 response.SetHeader(HttpHeaders.ContentDisposition, contentDisposition)
                     .SetHeader(HttpHeaders.AcceptRanges, "bytes");
@@ -455,12 +451,7 @@ namespace TouchSocket.Http
         public static TResponse SetContentTypeFromFileName<TResponse>(this TResponse response, string fileName) where TResponse : HttpResponse
         {
             var contentDisposition = "attachment;" + "filename=" +
-#if SERVER
-                HttpUtility.UrlDecode
-#else
-                UnityEngine.Networking.UnityWebRequest.EscapeURL
-#endif
-
+                ZFramework.UrlUtility.Decode
                 (fileName);
             response.SetHeader(HttpHeaders.ContentDisposition, contentDisposition);
             return response;

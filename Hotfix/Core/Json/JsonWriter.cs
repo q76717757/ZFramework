@@ -38,7 +38,7 @@ namespace ZFramework
     }
 
     /// <summary> JSON写入器 负责组装json字符串</summary>
-    internal class JsonWriter
+    public class JsonWriter
     {
         #region 字段
         /// <summary> 获取不依赖于区域性的（固定的）默认只读对象。 </summary>

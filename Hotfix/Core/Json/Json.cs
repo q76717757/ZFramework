@@ -107,14 +107,14 @@ namespace ZFramework
     }
 
     /// <summary> 序列化规则 </summary>
-    internal delegate void ExporterFunc(object obj, JsonWriter writer);
+    public delegate void ExporterFunc(object obj, JsonWriter writer);
     /// <summary> 序列化规则 </summary>
-    internal delegate void ExporterFunc<T>(T obj, JsonWriter writer);
+    public delegate void ExporterFunc<T>(T obj, JsonWriter writer);
 
     /// <summary> 反序列化规则 </summary>
-    internal delegate object ImporterFunc(object input);
+    public delegate object ImporterFunc(object input);
     /// <summary> 反序列化规则 </summary>
-    internal delegate TValue ImporterFunc<TJson, TValue>(TJson input);
+    public delegate TValue ImporterFunc<TJson, TValue>(TJson input);
     /// <summary> 容器工厂 多数用于实例一个JsonData容器 某些情况用来实例一个假容器 以更快跳过数据 </summary>
     internal delegate IJsonWrapper WrapperFactory();
 
@@ -181,7 +181,6 @@ namespace ZFramework
             RegisterBaseExporters();
             RegisterBaseImporters();
         }
-        internal Json() { }
         #endregion
 
         #region 私有方法
@@ -1085,9 +1084,8 @@ namespace ZFramework
 
 
 
-        //下面的方法要不要公开 看情况
         /// <summary> 注册自定义序列化规则 </summary>
-        internal void RegisterExporter<T>(ExporterFunc<T> exporter)
+        public void RegisterExporter<T>(ExporterFunc<T> exporter)
         {
             ExporterFunc exporter_wrapper =
                 delegate (object obj, JsonWriter writer)
@@ -1097,7 +1095,7 @@ namespace ZFramework
             custom_exporters_table[typeof(T)] = exporter_wrapper;
         }
         /// <summary> 注册自定义反序列化规则 </summary>
-        internal void RegisterImporter<TJson, TValue>(ImporterFunc<TJson, TValue> importer)
+        public void RegisterImporter<TJson, TValue>(ImporterFunc<TJson, TValue> importer)
         {
             ImporterFunc importer_wrapper =
                 delegate (object input)
@@ -1107,9 +1105,9 @@ namespace ZFramework
             RegisterImporter(custom_importers_table, typeof(TJson), typeof(TValue), importer_wrapper);
         }
         /// <summary> 清空自定义序列化规则 </summary>
-        internal void UnregisterExporters() => custom_exporters_table.Clear();
+        public void UnregisterExporters() => custom_exporters_table.Clear();
         /// <summary> 清空自定义反序列化规则 </summary>
-        internal void UnregisterImporters() => custom_importers_table.Clear();
+        public void UnregisterImporters() => custom_importers_table.Clear();
         #endregion
     }
 

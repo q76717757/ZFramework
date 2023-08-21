@@ -95,7 +95,7 @@ public static class WindowsEx
         openFile.maxFile = openFile.file.Length;
         openFile.fileTitle = new string(new char[64]);
         openFile.maxFileTitle = openFile.fileTitle.Length;
-        openFile.initialDir = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, "TempSyncRoomData").Replace('/', '\\');
+        //openFile.initialDir = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, "TempSyncRoomData").Replace('/', '\\');
         openFile.title = "读取文件";
 
         openFile.flags = 0x00080000 | 0x00001000 | 0x00000800 | 0x00000008;
@@ -121,7 +121,7 @@ public static class WindowsEx
         ofn.maxFile = ofn.file.Length;
         ofn.fileTitle = new string(new char[64]);
         ofn.maxFileTitle = ofn.fileTitle.Length;
-        ofn.initialDir = UnityEngine.Application.dataPath.Replace('/', '\\');//默认路径
+        //ofn.initialDir = UnityEngine.Application.dataPath.Replace('/', '\\');//默认路径
         ofn.title = "保存文件";
         ofn.defExt = ext;//默认拓展名  不用点  比如xls
         ofn.flags = 0x00080000 | 0x00001000 | 0x00000800 /*| 0x00000200*/ | 0x00000008;//x200多选标记 多选会变成文件夹
@@ -148,7 +148,7 @@ public static class WindowsEx
     }
     public static void OpenFolder(string path)
     {
-        UnityEngine.Application.OpenURL($"file:///{path}");
+        //UnityEngine.Application.OpenURL($"file:///{path}");
     }
 }
 #endif

@@ -10,6 +10,14 @@ using System.Net;
 
 namespace ZFramework
 {
+    public class TcpServerAwake : OnAwakeImpl<TcpServerComponent>
+    {
+        public override void OnAwake(TcpServerComponent self)
+        {
+            UrlUtility.coder = new UrlHelper();
+        }
+    }
+
     public class TcpServerComponent : Component
     {
         private TcpService m_service;
