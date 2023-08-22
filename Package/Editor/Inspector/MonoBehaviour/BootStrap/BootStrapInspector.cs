@@ -12,27 +12,17 @@ namespace ZFramework.Editor
     {
         public override void OnInspectorGUI()
         {
-            DrawBanner();
-            if (!BootConfig.IsExists)
+            if (BootProfile.IsExists)
             {
-                if (GUILayout.Button("Create BootConfig"))
-                {
-                    BootConfig.Create();
-                }
+                BootProfile.GetInstance();
+                DrawProjectSettings();
             }
             else
             {
-                DrawProjectSettings();
+                BootProfileUtility.DrawCreateButton();
             }
         }
-        void DrawBanner()
-        {
-            EditorGUILayout.BeginVertical("FrameBox");
-            EditorGUILayout.LabelField("--------------");
-            EditorGUILayout.LabelField("--广告位招租--");
-            EditorGUILayout.LabelField("--------------");
-            EditorGUILayout.EndVertical();
-        }
+
         void DrawProjectSettings()
         {
             if (GUILayout.Button("Project Settings"))
@@ -40,6 +30,7 @@ namespace ZFramework.Editor
                 ZFrameworkSettingProvider.OpenSettings();
             }
         }
+
     }
 
 #if UNITY_2020_3_OR_NEWER

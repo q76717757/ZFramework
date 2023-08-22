@@ -27,7 +27,7 @@ namespace ZFramework
                 Log.Error("UnhandledException:" + e.ExceptionObject);
             };
 
-            BootConfig bootConfig = BootConfig.Instance;
+            BootProfile bootConfig = BootProfile.GetInstance();
             IAssemblyLoader assemblyLoader = GetAssemblyLoader(bootConfig.AssemblyLoadType);
             Type[] allTypes = assemblyLoader.LoadAssembly(bootConfig.AssemblyNames);
             game = StartGame(allTypes);
@@ -59,8 +59,8 @@ namespace ZFramework
             return game;
         }
 
-        void Update()=> game.Update();
-        void LateUpdate()=> game.LateUpdate();
+        void Update() => game.Update();
+        void LateUpdate() => game.LateUpdate();
         void OnApplicationQuit() => game.Close();
     }
 }

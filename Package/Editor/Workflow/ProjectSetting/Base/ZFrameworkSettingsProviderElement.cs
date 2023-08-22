@@ -32,7 +32,7 @@ namespace ZFramework.Editor
 
         public sealed override void OnGUI(string searchContext)
         {
-            if (BootConfig.IsExists)
+            if (BootProfile.IsExists)
             {
                 if (!enableIsCalled)
                 {
@@ -43,10 +43,7 @@ namespace ZFramework.Editor
             }
             else
             {
-                if (GUILayout.Button("Create BootConfig"))
-                {
-                    BootConfig.Create();
-                }
+                BootProfileUtility.DrawCreateButton();
             }
         }
         public sealed override void OnActivate(string searchContext, VisualElement rootElement)

@@ -41,7 +41,6 @@ namespace ZFramework.Editor
                     Local();
                     break;
             }
-            BootConfig.Instance.SaveIfDirty();
         }
         Defines.UpdateType EnumPopup()
         {
@@ -56,7 +55,7 @@ namespace ZFramework.Editor
             //updateType.enumValueIndex = EditorGUILayout.Popup(updateType.enumValueIndex, displayNames);
             EditorGUILayout.EndHorizontal();
 
-            return BootConfig.Instance.AssemblyLoadType;
+            return BootProfile.GetInstance().AssemblyLoadType;
         }
         void Info(string info)
         {
@@ -72,7 +71,7 @@ namespace ZFramework.Editor
                 return;
             }
 #endif
-            DrawAssembly(BootConfig.Instance.AssemblyNames);
+            DrawAssembly(BootProfile.GetInstance().AssemblyNames);
             if (GUILayout.Button("重置到默认"))
             {
                 ResetAssembly(Defines.DefaultAssemblyNames);

@@ -117,6 +117,17 @@ namespace ZFramework
         }
 
         /// <summary>
+        /// 引导配置文件所在的文件夹
+        /// </summary>
+        public static string BootProfileAPath
+        {
+            get
+            {
+                return new DirectoryInfo(Path.Combine(BuildInAssetAPath, "Profile")).FullName;
+            }
+        }
+
+        /// <summary>
         /// 元数据程序集的加载路径 (HybridCLR)
         /// </summary>
         public static string AOTMetaAssemblyAPath
@@ -134,7 +145,7 @@ namespace ZFramework
         /// <returns>返回./StreamingAssets/BuildInAssets/{platform}/</returns>
         public static string GetBuildInAssetsAPath(PlatformType platform)
         {
-            return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "BuildInAssets", platform.ToString())).FullName;
+            return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "ZFramework", platform.ToString())).FullName;
         }
 
         /// <summary>

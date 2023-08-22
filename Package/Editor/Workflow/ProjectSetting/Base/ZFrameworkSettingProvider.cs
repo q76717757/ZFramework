@@ -16,7 +16,7 @@ namespace ZFramework.Editor
         Vector2 pos;
         public override void OnGUI(string searchContext)
         {
-            if (BootConfig.IsExists)
+            if (BootProfile.IsExists)
             {
                 var readme = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/ZFramework/README.md");
                 if (readme == null) return;
@@ -38,7 +38,10 @@ namespace ZFramework.Editor
                 }
 
                 EditorGUILayout.EndScrollView();
-
+            }
+            else
+            {
+                BootProfileUtility.DrawCreateButton();
             }
         }
     }
