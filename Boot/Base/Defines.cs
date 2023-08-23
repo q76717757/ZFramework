@@ -117,13 +117,13 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 引导配置文件所在的文件夹
+        /// 随包配置文件所在的文件夹
         /// </summary>
-        public static string BootProfileAPath
+        public static string ProfilesAPath
         {
             get
             {
-                return new DirectoryInfo(Path.Combine(BuildInAssetAPath, "Profile")).FullName;
+                return new DirectoryInfo(Path.Combine(BuildInAssetAPath, "Profiles")).FullName;
             }
         }
 
