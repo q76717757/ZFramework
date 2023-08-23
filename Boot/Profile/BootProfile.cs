@@ -22,7 +22,7 @@ namespace ZFramework
         /// <summary>
         /// 热更新模式
         /// </summary>
-        public Defines.UpdateType AssemblyLoadType { get => assemblyLoadType; }
+        public Defines.UpdateType AssemblyLoadType { get => assemblyLoadType;}
         /// <summary>
         /// 热更新程序集
         /// </summary>
@@ -34,7 +34,7 @@ namespace ZFramework
         /// <summary>
         /// 是否强同步
         /// </summary>
-        public bool IsMustSync { get => IsMustSync; }
+        public bool IsMustSync { get => isMustSync; }
 
         /// <summary>
         /// 配置文件是否存在
@@ -96,11 +96,11 @@ namespace ZFramework
         }
         internal static string GetFilePath()
         {
-            return Path.Combine(Defines.BootProfileAPath, "BootProfile.json");
+            return Path.Combine(Defines.ProfilesAPath, "BootProfile.json");
         }
         internal void Save()
         {
-            Directory.CreateDirectory(Defines.BootProfileAPath);
+            Directory.CreateDirectory(Defines.ProfilesAPath);
             string json = JsonUtility.ToJson(this, true);
             File.WriteAllText(GetFilePath(), json);
         }
@@ -117,5 +117,22 @@ namespace ZFramework
             isDirty = true;
         }
 
+
+        internal void SerLoadMod(Defines.UpdateType value)
+        {
+            if (assemblyLoadType != value)
+            {
+                assemblyLoadType = value;
+                SetDirty();
+            }
+        }
+        internal void SetMustSync(bool value)
+        {
+            if (isMustSync != value)
+            {
+                isMustSync = value;
+                SetDirty();
+            }
+        }
     }
 }
