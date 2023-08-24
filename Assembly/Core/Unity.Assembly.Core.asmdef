@@ -1,9 +1,8 @@
 {
-    "name": "Unity.Hotfix.Data",
+    "name": "Unity.Assembly.Core",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Boot",
-        "Unity.Hotfix.Core"
+        "Unity.Assembly.Boot"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

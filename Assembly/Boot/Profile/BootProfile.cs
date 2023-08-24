@@ -13,11 +13,23 @@ namespace ZFramework
     public class BootProfile
     {
         [SerializeField] private Defines.UpdateType assemblyLoadType = Defines.UpdateType.Not;
-        [SerializeField] private string[] assemblyNames = Defines.DefaultAssemblyNames;
-        [SerializeField] private string[] aotMetaAssemblyNames = Defines.DefaultAOTMetaAssemblyNames;
+        [SerializeField] private string[] assemblyNames = new string[]//hybridclr
+        {
+            "Unity.Core",
+            "Unity.Data",
+            "Unity.Func",
+            "Unity.View",
+            "Assembly-CSharp",
+        };
+        [SerializeField] private string[] aotMetaAssemblyNames = new string[]
+        {
+            "mscorlib",
+            "System",
+            "System.Core",
+            "UnityEngine.CoreModule",
+            "Unity.Package.Runtime",
+        };
         [SerializeField] private bool isMustSync = false;
-
-
 
         /// <summary>
         /// 热更新模式

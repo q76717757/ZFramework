@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace ZFramework
 {
@@ -17,11 +16,11 @@ namespace ZFramework
         public override void OnUpdate(TestComponent self)
         {
             Log.Error("Update" + (self == null).ToString());
-            if (Keyboard.current[Key.A].isPressed)
+            if (Input.GetKeyDown(KeyCode.A))
             {
                 Log.Error("----A----");
             }
-            if (Keyboard.current[Key.S].isPressed)
+            if (Input.GetKeyDown(KeyCode.S))
             {
                 Entity.Destory(self);
                 self.TestMethod();
@@ -33,7 +32,7 @@ namespace ZFramework
         public override void OnLateUpdate(TestComponent self)
         {
             Log.Error("LateUpdate");
-            if (Keyboard.current[Key.A].isPressed)
+            if (Input.GetKeyDown(KeyCode.A))
             {
                 Log.Error("----B----");
             }

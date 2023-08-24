@@ -1,10 +1,10 @@
 {
-    "name": "Unity.Hotfix.Func",
+    "name": "Unity.Assembly.Func",
     "rootNamespace": "ZFramework",
     "references": [
-        "Unity.Boot",
-        "Unity.Hotfix.Core",
-        "Unity.Hotfix.Data"
+        "Unity.Assembly.Boot",
+        "Unity.Assembly.Core",
+        "Unity.Assembly.Data"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

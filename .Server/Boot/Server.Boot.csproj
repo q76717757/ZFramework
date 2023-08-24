@@ -17,7 +17,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\..\Boot\Common\**\*.cs">
+		<Compile Include="..\..\Assembly\Boot\Common\**\*.cs">
 			<Link>Common\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
 	</ItemGroup>

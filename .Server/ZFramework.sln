@@ -9,15 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unity", "Unity", "{2FA3B954
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{1AECF59E-CC28-4B18-942F-3B95B58FD865}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Boot", "..\..\..\Unity.Boot.csproj", "{E7ECA2B6-BC35-61D1-EC47-8655F3F3741C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Assembly.Boot", "..\..\..\Unity.Assembly.Boot.csproj", "{E7ECA2B6-BC35-61D1-EC47-8655F3F3741C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Hotfix.Core", "..\..\..\Unity.Hotfix.Core.csproj", "{456489C2-E34B-AC58-9F6B-3F60187C4A7C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Assembly.Core", "..\..\..\Unity.Assembly.Core.csproj", "{456489C2-E34B-AC58-9F6B-3F60187C4A7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Hotfix.Data", "..\..\..\Unity.Hotfix.Data.csproj", "{B325D85A-D3C2-1F03-4424-29C6420DE565}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Assembly.Data", "..\..\..\Unity.Assembly.Data.csproj", "{B325D85A-D3C2-1F03-4424-29C6420DE565}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Hotfix.Func", "..\..\..\Unity.Hotfix.Func.csproj", "{91D41F4F-C774-13C2-C57A-C68194649836}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Assembly.Func", "..\..\..\Unity.Assembly.Func.csproj", "{91D41F4F-C774-13C2-C57A-C68194649836}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Hotfix.View", "..\..\..\Unity.Hotfix.View.csproj", "{F58EF478-2727-0108-8F00-5709514722E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Assembly.View", "..\..\..\Unity.Assembly.View.csproj", "{F58EF478-2727-0108-8F00-5709514722E2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Package.Runtime", "..\..\..\Unity.Package.Runtime.csproj", "{A374B7E9-A210-9651-A65D-221AF4713360}"
 EndProject

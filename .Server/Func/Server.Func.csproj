@@ -15,7 +15,7 @@
   </PropertyGroup>
 	
 	<ItemGroup>
-		<Compile Include="..\..\Hotfix\Func\**\*.cs">
+		<Compile Include="..\..\Assembly\Func\**\*.cs">
 			<Link>Func\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
 	</ItemGroup>
@@ -25,10 +25,6 @@
 	  <ProjectReference Include="..\Core\Server.Core.csproj" />
 	  <ProjectReference Include="..\Data\Server.Data.csproj" />
 	  <ProjectReference Include="..\Packages\Server.Packages.csproj" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <Folder Include="Server\" />
 	</ItemGroup>
 	
 </Project>

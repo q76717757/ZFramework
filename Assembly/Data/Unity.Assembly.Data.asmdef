@@ -1,8 +1,9 @@
 {
-    "name": "Unity.Boot",
+    "name": "Unity.Assembly.Data",
     "rootNamespace": "ZFramework",
     "references": [
-        "HybridCLR.Runtime"
+        "Unity.Assembly.Boot",
+        "Unity.Assembly.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -11,12 +12,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "com.code-philosophy.hybridclr",
-            "expression": "",
-            "define": "ENABLE_HYBRIDCLR"
-        }
-    ],
-    "noEngineReferences": false
+    "versionDefines": [],
+    "noEngineReferences": true
 }

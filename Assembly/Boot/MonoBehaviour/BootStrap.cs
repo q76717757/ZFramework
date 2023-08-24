@@ -29,7 +29,7 @@ namespace ZFramework
 
             BootProfile bootConfig = BootProfile.GetInstance();
             IAssemblyLoader assemblyLoader = GetAssemblyLoader(bootConfig.AssemblyLoadType);
-            Type[] allTypes = assemblyLoader.LoadAssembly(bootConfig.AssemblyNames);
+            Type[] allTypes = assemblyLoader.LoadAssembly(Defines.AssemblyNames);
             game = StartGame(allTypes);
         }
 

@@ -23,7 +23,7 @@ namespace ZFramework
                 if (true)//文件合法
                 {
                     //补充元数据
-                    HybridCLR_API.LoadMetadataForAOTAssembly(assemblyNames);
+                    //HybridCLR_API.LoadMetadataForAOTAssembly(assemblyNames);
                     //加载JIT.ab
                     //加载程序集
                 }

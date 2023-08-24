@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
-using UnityEngine.InputSystem;
+//using UnityEngine.InputSystem;
 
 namespace ZFramework
 {
@@ -113,7 +113,7 @@ namespace ZFramework
         public override void OnLoaded(LoadSceneMode mode)
         {
             Log.Info("TianTao Loaded");
-            XRActiveController.SetActive(true);
+            //XRActiveController.SetActive(true);
         }
         public override void OnUnload()
         {

@@ -16,7 +16,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\..\Hotfix\Data\**\*.cs">
+		<Compile Include="..\..\Assembly\Data\**\*.cs">
 			<Link>Data\%(RecursiveDir)%(FileName)%(Extension)</Link>
 		</Compile>
 	</ItemGroup>

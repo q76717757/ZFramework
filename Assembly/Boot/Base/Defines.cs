@@ -37,6 +37,7 @@ namespace ZFramework
             iOS           = 1 << 2,
             Android       = 1 << 3,
             //WebGL       = 1 << 4,webgl热更有特殊的处理,时间关系暂不考虑
+            //MiniGame    = 1 << 5
 
             OfflineSupported = Windows | Windows64,
             OnlineSupported = OfflineSupported | Android | iOS,
@@ -71,31 +72,20 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 默认热更新程序集 (HybridCLR)
+        /// 框架管理的程序集
         /// </summary>
-        public static string[] DefaultAssemblyNames => new string[]
+        public static string[] AssemblyNames => new string[]
         {
-            "Unity.Hotfix.Core",
-            "Unity.Hotfix.Data",
-            "Unity.Hotfix.Func",
-            "Unity.Hotfix.View",
+            "Unity.Boot",
+            "Unity.Core",
+            "Unity.Data",
+            "Unity.Func",
+            "Unity.View",
             "Assembly-CSharp",
         };
 
         /// <summary>
-        /// 默认补充元数据程序集 (HybridCLR)
-        /// </summary>
-        public static string[] DefaultAOTMetaAssemblyNames => new string[]
-        {
-            "mscorlib",
-            "System",
-            "System.Core",
-            "UnityEngine.CoreModule",
-            "Unity.Package.Runtime",
-        };
-
-        /// <summary>
-        /// 随包资产的路径  ./StreamingAssets/BuildInAssets/{Platform}
+        /// 随包资产的路径(只读)  ./StreamingAssets/BuildInAssets/{Platform}
         /// </summary>
         public static string BuildInAssetAPath
         {
@@ -106,7 +96,7 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 数据持久化根目录  windows平台./Res/   其他平台返回./PersistentDataPath/Res
+        /// 数据持久化根目录(可读写)  windows平台./Res/   其他平台返回./PersistentDataPath/Res
         /// </summary>
         public static string PersistenceDataAPath
         {
@@ -152,7 +142,7 @@ namespace ZFramework
         /// 获取指定平台下的持久化资源的存放路径(可读写目录)
         /// </summary>
         /// <param name="platform">目标运行时平台</param>
-        /// <returns>windows平台./Res/   其他平台返回./PersistentDataPath/Res/ </returns>
+        /// <returns>windows平台./Res/   其他平台返回./PersistentDataPath/Res/ Editor下返回工程根目录下的临时路径</returns>
         public static string GetPresistenceDataAPath(PlatformType platform)
         {
 #if UNITY_EDITOR

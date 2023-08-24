@@ -1,12 +1,12 @@
 {
-    "name": "Unity.Hotfix.View",
+    "name": "Unity.Assembly.View",
     "rootNamespace": "ZFramework",
     "references": [
         "Unity.Package.Runtime",
-        "Unity.Boot",
-        "Unity.Hotfix.Core",
-        "Unity.Hotfix.Data",
-        "Unity.Hotfix.Func",
+        "Unity.Assembly.Boot",
+        "Unity.Assembly.Core",
+        "Unity.Assembly.Data",
+        "Unity.Assembly.Func",
         "Unity.TextMeshPro",
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.XR.Management"
