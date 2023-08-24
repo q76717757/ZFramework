@@ -52,10 +52,11 @@ namespace ZFramework.Editor
             }
             EndFadeGroup();
         }
-        public void JoinGroup(List<FadeFoldout> group)
+        public FadeFoldout JoinGroup(List<FadeFoldout> group)
         {
             this.group = group;
             this.group.Add(this);
+            return this;
         }
         bool BeginFadeGroup()
         {
