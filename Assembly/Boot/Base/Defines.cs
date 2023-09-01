@@ -12,22 +12,6 @@ namespace ZFramework
     /// </summary>
     public static class Defines
     {
-        public enum UpdateType : byte
-        {
-            /// <summary>
-            /// 不支持热更的平台/没有网络环境的项目/临时开发不想走热更流程
-            /// </summary>
-            Not = 0,
-            /// <summary>
-            /// 需要平台支持热更+项目有网络环境+部署对应的热更服务 版本查询,资源下载等
-            /// </summary>
-            Online = 1,
-            /// <summary>
-            /// 仅针对WinPC项目  不需要部署热更服务 从本地load资源  因为windows系统操作文件方便  适用于一些内网/无网PC项目
-            /// </summary>
-            Offline = 2,
-        }
-
         [Flags]
         public enum PlatformType : byte
         {
@@ -76,11 +60,10 @@ namespace ZFramework
         /// </summary>
         public static string[] AssemblyNames => new string[]
         {
-            "Unity.Boot",
-            "Unity.Core",
-            "Unity.Data",
-            "Unity.Func",
-            "Unity.View",
+            "Unity.Assembly.Core",
+            "Unity.Assembly.Data",
+            "Unity.Assembly.Func",
+            "Unity.Assembly.View",
             "Assembly-CSharp",
         };
 

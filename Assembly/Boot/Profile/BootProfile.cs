@@ -12,8 +12,8 @@ namespace ZFramework
     /// </summary>
     public class BootProfile
     {
-        [SerializeField] private Defines.UpdateType assemblyLoadType = Defines.UpdateType.Not;
-        [SerializeField] private string[] assemblyNames = new string[]//hybridclr
+        [SerializeField] private bool isEnableHotfixCode = false;
+        [SerializeField] private string[] hotfixAssemblyNames = new string[]
         {
             "Unity.Core",
             "Unity.Data",
@@ -29,24 +29,21 @@ namespace ZFramework
             "UnityEngine.CoreModule",
             "Unity.Package.Runtime",
         };
-        [SerializeField] private bool isMustSync = false;
+
 
         /// <summary>
-        /// 热更新模式
+        /// 是否启用代码热更新
         /// </summary>
-        public Defines.UpdateType AssemblyLoadType { get => assemblyLoadType;}
+        public bool IsEnableHotfixCore { get => isEnableHotfixCode; }
         /// <summary>
         /// 热更新程序集
         /// </summary>
-        public string[] AssemblyNames { get => assemblyNames; }
+        public string[] HotfixAssemblyNames { get => hotfixAssemblyNames; }
         /// <summary>
         /// 补充元数据程序集
         /// </summary>
         public string[] AotMetaAssemblyNames { get => aotMetaAssemblyNames; }
-        /// <summary>
-        /// 是否强同步
-        /// </summary>
-        public bool IsMustSync { get => isMustSync; }
+
 
         /// <summary>
         /// 配置文件是否存在
@@ -129,20 +126,11 @@ namespace ZFramework
             isDirty = true;
         }
 
-
-        internal void SerLoadMod(Defines.UpdateType value)
+        internal void SetEnableHotfix(bool enable)
         {
-            if (assemblyLoadType != value)
+            if (isEnableHotfixCode != enable)
             {
-                assemblyLoadType = value;
-                SetDirty();
-            }
-        }
-        internal void SetMustSync(bool value)
-        {
-            if (isMustSync != value)
-            {
-                isMustSync = value;
+                isEnableHotfixCode = enable;
                 SetDirty();
             }
         }

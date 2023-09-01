@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace ZFramework
@@ -8,54 +10,41 @@ namespace ZFramework
     [DisallowMultipleComponent]
     public sealed class BootStrap : MonoBehaviour
     {
-        //引导启动流程图
-        //https://www.processon.com/view/link/64b9f2dda554064ccf306779
-
         static IGameInstance game;
 
         void Start()
         {
+            ZLogVisualization.Visua = true;
             if (game != null)
             {
                 Destroy(gameObject);
                 return;
             }
-
             DontDestroyOnLoad(gameObject);
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
-            {
-                Log.Error("UnhandledException:" + e.ExceptionObject);
-            };
 
-            BootProfile bootConfig = BootProfile.GetInstance();
-            IAssemblyLoader assemblyLoader = GetAssemblyLoader(bootConfig.AssemblyLoadType);
-            Type[] allTypes = assemblyLoader.LoadAssembly(Defines.AssemblyNames);
-            game = StartGame(allTypes);
+            game = StartGame();
         }
 
-        IAssemblyLoader GetAssemblyLoader(Defines.UpdateType type)
+        IGameInstance StartGame()
         {
-#if UNITY_EDITOR
-            return new DomainLoader();
-#else
-            switch (type)
+            //根据引导配置预加载程序集
+            if (BootProfile.GetInstance().IsEnableHotfixCore)
             {
-                case Defines.UpdateType.Not:
-                    return new DomainLoader();
-                case Defines.UpdateType.Online:
-                    return new OnlineLoader();
-                case Defines.UpdateType.Offline:
-                    return new OfflineLoader();
-                default:
-                    throw new NotImplementedException();
+                HybridCLRUtility.LoadAssembly();
             }
-#endif
-        }
-        IGameInstance StartGame(Type[] allTypes)
-        {
+            //遍历域中所有程序集,获取框架管理的程序集
+            List<Type> allTypes = new List<Type>();
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (Defines.AssemblyNames.Contains(assembly.GetName().Name))
+                {
+                    allTypes.AddRange(assembly.GetTypes());
+                }
+            }
+            //反射框架入口
             Type entryType = allTypes.First(type => type.FullName == "ZFramework.Game");
             IGameInstance game = Activator.CreateInstance(entryType, true) as IGameInstance;
-            game.Start(allTypes);
+            game.Start(allTypes.ToArray());
             return game;
         }
 

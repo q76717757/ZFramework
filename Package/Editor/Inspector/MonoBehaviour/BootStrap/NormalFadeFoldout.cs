@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace ZFramework.Editor
 {
@@ -12,9 +11,19 @@ namespace ZFramework.Editor
 
         protected override void OnGUI()
         {
-            var profile = BootProfile.GetInstance();
+            ShowDoc();
+
             EditorGUILayout.LabelField("目标平台:" + Defines.TargetRuntimePlatform.ToString());
-            EditorGUILayout.LabelField("强同步:" + profile.IsMustSync);
+        }
+
+        void ShowDoc()
+        {
+            string docURL = "https://www.processon.com/view/link/64b9f2dda554064ccf306779";
+            if (GUILayout.Button($"引导流程图:https://www.processon.com/view/link/"))
+            {
+                Application.OpenURL(docURL);
+            }
+            EditorGUILayout.Space();
         }
     }
 }

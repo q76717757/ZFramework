@@ -1,14 +1,24 @@
-#if ENABLE_HYBRIDCLR
-
-using UnityEngine.Networking;
-using HybridCLR;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
+using UnityEngine.Networking;
+
+#if ENABLE_HYBRIDCLR
+using HybridCLR;
+#endif
 
 namespace ZFramework
 {
-    internal static class HybridCLR_API
+    internal static class HybridCLRUtility
     {
+        public static void LoadAssembly()
+        { 
+
+        }
+
+#if ENABLE_HYBRIDCLR
         public static void LoadMetadataForAOTAssembly(string[] aotAssemblyNames, HomologousImageMode mode = HomologousImageMode.Consistent)
         {
             foreach (var aotName in aotAssemblyNames)
@@ -38,7 +48,6 @@ namespace ZFramework
                 }
             }
         }
+#endif
     }
 }
-
-#endif

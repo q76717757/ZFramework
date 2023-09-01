@@ -41,7 +41,7 @@ namespace ZFramework.Editor
 
         protected FadeFoldout()
         {
-            animBool = new AnimBool();
+            animBool = new AnimBool(true);
         }
 
         public void OnGui()

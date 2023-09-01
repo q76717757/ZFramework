@@ -2,35 +2,75 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.PackageManager;
+using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Profiling;
+
+#if ENABLE_HYBRIDCLR
+using HybridCLR;
+using HybridCLR.Editor;
+using HybridCLR.Editor.Installer;
+#endif
 
 namespace ZFramework.Editor
 {
-    public class HotfixFadeFoldout : FadeFoldout
+    public class HybridCLRFoldout : FadeFoldout
     {
         public override string Title => "代码热更新";
 
+        string packageName = "com.code-philosophy.hybridclr";
+        string gitURL = "git@gitee.com:focus-creative-games/hybridclr_unity.git";
+
         protected override void OnGUI()
         {
-            ShowDoc();
+            EditorGUILayout.LabelField("代码热更新方案: HybridCLR", EditorStyles.centeredGreyMiniLabel);
 
-            switch (EnumPopup())
+            BootProfile profile = BootProfile.GetInstance();
+            EditorGUILayout.BeginHorizontal();
+            bool enable = EditorGUILayout.Toggle(profile.IsEnableHotfixCore, GUILayout.Width(15));
+            profile.SetEnableHotfix(enable);
+            EditorGUILayout.LabelField("启用");
+            EditorGUILayout.EndHorizontal();
+
+            //ShowDoc();
+
+            EditorGUI.BeginDisabledGroup(!enable);
+            if (enable)
             {
-                case Defines.UpdateType.Not:
-                    Not();
-                    break;
-                case Defines.UpdateType.Online:
-                    Remote();
-                    break;
-                case Defines.UpdateType.Offline:
-                    Local();
-                    break;
+                CheckHybridCLR();
+            }
+            else
+            {
+                IsDisable();
+            }
+            //SelectAssembly();
+            EditorGUI.EndDisabledGroup();
+
+            //EditorGUILayout.HelpBox("HybridCLR已开启,如选择不热更模式则需要关闭HybridCLR", MessageType.Error);
+
+            profile.SaveIfDirty();
+
+            if (GUILayout.Button("TestButton"))
+            {
+                Log.Info("TestButton");
             }
         }
 
+
+        void CheckHybridCLRPackageIsInstall()
+        {
+#if ENABLE_HYBRIDCLR
+
+
+#else
+
+ 
+#endif
+        }
+
+
         void ShowDoc()
         {
-            EditorGUILayout.LabelField("热更新方案: HybridCLR", EditorStyles.centeredGreyMiniLabel);
             string docURL = "https://hybridclr.doc.code-philosophy.com/docs/intro";
             if (GUILayout.Button($"官方文档:{docURL}"))
             {
@@ -39,71 +79,45 @@ namespace ZFramework.Editor
             EditorGUILayout.Space();
         }
 
-        Defines.UpdateType EnumPopup()
+        ReorderableList list;
+        void SelectAssembly()
         {
             BootProfile profile = BootProfile.GetInstance();
 
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("热更新模式:", EditorStyles.boldLabel, GUILayout.Width(100));
-            profile.SerLoadMod((Defines.UpdateType)EditorGUILayout.EnumPopup(profile.AssemblyLoadType));
-            EditorGUILayout.EndHorizontal();
+            if (list == null)
+            {
+                list = new ReorderableList(profile.AotMetaAssemblyNames, null, true, false, true, true);
+                list.drawElementCallback += A;
+            }
+            list.DoLayoutList();
 
             profile.SaveIfDirty();
-            return BootProfile.GetInstance().AssemblyLoadType;
+        }
+        void A(Rect rect, int index, bool isActive, bool isFocused)
+        {
+            BootProfile profile = BootProfile.GetInstance();
+            //Log.Info(index + ":" + isActive + ":" + isFocused);
+            EditorGUI.TextField(rect, profile.HotfixAssemblyNames[index]);
         }
 
-
-        void Not()
-        {
-#if ENABLE_HYBRIDCLR
-            if (!IsDisable())
-            {
-                return;
-            }
-#endif
-            DrawAssembly(BootProfile.GetInstance().AssemblyNames);
-            if (GUILayout.Button("重置到默认"))
-            {
-                ResetAssembly(Defines.AssemblyNames);
-            }
-        }
-        void Remote()
-        {
-            if (CheckHybridCLR())
-            {
-#if ENABLE_HYBRIDCLR
-                CheckAssemblySetting();
-#endif
-            }
-        }
-        void Local()
-        {
-            if (CheckHybridCLR())
-            {
-#if ENABLE_HYBRIDCLR
-                CheckAssemblySetting();
-#endif
-            }
-        }
 
 
         bool CheckHybridCLR()
         {
 #if ENABLE_HYBRIDCLR
+
+            if (GUILayout.Button("移除HybridCLR"))
+            {
+                var r =  Client.Remove(packageName);
+            }
+
             return IsFullInstall() && IsEnable() && CheckTargetPlatfrom() && CheckGC() && CheckIL2CPP() && CheckAPILevel();//判断是有顺序的
 #else
-            EditorGUILayout.LabelField("HybridCLR Package(未安装)", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("可以通过Package Manager的Add package from git URL安装", MessageType.Error);
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("URL:", GUILayout.Width(50));
-            EditorGUILayout.TextField("git@gitee.com:focus-creative-games/hybridclr_unity.git");
-            EditorGUILayout.EndHorizontal();
-
+            EditorGUILayout.HelpBox("HybridCLR Package(未安装)", MessageType.Error);
             UnityEditor.PackageManager.Requests.AddRequest a = null;
-            if (GUILayout.Button("从git安装"))
+            if (GUILayout.Button("点击从git安装"))
             {
-                a = Client.Add("git@gitee.com:focus-creative-games/hybridclr_unity.git");
+                a = Client.Add(gitURL);
             }
             if (a != null)
             {
@@ -162,46 +176,45 @@ namespace ZFramework.Editor
         }
         bool CheckTargetPlatfrom()
         {
-            var target = Defines.TargetRuntimePlatform;
-            var select = BootConfig.Instance.AssemblyLoadType;
-            switch (select)
-            {
-                case Defines.UpdateType.Online:
-                    if (target == (target & Defines.PlatformType.OnlineSupported))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        Show(target.ToString());
-                        EditorGUILayout.HelpBox("目标平台不支持在线更新模式,默认只支持Windows/Android/iOS", MessageType.Error);
-                        if (GUILayout.Button("关闭热更新功能"))
-                        {
-                            //updateType.enumValueIndex = (int)Defines.UpdateType.Not;
-                            SettingsUtil.Enable = false;
-                        }
-                    }
-                    break;
-                case Defines.UpdateType.Offline:
-                    if (target == (target & Defines.PlatformType.OfflineSupported))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        Show(target.ToString());
-                        EditorGUILayout.HelpBox("目标平台不支持离线更新,默认只支持Windows", MessageType.Error);
-                        if (GUILayout.Button("关闭热更新功能"))
-                        {
-                            //updateType.enumValueIndex = (int)Defines.UpdateType.Not;
-                            SettingsUtil.Enable = false;
-                        }
-                    }
-                    break;
-                case Defines.UpdateType.Not:
-                    return true;
-            }
-            return false;
+            //var target = Defines.TargetRuntimePlatform;
+            //var select = BootConfig.Instance.AssemblyLoadType;
+            //switch (select)
+            //{
+            //    case Defines.UpdateType.Online:
+            //        if (target == (target & Defines.PlatformType.OnlineSupported))
+            //        {
+            //            return true;
+            //        }
+            //        else
+            //        {
+            //            Show(target.ToString());
+            //            EditorGUILayout.HelpBox("目标平台不支持在线更新模式,默认只支持Windows/Android/iOS", MessageType.Error);
+            //            if (GUILayout.Button("关闭热更新功能"))
+            //            {
+            //                //updateType.enumValueIndex = (int)Defines.UpdateType.Not;
+            //                //SettingsUtil.Enable = false;
+            //            }
+            //        }
+            //        break;
+            //    case Defines.UpdateType.Offline:
+            //        if (target == (target & Defines.PlatformType.OfflineSupported))
+            //        {
+            //            return true;
+            //        }
+            //        else
+            //        {
+            //            Show(target.ToString());
+            //            EditorGUILayout.HelpBox("目标平台不支持离线更新,默认只支持Windows", MessageType.Error);
+            //            if (GUILayout.Button("关闭热更新功能"))
+            //            {
+            //                //updateType.enumValueIndex = (int)Defines.UpdateType.Not;
+            //                //SettingsUtil.Enable = false;
+            //            }
+            //        }
+            //        break;
+            //    case Defines.UpdateType.Not:
+            //        return true;
+            //}
 
             void Show(string label)
             {
@@ -210,6 +223,7 @@ namespace ZFramework.Editor
                 EditorGUILayout.LabelField(label);
                 EditorGUILayout.EndHorizontal();
             }
+            return true;
         }
         bool CheckGC()
         {
@@ -263,32 +277,32 @@ namespace ZFramework.Editor
         }
         void CheckAssemblySetting()
         {
-            DrawAssembly(BootConfig.Instance.AssemblyNames);
+            //DrawAssembly(BootConfig.Instance.AssemblyNames);
             CheckAssemblyConsistency();
-            DrawAssembly(BootConfig.Instance.AotMetaAssemblyNames);
+            //DrawAssembly(BootConfig.Instance.AotMetaAssemblyNames);
 
             EditorGUILayout.Space();
             if (GUILayout.Button("重置到默认"))
             {
-                ResetAssembly(Defines.DefaultAssemblyNames);
-                ResetAssembly(Defines.DefaultAOTMetaAssemblyNames);
+                //ResetAssembly(Defines.DefaultAssemblyNames);
+                //ResetAssembly(Defines.DefaultAOTMetaAssemblyNames);
             }
         }
         void CheckAssemblyConsistency()
         {
-            string[] assemblyNameValues = BootConfig.Instance.AssemblyNames;
-            for (int i = 0; i < assemblyNameValues.Length; i++)
-            {
-                assemblyNameValues[i] = BootConfig.Instance.AssemblyNames[i];
-            }
-            List<string> clr = new List<string>();
-            if (HybridCLRSettings.Instance.hotUpdateAssemblies != null)
-                clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblies);
-            if (HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions != null)
-                clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions.Where((a) => a != null).Select((a) => a.name));
+            //string[] assemblyNameValues = BootConfig.Instance.AssemblyNames;
+            //for (int i = 0; i < assemblyNameValues.Length; i++)
+            //{
+            //    assemblyNameValues[i] = BootConfig.Instance.AssemblyNames[i];
+            //}
+            //List<string> clr = new List<string>();
+            //if (HybridCLRSettings.Instance.hotUpdateAssemblies != null)
+            //    clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblies);
+            //if (HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions != null)
+            //    clr.AddRange(HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions.Where((a) => a != null).Select((a) => a.name));
 
 
-            if (!ComparisonArray(clr, assemblyNameValues))
+            //if (!ComparisonArray(clr, assemblyNameValues))
             {
                 EditorGUILayout.HelpBox("热更程序集列表与HybridCLR不一致", MessageType.Error);
 
@@ -296,7 +310,7 @@ namespace ZFramework.Editor
                 if (GUILayout.Button("保存至HybridCLR"))
                 {
                     HybridCLRSettings.Instance.hotUpdateAssemblyDefinitions = new UnityEditorInternal.AssemblyDefinitionAsset[0];
-                    HybridCLRSettings.Instance.hotUpdateAssemblies = assemblyNameValues;
+                    //HybridCLRSettings.Instance.hotUpdateAssemblies = assemblyNameValues;
                     HybridCLRSettings.Save();
                 }
                 EditorGUILayout.EndHorizontal();
@@ -304,14 +318,6 @@ namespace ZFramework.Editor
         }
 #endif
 
-        void DrawAssembly(string[] assemblyNames)
-        {
-            for (int i = 0; i < assemblyNames.Length; i++)
-            {
-                EditorGUILayout.LabelField(assemblyNames[i]);
-            }
-            EditorGUILayout.HelpBox("画一下数组,暂未实现", MessageType.Error);
-        }
         void ResetAssembly(string[] defVals)
         {
             //for (int i = 0; i < defVals.Length; i++)

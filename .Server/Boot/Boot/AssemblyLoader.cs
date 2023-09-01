@@ -6,7 +6,7 @@ using System.Runtime.Loader;
 
 namespace ZFramework
 {
-    public class AssemblyLoader: IAssemblyLoader
+    public class AssemblyLoader
     {
         private AssemblyLoadContext assemblyLoadContext;
 
