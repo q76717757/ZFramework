@@ -1,34 +1,66 @@
-﻿// Author: Daniele Giardini - http://www.demigiant.com
-// Created: 2015/03/21 18:43
+// Author: Daniele Giardini - http://www.demigiant.com
+// Created: 2018/07/13
 
-using UnityEngine.Audio;
+#if true // MODULE_MARKER
+using System;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
+using UnityEngine;
+#if UNITY_5 || UNITY_2017_1_OR_NEWER
+using UnityEngine.Audio; // Required for AudioMixer
+#endif
 
+#pragma warning disable 1591
 namespace DG.Tweening
 {
-    /// <summary>
-    /// Methods that extend known Unity objects and allow to directly create and control tweens from their instances.
-    /// These, as all DOTween50 methods, require Unity 5.0 or later.
-    /// </summary>
-    public static class ShortcutExtensions50
+	public static class DOTweenModuleAudio
     {
-        #region AudioMixerGroup
+        #region Shortcuts
+
+        #region Audio
+
+        /// <summary>Tweens an AudioSource's volume to the given value.
+        /// Also stores the AudioSource as the tween's target so it can be used for filtered operations</summary>
+        /// <param name="endValue">The end value to reach (0 to 1)</param><param name="duration">The duration of the tween</param>
+        public static TweenerCore<float, float, FloatOptions> DOFade(this AudioSource target, float endValue, float duration)
+        {
+            if (endValue < 0) endValue = 0;
+            else if (endValue > 1) endValue = 1;
+            TweenerCore<float, float, FloatOptions> t = DOTween.To(() => target.volume, x => target.volume = x, endValue, duration);
+            t.SetTarget(target);
+            return t;
+        }
+
+        /// <summary>Tweens an AudioSource's pitch to the given value.
+        /// Also stores the AudioSource as the tween's target so it can be used for filtered operations</summary>
+        /// <param name="endValue">The end value to reach</param><param name="duration">The duration of the tween</param>
+        public static TweenerCore<float, float, FloatOptions> DOPitch(this AudioSource target, float endValue, float duration)
+        {
+            TweenerCore<float, float, FloatOptions> t = DOTween.To(() => target.pitch, x => target.pitch = x, endValue, duration);
+            t.SetTarget(target);
+            return t;
+        }
+
+        #endregion
+
+#if UNITY_5 || UNITY_2017_1_OR_NEWER
+        #region AudioMixer (Unity 5 or Newer)
 
         /// <summary>Tweens an AudioMixer's exposed float to the given value.
         /// Also stores the AudioMixer as the tween's target so it can be used for filtered operations.
         /// Note that you need to manually expose a float in an AudioMixerGroup in order to be able to tween it from an AudioMixer.</summary>
         /// <param name="floatName">Name given to the exposed float to set</param>
         /// <param name="endValue">The end value to reach</param><param name="duration">The duration of the tween</param>
-        public static Tweener DOSetFloat(this AudioMixer target, string floatName, float endValue, float duration)
+        public static TweenerCore<float, float, FloatOptions> DOSetFloat(this AudioMixer target, string floatName, float endValue, float duration)
         {
-            return DOTween.To(()=> {
-                float currVal;
-                target.GetFloat(floatName, out currVal);
-                return currVal;
-            }, x=> target.SetFloat(floatName, x), endValue, duration)
-            .SetTarget(target);
+            TweenerCore<float, float, FloatOptions> t = DOTween.To(()=> {
+                    float currVal;
+                    target.GetFloat(floatName, out currVal);
+                    return currVal;
+                }, x=> target.SetFloat(floatName, x), endValue, duration);
+            t.SetTarget(target);
+            return t;
         }
-
-        #endregion
 
         #region Operation Shortcuts
 
@@ -53,8 +85,6 @@ namespace DG.Tweening
         /// <param name="complete">If TRUE completes the tween before killing it</param>
         public static int DOKill(this AudioMixer target, bool complete = false)
         {
-            //            int tot = complete ? DOTween.CompleteAndReturnKilledTot(target) : 0;
-            //            return tot + DOTween.Kill(target);
             return DOTween.Kill(target, complete);
         }
 
@@ -162,5 +192,11 @@ namespace DG.Tweening
         }
 
         #endregion
+
+        #endregion
+#endif
+
+        #endregion
     }
 }
+#endif
