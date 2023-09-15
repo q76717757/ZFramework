@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.IO;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -56,18 +57,6 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 框架管理的程序集
-        /// </summary>
-        public static string[] AssemblyNames => new string[]
-        {
-            "Unity.Assembly.Core",
-            "Unity.Assembly.Data",
-            "Unity.Assembly.Func",
-            "Unity.Assembly.View",
-            "Assembly-CSharp",
-        };
-
-        /// <summary>
         /// 随包资产的路径(只读)  ./StreamingAssets/BuildInAssets/{Platform}
         /// </summary>
         public static string BuildInAssetAPath
@@ -86,28 +75,6 @@ namespace ZFramework
             get
             {
                 return GetPresistenceDataAPath(TargetRuntimePlatform);
-            }
-        }
-
-        /// <summary>
-        /// 随包配置文件所在的文件夹
-        /// </summary>
-        public static string ProfilesAPath
-        {
-            get
-            {
-                return new DirectoryInfo(Path.Combine(BuildInAssetAPath, "Profiles")).FullName;
-            }
-        }
-
-        /// <summary>
-        /// 元数据程序集的加载路径 (HybridCLR)
-        /// </summary>
-        public static string AOTMetaAssemblyAPath
-        {
-            get
-            {
-                return new DirectoryInfo(Path.Combine(BuildInAssetAPath, "Assembly")).FullName;
             }
         }
 

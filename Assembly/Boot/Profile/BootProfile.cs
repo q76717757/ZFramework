@@ -10,40 +10,41 @@ namespace ZFramework
     /// <summary>
     /// 启动配置文件
     /// </summary>
-    public class BootProfile
+    internal class BootProfile
     {
-        [SerializeField] private bool isEnableHotfixCode = false;
-        [SerializeField] private string[] hotfixAssemblyNames = new string[]
-        {
-            "Unity.Core",
-            "Unity.Data",
-            "Unity.Func",
-            "Unity.View",
-            "Assembly-CSharp",
-        };
-        [SerializeField] private string[] aotMetaAssemblyNames = new string[]
-        {
-            "mscorlib",
-            "System",
-            "System.Core",
-            "UnityEngine.CoreModule",
-            "Unity.Package.Runtime",
-        };
-
-
         /// <summary>
         /// 是否启用代码热更新
         /// </summary>
-        public bool IsEnableHotfixCore { get => isEnableHotfixCode; }
+        public bool isEnableHotfixCode = false;
         /// <summary>
-        /// 热更新程序集
+        /// 加载程序集
         /// </summary>
-        public string[] HotfixAssemblyNames { get => hotfixAssemblyNames; }
+        public List<string> assemblyNames = new List<string>
+        {
+            "Unity.Assembly.Core",
+            "Unity.Assembly.Data",
+            "Unity.Assembly.Func",
+            "Unity.Assembly.View",
+            "Assembly-CSharp",
+        };
         /// <summary>
         /// 补充元数据程序集
         /// </summary>
-        public string[] AotMetaAssemblyNames { get => aotMetaAssemblyNames; }
+        public List<string> aotMetaAssemblyNames = new List<string>
+        {
 
+        };
+        /// <summary>
+        /// 热更新程序集
+        /// </summary>
+        public List<string> hotfixAssemblyNames = new List<string>
+        {
+            "Unity.Assembly.Core",
+            "Unity.Assembly.Data",
+            "Unity.Assembly.Func",
+            "Unity.Assembly.View",
+            "Assembly-CSharp",
+        };
 
         /// <summary>
         /// 配置文件是否存在
@@ -57,10 +58,9 @@ namespace ZFramework
         }
 
 
-
-
+        const string FILE_NAME = "BootProfile.json";
         static BootProfile _instance;
-        bool isDirty;
+        bool isDirty = true;
 
         internal static BootProfile GetInstance()
         {
@@ -105,11 +105,11 @@ namespace ZFramework
         }
         internal static string GetFilePath()
         {
-            return Path.Combine(Defines.ProfilesAPath, "BootProfile.json");
+            return Path.Combine(Defines.BuildInAssetAPath, "Profiles", FILE_NAME);
         }
         internal void Save()
         {
-            Directory.CreateDirectory(Defines.ProfilesAPath);
+            Directory.CreateDirectory(Path.Combine(Defines.BuildInAssetAPath, "Profiles"));
             string json = JsonUtility.ToJson(this, true);
             File.WriteAllText(GetFilePath(), json);
         }
@@ -124,15 +124,6 @@ namespace ZFramework
         internal void SetDirty()
         { 
             isDirty = true;
-        }
-
-        internal void SetEnableHotfix(bool enable)
-        {
-            if (isEnableHotfixCode != enable)
-            {
-                isEnableHotfixCode = enable;
-                SetDirty();
-            }
         }
     }
 }
