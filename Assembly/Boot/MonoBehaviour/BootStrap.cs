@@ -10,7 +10,7 @@ namespace ZFramework
     [DisallowMultipleComponent]
     public sealed class BootStrap : MonoBehaviour
     {
-        static IGameInstance game;
+        internal static IGameInstance game;
 
         void Start()
         {
@@ -27,16 +27,18 @@ namespace ZFramework
 
         IGameInstance StartGame()
         {
+            BootProfile profile = BootProfile.GetInstance();
+
             //根据引导配置预加载程序集
-            if (BootProfile.GetInstance().IsEnableHotfixCore)
+            if (profile.isEnableHotfixCode)
             {
                 HybridCLRUtility.LoadAssembly();
             }
-            //遍历域中所有程序集,获取框架管理的程序集
+            //遍历域中所有已程序集,获取框架管理的程序集
             List<Type> allTypes = new List<Type>();
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                if (Defines.AssemblyNames.Contains(assembly.GetName().Name))
+                if (profile.assemblyNames.Contains(assembly.GetName().Name))
                 {
                     allTypes.AddRange(assembly.GetTypes());
                 }

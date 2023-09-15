@@ -10,23 +10,7 @@ namespace ZFramework.Editor
     [CustomEditor(typeof(BootStrap))]
     public class BootStrapInspector: UnityEditor.Editor
     {
-        List<FadeFoldout> fadeFoldouts= new List<FadeFoldout>();
-
-        private void OnEnable()
-        {
-            fadeFoldouts.Add(new NormalFadeFoldout());
-            fadeFoldouts.Add(new HybridCLRFoldout());
-            fadeFoldouts.Add(new BuildFadeFoldout());
-
-            //new NormalFadeFoldout().JoinGroup(fadeFoldouts);
-            //new AssemblyFadeGroup().JoinGroup(fadeFoldouts); 
-            //new HotfixFadeFoldout().JoinGroup(fadeFoldouts);
-
-            foreach (var item in fadeFoldouts)
-            {
-                item.OnValueChange.AddListener(Repaint);
-            }
-        }
+        List<FadeFoldout> fadeFoldouts;
 
         public override void OnInspectorGUI()
         {
@@ -36,12 +20,34 @@ namespace ZFramework.Editor
             }
             else
             {
-                foreach (var item in fadeFoldouts)
-                {
-                    item.OnGui();
-                }
+                DrawElements();
             }
         }
+
+        void DrawElements()
+        {
+            if (fadeFoldouts == null)
+            {
+                fadeFoldouts = new List<FadeFoldout>
+                {
+                    new NormalFadeFoldout(),
+                    new HybridCLRFoldout(),
+                    new BuildFadeFoldout(),
+                    new ToolBoxFadeFoldout()
+                };
+
+                foreach (var item in fadeFoldouts)
+                {
+                    item.OnValueChange.AddListener(Repaint);
+                }
+            }
+
+            foreach (var item in fadeFoldouts)
+            {
+                item.OnGui();
+            }
+        }
+
     }
 
 }

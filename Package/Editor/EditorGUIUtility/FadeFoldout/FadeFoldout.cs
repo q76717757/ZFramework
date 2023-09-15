@@ -28,6 +28,18 @@ namespace ZFramework.Editor
         }
 
         public abstract string Title { get; }
+        public bool IsOn
+        {
+            get
+            {
+                return animBool.target;
+            }
+            set
+            {
+                animBool.target = value;
+            }
+
+        }
         public UnityEvent OnValueChange 
         {
             get
@@ -41,7 +53,7 @@ namespace ZFramework.Editor
 
         protected FadeFoldout()
         {
-            animBool = new AnimBool(true);
+            animBool = new AnimBool();
         }
 
         public void OnGui()
