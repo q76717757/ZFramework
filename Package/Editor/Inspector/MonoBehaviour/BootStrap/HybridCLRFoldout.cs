@@ -2,13 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.PackageManager;
-using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.Profiling;
-using UnityEngine.Rendering.Universal;
 using UnityEditor.PackageManager.Requests;
 using System.Linq;
 using System;
+using UnityEditorInternal;
+using UnityEngine.UIElements;
 
 #if ENABLE_HYBRIDCLR
 using HybridCLR;
@@ -22,7 +21,7 @@ namespace ZFramework.Editor
     {
         public override string Title => "代码热更新";
 
-        static string gitURL = "git@gitee.com:focus-creative-games/hybridclr_unity.git";
+        static string gitURL = "https://gitee.com/focus-creative-games/hybridclr_unity.git";
         static AddRequest addRequest;
         BootProfile Profile
         {
@@ -57,11 +56,15 @@ namespace ZFramework.Editor
         bool IsEnableHotfix()
         {
             Rect rect = EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
+
             EditorGUILayout.LabelField("热更新方案:HybridCLR", EditorStyles.centeredGreyMiniLabel);
-            if (EditorGUILayout.LinkButton($"官方文档: https://hybridclr.doc.code-philosophy.com"))
+            Rect linkRect =  EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight, EditorStyles.linkLabel,GUILayout.ExpandWidth(true));
+            EditorGUIUtility.AddCursorRect(linkRect, MouseCursor.Link);
+            if(GUI.Button(linkRect,$"官方文档: https://hybridclr.doc.code-philosophy.com",EditorStyles.linkLabel))
             {
                 Application.OpenURL("https://hybridclr.doc.code-philosophy.com/docs/intro");
             }
+
             EditorGUILayout.EndVertical();
 
             bool enable = EditorGUI.ToggleLeft(new Rect(rect.x + 3, rect.y + 2, 50, EditorGUIUtility.singleLineHeight), "启用", Profile.isEnableHotfixCode, EditorStyles.miniLabel);
@@ -90,7 +93,6 @@ namespace ZFramework.Editor
     public partial class HybridCLRFoldout
     { 
         static string packageName = "com.code-philosophy.hybridclr";
-        static RemoveRequest removeRequest;
         ReorderableList _hotfixList;
         ReorderableList _aotMetaList;
         ReorderableList HotfixList
@@ -231,7 +233,7 @@ namespace ZFramework.Editor
                 }
                 if (GUILayout.Button("移除HybridCLR Package"))
                 {
-                    removeRequest = Client.Remove(packageName);
+                    Client.Remove(packageName);
                 }
                 EditorGUILayout.EndHorizontal();
                 return false;

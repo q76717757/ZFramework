@@ -28,13 +28,11 @@ namespace ZFramework.Editor
         {
             if (fadeFoldouts == null)
             {
-                fadeFoldouts = new List<FadeFoldout>
-                {
-                    new NormalFadeFoldout(),
-                    new HybridCLRFoldout(),
-                    new BuildFadeFoldout(),
-                    new ToolBoxFadeFoldout()
-                };
+                fadeFoldouts = new List<FadeFoldout>();
+                new NormalFadeFoldout().JoinGroup(fadeFoldouts);
+                new HybridCLRFoldout().JoinGroup(fadeFoldouts);
+                new BuildFadeFoldout().JoinGroup(fadeFoldouts);
+                new ToolBoxFadeFoldout().JoinGroup(fadeFoldouts);
 
                 foreach (var item in fadeFoldouts)
                 {

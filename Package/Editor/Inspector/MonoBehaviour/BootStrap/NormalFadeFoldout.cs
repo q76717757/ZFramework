@@ -51,16 +51,25 @@ namespace ZFramework.Editor
                 Profile.assemblyNames.AddRange(new BootProfile().assemblyNames);
                 OnListChange();
             }
+
+            Profile.SaveIfDirty();
         }
 
         void ShowDoc()
         {
+            EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
+
+            EditorGUILayout.LabelField("引导流程图", EditorStyles.centeredGreyMiniLabel);
+
             string docURL = "https://www.processon.com/view/link/64b9f2dda554064ccf306779";
-            if (GUILayout.Button($"引导流程图:https://www.processon.com/view/link/"))
+            Rect linkRect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight, EditorStyles.linkLabel, GUILayout.ExpandWidth(true));
+            EditorGUIUtility.AddCursorRect(linkRect, MouseCursor.Link);
+            if (GUI.Button(linkRect, docURL, EditorStyles.linkLabel))
             {
                 Application.OpenURL(docURL);
             }
-            EditorGUILayout.Space();
+
+            EditorGUILayout.EndVertical();
         }
 
         void OnDrawAotMetaElement(Rect rect, int index, bool isActive, bool isFocused)
