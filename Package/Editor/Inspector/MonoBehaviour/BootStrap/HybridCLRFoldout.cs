@@ -7,10 +7,12 @@ using UnityEditor.PackageManager.Requests;
 using System.Linq;
 using System;
 using UnityEditorInternal;
-using UnityEngine.UIElements;
+using System.IO;
+using System.Reflection;
 
 #if ENABLE_HYBRIDCLR
 using HybridCLR;
+using HybridCLR.Editor.Commands;
 using HybridCLR.Editor;
 using HybridCLR.Editor.Installer;
 #endif
@@ -19,7 +21,7 @@ namespace ZFramework.Editor
 {
     public partial class HybridCLRFoldout : FadeFoldout
     {
-        public override string Title => "代码热更新";
+        public override string Title => $"代码热更新({Defines.TargetRuntimePlatform})";
 
         static string gitURL = "https://gitee.com/focus-creative-games/hybridclr_unity.git";
         static AddRequest addRequest;
@@ -39,7 +41,7 @@ namespace ZFramework.Editor
                 if (SettingsIsCorrect())
                 {
                     DrawAssemblySettings();
-                    ShowPath();
+                    PackagingProcess();
                 }
 #else
                 IntallPackage();
@@ -174,18 +176,6 @@ namespace ZFramework.Editor
             }
             return !isUnsupport;
         }
-        bool CheckGC()
-        {
-            if (PlayerSettings.gcIncremental)
-            {
-                EditorGUILayout.HelpBox("HybridCLR刚支持增量GC,如果出现问题可以尝试关闭增量GC", MessageType.Warning);
-                if (GUILayout.Button("关闭增量GC功能"))
-                {
-                    PlayerSettings.gcIncremental = false;
-                }
-            }
-            return true;
-        }
         bool IsIL2CPP()
         {
             var isILCPP = PlayerSettings.GetScriptingBackend(EditorUserBuildSettings.selectedBuildTargetGroup) == ScriptingImplementation.IL2CPP;
@@ -217,6 +207,18 @@ namespace ZFramework.Editor
             }
             return isDotNetFramework;
         } 
+        bool CheckGC()
+        {
+            if (PlayerSettings.gcIncremental)
+            {
+                EditorGUILayout.HelpBox("增量GC还在Beta中,如果出现问题可以先关闭增量GC", MessageType.Warning);
+                if (GUILayout.Button("关闭增量GC功能"))
+                {
+                    PlayerSettings.gcIncremental = false;
+                }
+            }
+            return true;
+        }
         bool IsDisable()
         {
             if (!SettingsUtil.Enable)
@@ -241,28 +243,28 @@ namespace ZFramework.Editor
             
         }
 
-
         void DrawAssemblySettings()
         {
-            var rect = EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
-
-            EditorGUILayout.LabelField("补充元数据程序集", EditorStyles.centeredGreyMiniLabel);
-            AotMetaList.DoLayoutList();
+            Rect rect = EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
             EditorGUILayout.LabelField("热更新程序集", EditorStyles.centeredGreyMiniLabel);
             HotfixList.DoLayoutList();
 
-            CheckAssemblyConsistency();
-
+            if (GUILayout.Button("编译+打包热更程序集"))
+            {
+                CompileDllCommand.CompileDll(EditorUserBuildSettings.activeBuildTarget);
+                PackagingHotfixAssembly();
+                Application.OpenURL(HybridCLRUtility.BuildInAssemblyBundleLoadAPath);
+            }
             EditorGUILayout.EndVertical();
+
+            CheckAssemblyConsistency();
 
             if (GUI.Button(new Rect(rect.x + rect.width - 43, rect.y + 3, 40, 15), "重置", EditorStyles.miniButton))
             {
                 GUI.FocusControl(null);
                 BootProfile defaultValue = new BootProfile();
                 Profile.hotfixAssemblyNames.Clear();
-                Profile.aotMetaAssemblyNames.Clear();
                 Profile.hotfixAssemblyNames.AddRange(defaultValue.hotfixAssemblyNames);
-                Profile.aotMetaAssemblyNames.AddRange(defaultValue.aotMetaAssemblyNames);
                 OnListChange();
             }
         }
@@ -292,7 +294,6 @@ namespace ZFramework.Editor
             SyncSettings(Profile.hotfixAssemblyNames.ToArray());
             Profile.SetDirty();
         }
-
         void CheckAssemblyConsistency()
         {
             string[] assemblyNameValues = Profile.hotfixAssemblyNames.ToArray();
@@ -341,19 +342,164 @@ namespace ZFramework.Editor
             }
         }
 
-        void ShowPath()
+        void PackagingProcess()
         {
-            //EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
-            //EditorGUILayout.LabelField(HybridCLRSettings.Instance.hotUpdateDllCompileOutputRootDir);
-            //EditorGUILayout.LabelField(HybridCLRSettings.Instance.strippedAOTDllOutputRootDir);
-            //if (GUILayout.Button("HybridCLR Settings"))
-            //{
-            //    SettingsService.OpenProjectSettings("Project/HybridCLR Settings");
-            //}
-            //EditorGUILayout.EndVertical();
-        }
+            EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
+            EditorGUILayout.LabelField($"打包流程", EditorStyles.centeredGreyMiniLabel);
 
+            //part 1
+            EditorGUILayout.LabelField("步骤一:执行必要的生成操作", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("1.编译程序集;2.生成IL2CPP宏;3.生成Link.xml;4.导出工程获取AOT程序集;5.生成桥接函数;6.生成反向平台调用包装;7.生成AOT启发文档", MessageType.Info);
+            if (GUILayout.Button("一键生成"))
+            {
+                PrebuildCommand.GenerateAll();
+                GUIUtility.ExitGUI();//解决一个报错,导出工程后GUI不能闭合,中断本次GUI执行即可
+            }
+
+            //part 2
+            EditorGUILayout.LabelField("步骤二:添加AOT引用(可选)", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("根据启发文档的提示手动添加AOT引用,再重新编译AOT可以提升性能", MessageType.Warning);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("自动生成的启发文档");
+            EditorGUI.BeginDisabledGroup(true);
+            MonoScript aotGeneric = AssetDatabase.LoadAssetAtPath<MonoScript>("Assets/" + HybridCLRSettings.Instance.outputAOTGenericReferenceFile);
+            EditorGUILayout.ObjectField(aotGeneric, typeof(MonoScript), false);
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("手动添加AOT的引用");
+            EditorGUI.BeginDisabledGroup(true);
+            MonoScript aorRef = AssetDatabase.LoadAssetAtPath<MonoScript>("Assets/ZFramework/Assembly/Boot/HybridCLR/AOTReferences.cs");
+            EditorGUILayout.ObjectField(aorRef, typeof(MonoScript), false);
+            EditorGUI.EndDisabledGroup();
+            EditorGUILayout.EndHorizontal();
+            if (GUILayout.Button("重新生成"))
+            {
+                PrebuildCommand.GenerateAll();
+                GUIUtility.ExitGUI();
+            }
+
+            //part 3
+            EditorGUILayout.LabelField("步骤三:设置补充元数据程序集", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox("根据启发文档的提示,设置需要补充元数据的AOT程序集", MessageType.Info);
+            AotMetaList.DoLayoutList();
+            Rect rect = GUILayoutUtility.GetLastRect();
+            if (GUI.Button(new Rect(rect.x + rect.width - 63, rect.y - 3 - 20, 60, 15), "自动填充", EditorStyles.miniButton))
+            {
+                //HybridCLR会生成一个启发文档,反射启发文档的内容自动填充进去
+                Assembly assembly_csharp = AppDomain.CurrentDomain.GetAssemblies().First((assembly) => assembly.GetName().Name == "Assembly-CSharp");
+                if (assembly_csharp != null)
+                {
+                    Type type = assembly_csharp.GetType("AOTGenericReferences");
+                    if (type != null)
+                    {
+                        FieldInfo property = type.GetField("PatchedAOTAssemblyList");
+                        if (property != null && property.GetValue(null) is IReadOnlyList<string> values)
+                        {
+                            Profile.aotMetaAssemblyNames.Clear();
+                            Profile.aotMetaAssemblyNames.AddRange(values.Select((s) => s.Replace(".dll", "")));
+                            OnListChange();
+                        }
+                    }
+                }
+                GUI.FocusControl(null);
+            }
+
+            if (GUILayout.Button("打包AOT程序集"))
+            {
+                PackagingMetaAssembly();
+            }
+            EditorGUILayout.EndVertical();
+
+            
+        }
+        void PackagingMetaAssembly()
+        {
+            BootProfile profile = BootProfile.GetInstance();
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            //复制aot源文件到工程内
+            string aotAssembliesSrcDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
+            string aotAssembliesDstDir = $"Assets/07.Bundles/{Defines.TargetRuntimePlatform}/AOTPackingCache";
+            Directory.CreateDirectory(aotAssembliesDstDir);
+            List<string> assemblyNames = new List<string>();
+            List<string> names = profile.aotMetaAssemblyNames;
+            foreach (var dll in names)
+            {
+                string srcDllPath = $"{aotAssembliesSrcDir}/{dll}.dll";
+                if (!File.Exists(srcDllPath))
+                {
+                    Debug.LogError("AOT DLL:" + srcDllPath + "不存在");
+                    continue;
+                }
+                string dllBytesPath = $"{aotAssembliesDstDir}/{dll}.dll.bytes";
+                File.Copy(srcDllPath, dllBytesPath, true);
+                assemblyNames.Add(dllBytesPath);
+            }
+            AssetDatabase.Refresh();
+
+            //打ab包
+            AssetBundleBuild build = new AssetBundleBuild();
+            build.assetBundleName = HybridCLRUtility.AOTMetaAssemblyBundleName;
+            build.assetNames = assemblyNames.ToArray();
+            AssetBundleManifest aotabm = BuildPipeline.BuildAssetBundles(aotAssembliesDstDir, new AssetBundleBuild[] { build }, BuildAssetBundleOptions.ForceRebuildAssetBundle, target);
+
+            //删除aot源文件
+            for (int i = 0; i < assemblyNames.Count; i++)
+            {
+                AssetDatabase.DeleteAsset(assemblyNames[i]);
+            }
+
+            //复制到随包目录下
+            Directory.CreateDirectory(HybridCLRUtility.BuildInAssemblyBundleLoadAPath);
+            File.Copy($"{aotAssembliesDstDir}/{build.assetBundleName}", $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}", true);
+
+            Log.Info("打包AOT程序集完成 hash->" + aotabm.GetAssetBundleHash(build.assetBundleName) + " path->" + $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}");
+
+            AssetDatabase.Refresh();
+        }
+        void PackagingHotfixAssembly()
+        {
+            BootProfile profile = BootProfile.GetInstance();
+            BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+            string aotAssembliesSrcDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
+            string aotAssembliesDstDir = $"Assets/07.Bundles/{Defines.TargetRuntimePlatform}/JITPackingCache";
+            Directory.CreateDirectory(aotAssembliesDstDir);
+            List<string> assemblyNames = new List<string>();
+            List<string> names = profile.hotfixAssemblyNames;
+            foreach (var dll in names)
+            {
+                string srcDllPath = $"{aotAssembliesSrcDir}/{dll}.dll";
+                if (!File.Exists(srcDllPath))
+                {
+                    Debug.LogError("JIT DLL:" + srcDllPath + "不存在");
+                    continue;
+                }
+                string dllBytesPath = $"{aotAssembliesDstDir}/{dll}.dll.bytes";
+                File.Copy(srcDllPath, dllBytesPath, true);
+                assemblyNames.Add(dllBytesPath);
+            }
+            AssetDatabase.Refresh();
+
+            //打ab包
+            AssetBundleBuild build = new AssetBundleBuild();
+            build.assetBundleName = HybridCLRUtility.HotfixAssemblyBundleName;
+            build.assetNames = assemblyNames.ToArray();
+            AssetBundleManifest aotabm = BuildPipeline.BuildAssetBundles(aotAssembliesDstDir, new AssetBundleBuild[] { build }, BuildAssetBundleOptions.ForceRebuildAssetBundle, target);
+                                                                          
+            //删除jit源文件
+            for (int i = 0; i < assemblyNames.Count; i++)
+            {
+                AssetDatabase.DeleteAsset(assemblyNames[i]);
+            }
+
+            //复制到随包目录下
+            Directory.CreateDirectory(HybridCLRUtility.BuildInAssemblyBundleLoadAPath);
+            File.Copy($"{aotAssembliesDstDir}/{build.assetBundleName}", $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}", true);
+
+            Log.Info("打包JIT程序集完成 hash->" + aotabm.GetAssetBundleHash(build.assetBundleName) + " path->" + $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}");
+
+            AssetDatabase.Refresh();
+        }
     }
 #endif
-
 }

@@ -1,53 +1,118 @@
+#if ENABLE_HYBRIDCLR
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
-
-#if ENABLE_HYBRIDCLR
 using HybridCLR;
-#endif
+using System.Reflection;
+using System.Linq;
 
 namespace ZFramework
 {
-    internal static class HybridCLRUtility
+    public static class HybridCLRUtility
     {
-        public static void LoadAssembly()
-        { 
+        /// <summary>
+        /// 热更程序集的包名
+        /// </summary>
+        public static string HotfixAssemblyBundleName => "hotfixassembly.ab";//ab包的名字是全小写的
 
+        /// <summary>
+        /// AOT元数据程序集的包名
+        /// </summary>
+        public static string AOTMetaAssemblyBundleName => "metaassembly.ab";
+
+        /// <summary>
+        /// 随包程序集的加载路径
+        /// </summary>
+        public static string BuildInAssemblyBundleLoadAPath
+        {
+            get
+            {
+                return Path.Combine(Defines.BuildInAssetAPath, "Assembly");
+            }
+        }
+        /// <summary>
+        /// 持久化程序集加载路径
+        /// </summary>
+        public static string PersistenceAssemblyBundleLoadAPath
+        {
+            get
+            {
+                return Path.Combine(Defines.PersistenceDataAPath, "Assembly");
+            }
         }
 
-#if ENABLE_HYBRIDCLR
-        public static void LoadMetadataForAOTAssembly(string[] aotAssemblyNames, HomologousImageMode mode = HomologousImageMode.Consistent)
+
+        /// <summary>
+        /// 加载程序集
+        /// </summary>
+        internal static void LoadAssembly()
         {
-            foreach (var aotName in aotAssemblyNames)
+            //补充元数据
+            LoadMetadataForAOTAssembly(Path.Combine(BuildInAssemblyBundleLoadAPath, AOTMetaAssemblyBundleName));
+
+            //加载热更程序集
+            string hotfixDLLPath = Path.Combine(PersistenceAssemblyBundleLoadAPath, HotfixAssemblyBundleName);
+            string buildinDLLPath = Path.Combine(BuildInAssemblyBundleLoadAPath, HotfixAssemblyBundleName);
+            if (File.Exists(hotfixDLLPath))
             {
-                Uri uri = new Uri(Path.Combine(Defines.AOTMetaAssemblyAPath, $"{aotName}.dll.bytes"));
-                UnityWebRequest www = UnityWebRequest.Get(uri);
-                www.SendWebRequest();
-                while (!www.isDone)
+                LoadHotfixAssembly(hotfixDLLPath);
+            }
+            else
+            {
+                LoadHotfixAssembly(buildinDLLPath);
+            }
+        }
+
+
+        private static void LoadMetadataForAOTAssembly(string uri)
+        {
+            using DownloadHandler download = UnityWebRequestUtility.DownLoad(uri);
+            AssetBundle bundle = AssetBundle.LoadFromMemory(download.data);
+            TextAsset[] assets = bundle.LoadAllAssets<TextAsset>();
+            foreach (TextAsset asset in assets)
+            {
+                LoadImageErrorCode error = RuntimeApi.LoadMetadataForAOTAssembly(asset.bytes, HomologousImageMode.Consistent);
+                if (error != LoadImageErrorCode.OK)
                 {
-                }
-                if (www.result != UnityWebRequest.Result.Success)
-                {
-                    Log.Error($"{aotName}读取失败:{www.error}");
+                    Log.Error($"{asset.name}元数据补充失败:{error}");
                 }
                 else
                 {
-                    byte[] assetData = www.downloadHandler.data;
-                    LoadImageErrorCode error = RuntimeApi.LoadMetadataForAOTAssembly(assetData, mode);
-                    if (error != LoadImageErrorCode.OK)
-                    {
-                        Log.Error($"{aotName}元数据补充失败:{error}");
-                    }
-                    else
-                    {
-                        Log.Info("AOT补充元数据->" + aotName);
-                    }
+                    Log.Info("补充AOT元数据->" + asset.name);
                 }
             }
+            bundle.Unload(true);
         }
-#endif
+        private static void LoadHotfixAssembly(string uri)
+        {
+            using DownloadHandler download = UnityWebRequestUtility.DownLoad(uri);
+            AssetBundle bundle = AssetBundle.LoadFromMemory(download.data);
+            TextAsset[] assets = bundle.LoadAllAssets<TextAsset>();
+
+            foreach (string name in BootProfile.GetInstance().hotfixAssemblyNames)
+            {
+                TextAsset asset = assets.First(asset => asset.name == name + ".dll");
+                Assembly.Load(asset.bytes);
+                Log.Info("加载热更程序集->" + asset.name);
+            }
+            //foreach (TextAsset asset in assets)
+            //{
+            //    try
+            //    {
+            //        Assembly.Load(asset.bytes);
+            //        Log.Info("加载热更程序集->" + asset.name);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        throw e;
+            //    }
+            //}
+            bundle.Unload(true);
+        }
+
     }
 }
+#endif

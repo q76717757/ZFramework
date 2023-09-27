@@ -32,11 +32,14 @@ namespace ZFramework
             //根据引导配置预加载程序集
             if (profile.isEnableHotfixCode)
             {
+#if !UNITY_EDITOR && ENABLE_HYBRIDCLR
                 HybridCLRUtility.LoadAssembly();
+#endif
             }
-            //遍历域中所有已程序集,获取框架管理的程序集
+            //遍历域中所有已加载的程序集,获取框架管理的目标程序集
             List<Type> allTypes = new List<Type>();
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in assemblies)
             {
                 if (profile.assemblyNames.Contains(assembly.GetName().Name))
                 {
