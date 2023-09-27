@@ -32,7 +32,6 @@ namespace ZFramework
         /// </summary>
         public List<string> aotMetaAssemblyNames = new List<string>
         {
-
         };
         /// <summary>
         /// 热更新程序集
@@ -47,20 +46,29 @@ namespace ZFramework
         };
 
         /// <summary>
-        /// 配置文件是否存在
+        /// 文件是否存在
         /// </summary>
-        public static bool IsExists
+        internal static bool IsExists
         {
             get
             {
-                return File.Exists(GetFilePath());
+                return File.Exists(FilePath);
+            }
+        }
+        /// <summary>
+        /// 文件路径
+        /// </summary>
+        internal static string FilePath
+        {
+            get
+            {
+                return Path.Combine(Defines.BuildInAssetAPath, "Profiles", "BootProfile.json");
             }
         }
 
 
-        const string FILE_NAME = "BootProfile.json";
-        static BootProfile _instance;
-        bool isDirty = true;
+        private static BootProfile _instance;
+        private bool isDirty = true;
 
         internal static BootProfile GetInstance()
         {
@@ -73,45 +81,18 @@ namespace ZFramework
                 Log.Error("BootProfile文件不存在");
                 return null;
             }
-            UnityWebRequest webRequest = null;
-            try
+            using (DownloadHandler download = UnityWebRequestUtility.DownLoad(FilePath))
             {
-                webRequest = new UnityWebRequest(new Uri(GetFilePath()));
-                webRequest.downloadHandler = new DownloadHandlerBuffer();
-                webRequest.disposeDownloadHandlerOnDispose = true;
-                webRequest.SendWebRequest();
-
-                while (!webRequest.isDone) { }
-
-                if (webRequest.error == null)
-                {
-                    string json = webRequest.downloadHandler.text;
-                    _instance = JsonUtility.FromJson<BootProfile>(json);
-                }
-                else
-                {
-                    Log.Error("BootProfile读取失败:" + webRequest.error);
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error("BootProfile读取失败:" + e);
-            }
-            finally
-            {
-                webRequest?.Dispose();
+                _instance = JsonUtility.FromJson<BootProfile>(download.text);
             }
             return _instance;
         }
-        internal static string GetFilePath()
-        {
-            return Path.Combine(Defines.BuildInAssetAPath, "Profiles", FILE_NAME);
-        }
         internal void Save()
         {
-            Directory.CreateDirectory(Path.Combine(Defines.BuildInAssetAPath, "Profiles"));
+            _instance = this;
+            Directory.CreateDirectory(new FileInfo(FilePath).Directory.FullName);
             string json = JsonUtility.ToJson(this, true);
-            File.WriteAllText(GetFilePath(), json);
+            File.WriteAllText(FilePath, json);
         }
         internal void SaveIfDirty()
         {
