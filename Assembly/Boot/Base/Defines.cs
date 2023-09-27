@@ -57,7 +57,7 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 随包资产的路径(只读)  ./StreamingAssets/BuildInAssets/{Platform}
+        /// 随包资产的路径(只读)  ./StreamingAssets/ZFramework/{Platform}
         /// </summary>
         public static string BuildInAssetAPath
         {
@@ -68,7 +68,7 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 数据持久化根目录(可读写)  windows平台./Res/   其他平台返回./PersistentDataPath/Res
+        /// 数据持久化根目录(可读写)  windows平台./AssetFiles/   其他平台返回./PersistentDataPath/AssetFiles
         /// </summary>
         public static string PersistenceDataAPath
         {
@@ -82,7 +82,7 @@ namespace ZFramework
         /// 获取指定平台下的随包资源的存放路径(只读目录)
         /// </summary>
         /// <param name="platform">目标运行时平台</param>
-        /// <returns>返回./StreamingAssets/BuildInAssets/{platform}/</returns>
+        /// <returns>返回./StreamingAssets/ZFramework/{platform}/</returns>
         public static string GetBuildInAssetsAPath(PlatformType platform)
         {
             return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "ZFramework", platform.ToString())).FullName;
@@ -92,23 +92,19 @@ namespace ZFramework
         /// 获取指定平台下的持久化资源的存放路径(可读写目录)
         /// </summary>
         /// <param name="platform">目标运行时平台</param>
-        /// <returns>windows平台./Res/   其他平台返回./PersistentDataPath/Res/ Editor下返回工程根目录下的临时路径</returns>
+        /// <returns>windows平台./AssetFiles/   其他平台返回./PersistentDataPath/AssetFiles/</returns>
         public static string GetPresistenceDataAPath(PlatformType platform)
         {
-#if UNITY_EDITOR
-            DirectoryInfo directory = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "AssetBundleCache", platform.ToString()));
-#else
             DirectoryInfo directory;
             if ((platform & PlatformType.OfflineSupported) == platform)
             {
-                //离线模式仅针对winpc 资产放在安装目录 让用户自己可以替换ab包进行更新
-                directory = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "Res"));
+                //windows平台放在根目录下 方便用户自己替换资源
+                directory = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "AssetFiles"));
             }
             else
             {
-                directory = new DirectoryInfo(Path.Combine(Application.persistentDataPath, "Res"));
+                directory = new DirectoryInfo(Path.Combine(Application.persistentDataPath, "AssetFiles"));
             }
-#endif
             return directory.FullName;
         }
     }
