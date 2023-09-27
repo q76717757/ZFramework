@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.IO;
-using System;
-using UnityEditorInternal;
 using System.Collections.Generic;
 
 namespace ZFramework.Editor
@@ -16,7 +13,7 @@ namespace ZFramework.Editor
         {
             if (!BootProfile.IsExists)
             {
-                BootProfileUtility.DrawCreateButton();
+                CreateProfile();
             }
             else
             {
@@ -24,6 +21,14 @@ namespace ZFramework.Editor
             }
         }
 
+        void CreateProfile()
+        {
+            if (GUILayout.Button("创建配置文件", GUILayout.Height(50)))
+            {
+                new BootProfile().Save();
+                AssetDatabase.Refresh();
+            }
+        }
         void DrawElements()
         {
             if (fadeFoldouts == null)
@@ -34,13 +39,13 @@ namespace ZFramework.Editor
                 new BuildFadeFoldout().JoinGroup(fadeFoldouts);
                 new ToolBoxFadeFoldout().JoinGroup(fadeFoldouts);
 
-                foreach (var item in fadeFoldouts)
+                foreach (FadeFoldout item in fadeFoldouts)
                 {
                     item.OnValueChange.AddListener(Repaint);
                 }
             }
 
-            foreach (var item in fadeFoldouts)
+            foreach (FadeFoldout item in fadeFoldouts)
             {
                 item.OnGui();
             }

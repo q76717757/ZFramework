@@ -41,7 +41,6 @@ namespace ZFramework.Editor
             }
             else
             {
-                BootProfileUtility.DrawCreateButton();
             }
         }
     }

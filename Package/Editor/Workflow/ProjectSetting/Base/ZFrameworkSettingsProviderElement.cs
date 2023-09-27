@@ -43,7 +43,6 @@ namespace ZFramework.Editor
             }
             else
             {
-                BootProfileUtility.DrawCreateButton();
             }
         }
         public sealed override void OnActivate(string searchContext, VisualElement rootElement)
