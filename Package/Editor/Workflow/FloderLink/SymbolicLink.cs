@@ -166,6 +166,8 @@ namespace ZFramework.Editor
                 string[] copyToPath = copy.ToArray();;
                 string[] sourcePath = source.ToArray();
                 MKLink(copyToPath, sourcePath);
+
+                Application.OpenURL(linkAPath);
             }
         }
 
