@@ -31,7 +31,7 @@ namespace ZFramework
             ulong result = (ulong)id;
             this.Value = (ushort)(result & ushort.MaxValue);
             result >>= 16;
-            this.Process = (int)(result & IDCreateSystem.Mask18bit);
+            this.Process = (int)(result & IDGenerationSystem.Mask18bit);
             result >>= 18;
             this.Time = (uint)result;
         }
@@ -61,9 +61,9 @@ namespace ZFramework
         public InstanceIdStruct(long id)
         {
             ulong result = (ulong)id;
-            this.Value = (uint)(result & IDCreateSystem.Mask18bit);
+            this.Value = (uint)(result & IDGenerationSystem.Mask18bit);
             result >>= 18;
-            this.Process = (int)(result & IDCreateSystem.Mask18bit);
+            this.Process = (int)(result & IDGenerationSystem.Mask18bit);
             result >>= 18;
             this.Time = (uint)result;
         }
@@ -139,7 +139,7 @@ namespace ZFramework
         }
     }
 
-    internal class IDCreateSystem
+    internal class IDGenerationSystem
     {
         public const int Mask18bit = 0x03ffff;
 
@@ -160,7 +160,7 @@ namespace ZFramework
 
         private TimeTickSystem timeInfo;
 
-        public IDCreateSystem(TimeTickSystem timeInfo)
+        public IDGenerationSystem(TimeTickSystem timeInfo)
         {
             this.timeInfo = timeInfo;
 
@@ -213,7 +213,7 @@ namespace ZFramework
             {
                 ++this.instanceIdValue;
 
-                if (this.instanceIdValue > IDCreateSystem.Mask18bit - 1) // 18bit
+                if (this.instanceIdValue > IDGenerationSystem.Mask18bit - 1) // 18bit
                 {
                     ++this.lastInstanceIdTime; // 借用下一秒
                     this.instanceIdValue = 0;

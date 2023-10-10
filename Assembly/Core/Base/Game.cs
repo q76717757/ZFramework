@@ -7,7 +7,7 @@ namespace ZFramework
     {
         private readonly static AttributeMapper AttributeMapper = new AttributeMapper();
         private readonly static TimeTickSystem TimeTickSystem = new TimeTickSystem();
-        private readonly static IDCreateSystem IDCreateSystem = new IDCreateSystem(TimeTickSystem);
+        private readonly static IDGenerationSystem IDGenerationSystem = new IDGenerationSystem(TimeTickSystem);
         private readonly static GameLoopSystem GameLoopSystem = new GameLoopSystem();
         private readonly static DomainSystem DomainSystem = new DomainSystem();
 
