@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
-using UnityEngine.Networking;
 
 namespace ZFramework
 {
@@ -26,12 +25,6 @@ namespace ZFramework
             "Unity.Assembly.Func",
             "Unity.Assembly.View",
             "Assembly-CSharp",
-        };
-        /// <summary>
-        /// 补充元数据程序集
-        /// </summary>
-        public List<string> aotMetaAssemblyNames = new List<string>
-        {
         };
         /// <summary>
         /// 热更新程序集

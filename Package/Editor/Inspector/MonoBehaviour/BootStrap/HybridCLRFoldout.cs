@@ -96,7 +96,6 @@ namespace ZFramework.Editor
     { 
         static string packageName = "com.code-philosophy.hybridclr";
         ReorderableList _hotfixList;
-        ReorderableList _aotMetaList;
         ReorderableList HotfixList
         {
             get
@@ -110,20 +109,6 @@ namespace ZFramework.Editor
                 return _hotfixList;
             }
         }
-        ReorderableList AotMetaList
-        {
-            get
-            {
-                if (_aotMetaList == null)
-                {
-                    _aotMetaList = new ReorderableList(Profile.aotMetaAssemblyNames, typeof(string), true, false, true, true);
-                    _aotMetaList.drawElementCallback += OnDrawAotMetaElement;
-                    _aotMetaList.onChangedCallback += OnListChange;
-                }
-                return _aotMetaList;
-            }
-        }
-
         bool SettingsIsCorrect()
         { 
             return IsFullInstall() && IsEnable() && IsSupported() && IsIL2CPP() && IsDotNet4X() && CheckGC();//判断是有顺序的;
@@ -272,10 +257,6 @@ namespace ZFramework.Editor
         {
             DrawList(in Profile.hotfixAssemblyNames, rect, index);
         }
-        void OnDrawAotMetaElement(Rect rect, int index, bool isActive, bool isFocused)
-        {
-            DrawList(in Profile.aotMetaAssemblyNames, rect, index);
-        }
         void DrawList(in List<string> list, Rect rect, int index)
         {
             string next = EditorGUI.DelayedTextField(rect, list[index]);
@@ -381,10 +362,7 @@ namespace ZFramework.Editor
 
             //part 3
             EditorGUILayout.LabelField("步骤三:设置补充元数据程序集", EditorStyles.boldLabel);
-            EditorGUILayout.HelpBox("根据启发文档的提示,设置需要补充元数据的AOT程序集", MessageType.Info);
-            AotMetaList.DoLayoutList();
-            Rect rect = GUILayoutUtility.GetLastRect();
-            if (GUI.Button(new Rect(rect.x + rect.width - 63, rect.y - 3 - 20, 60, 15), "自动填充", EditorStyles.miniButton))
+            if (GUILayout.Button("打包AOT程序集"))
             {
                 //HybridCLR会生成一个启发文档,反射启发文档的内容自动填充进去
                 Assembly assembly_csharp = AppDomain.CurrentDomain.GetAssemblies().First((assembly) => assembly.GetName().Name == "Assembly-CSharp");
@@ -396,35 +374,26 @@ namespace ZFramework.Editor
                         FieldInfo property = type.GetField("PatchedAOTAssemblyList");
                         if (property != null && property.GetValue(null) is IReadOnlyList<string> values)
                         {
-                            Profile.aotMetaAssemblyNames.Clear();
-                            Profile.aotMetaAssemblyNames.AddRange(values.Select((s) => s.Replace(".dll", "")));
-                            OnListChange();
+                            List<string> aotMetaAssemblyNames = new List<string>();
+                            aotMetaAssemblyNames.AddRange(values.Select((s) => s.Replace(".dll", "")));
+                            PackagingMetaAssembly(aotMetaAssemblyNames);
                         }
                     }
                 }
-                GUI.FocusControl(null);
-            }
-
-            if (GUILayout.Button("打包AOT程序集"))
-            {
-                PackagingMetaAssembly();
             }
             EditorGUILayout.EndVertical();
-
-            
         }
-        void PackagingMetaAssembly()
+        void PackagingMetaAssembly(List<string> aotList)
         {
-            BootProfile profile = BootProfile.GetInstance();
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
             //复制aot源文件到工程内
             string aotAssembliesSrcDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
             string aotAssembliesDstDir = $"Assets/07.Bundles/{Defines.TargetRuntimePlatform}/AOTPackingCache";
             Directory.CreateDirectory(aotAssembliesDstDir);
             List<string> assemblyNames = new List<string>();
-            List<string> names = profile.aotMetaAssemblyNames;
-            foreach (var dll in names)
+            foreach (string dll in aotList)
             {
+                Log.Info("AOT DLL->" + dll);
                 string srcDllPath = $"{aotAssembliesSrcDir}/{dll}.dll";
                 if (!File.Exists(srcDllPath))
                 {
