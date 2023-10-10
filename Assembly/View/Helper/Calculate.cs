@@ -19,10 +19,10 @@ public class To
 
 
     /// <summary>
-    /// 2DÖ±½Ç×ø±ê×ª¼«×ø±ê
+    /// 2Dç›´è§’åæ ‡è½¬æåæ ‡
     /// </summary>
-    /// <param name="vt2">2DÖ±½Ç×ø±êÏòÁ¿</param>
-    /// <returns>¼«×ø±êÏòÁ¿</returns>
+    /// <param name="vt2">2Dç›´è§’åæ ‡å‘é‡</param>
+    /// <returns>æåæ ‡å‘é‡</returns>
     Vector2 CartesianToPolar(Vector2 vt2)
     {
         float r = Mathf.Sqrt(vt2.x * vt2.x + vt2.y * vt2.y);
@@ -30,10 +30,10 @@ public class To
         return new Vector2(r, deg);
     }
     /// <summary>
-    /// 3DÖ±½Ç×ø±ê×ª¼«×ø±ê
+    /// 3Dç›´è§’åæ ‡è½¬æåæ ‡
     /// </summary>
-    /// <param name="vt3">3DÖ±½Ç×ø±êÏòÁ¿</param>
-    /// <returns>3D¼«×ø±êÏòÁ¿</returns>
+    /// <param name="vt3">3Dç›´è§’åæ ‡å‘é‡</param>
+    /// <returns>3Dæåæ ‡å‘é‡</returns>
     Vector3 CartesianToPolar(Vector3 vt3)
     {
         float r = Mathf.Sqrt(Mathf.Pow(vt3.x, 2) + Mathf.Pow(vt3.y, 2) + Mathf.Pow(vt3.z, 2));
@@ -42,11 +42,11 @@ public class To
         return new Vector3(r, deg, dirDeg);
     }
     /// <summary>
-    /// »ñÈ¡ÏòÁ¿
+    /// è·å–å‘é‡
     /// </summary>
-    /// <param name="dis">¾¶Ïò¾àÀë</param>
-    /// <param name="polAngle">¼«½Ç</param>
-    /// <returns>2DÏòÁ¿</returns>
+    /// <param name="dis">å¾„å‘è·ç¦»</param>
+    /// <param name="polAngle">æè§’</param>
+    /// <returns>2Då‘é‡</returns>
     Vector2 GetVector(float dis, float polAngle)
     {
         float x = Mathf.Cos(polAngle * Mathf.Deg2Rad) * dis;
@@ -54,12 +54,12 @@ public class To
         return new Vector2(x, y);
     }
     /// <summary>
-    /// »ñÈ¡ÏòÁ¿
+    /// è·å–å‘é‡
     /// </summary>
-    /// <param name="dis">¾¶Ïò¾àÀë</param>
-    /// <param name="polAngle">¼«½Ç</param>
-    /// <param name="oriAngle">·½Î»½Ç</param>
-    /// <returns>3DÏòÁ¿</returns>
+    /// <param name="dis">å¾„å‘è·ç¦»</param>
+    /// <param name="polAngle">æè§’</param>
+    /// <param name="oriAngle">æ–¹ä½è§’</param>
+    /// <returns>3Då‘é‡</returns>
     Vector3 GetVector(float dis, float polAngle, float oriAngle)
     {
         float x = Mathf.Sin(polAngle * Mathf.Deg2Rad) * Mathf.Cos(oriAngle * Mathf.Deg2Rad) * dis;
@@ -68,12 +68,12 @@ public class To
         return new Vector3(x, y, z);
     }
     /// <summary>
-    ///  »ñÈ¡ÏòÁ¿
+    ///  è·å–å‘é‡
     /// </summary>
-    /// <param name="point">¼«µã×ø±ê</param>
-    /// <param name="dir">¾¶Ïò¾àÀë</param>
-    /// <param name="angle">½Ç¶È</param>
-    /// <returns>ÒÔ¼«µã×ø±êÎªÔ­µã2DÏòÁ¿</returns>
+    /// <param name="point">æç‚¹åæ ‡</param>
+    /// <param name="dir">å¾„å‘è·ç¦»</param>
+    /// <param name="angle">è§’åº¦</param>
+    /// <returns>ä»¥æç‚¹åæ ‡ä¸ºåŸç‚¹2Då‘é‡</returns>
     Vector2 GetVector(Vector2 point, float dir, float angle)
     {
         float x = Mathf.Cos(angle * Mathf.Deg2Rad) * dir;
@@ -81,13 +81,13 @@ public class To
         return new Vector2(point.x + x, point.y + y);
     }
     /// <summary>
-    /// »ñÈ¡ÏòÁ¿
+    /// è·å–å‘é‡
     /// </summary>
-    /// <param name="point">¼«µã×ø±ê</param>
-    /// <param name="dir">¾¶Ïò¾àÀë</param>
-    /// <param name="xoyAngle">xÖáÓëyÖá¼Ğ½Ç</param>
-    /// <param name="xozAngle">xÖáÓëzÖá¼Ğ½Ç</param>
-    /// <returns>ÒÔ¼«µã×ø±êÎªÔ­µã3DÏòÁ¿</returns>
+    /// <param name="point">æç‚¹åæ ‡</param>
+    /// <param name="dir">å¾„å‘è·ç¦»</param>
+    /// <param name="xoyAngle">xè½´ä¸yè½´å¤¹è§’</param>
+    /// <param name="xozAngle">xè½´ä¸zè½´å¤¹è§’</param>
+    /// <returns>ä»¥æç‚¹åæ ‡ä¸ºåŸç‚¹3Då‘é‡</returns>
     Vector3 GetVector(Vector3 point, float dir, float xoyAngle, float xozAngle)
     {
         float x = Mathf.Cos(xozAngle * Mathf.Deg2Rad) * Mathf.Cos(xoyAngle * Mathf.Deg2Rad) * dir;
@@ -96,32 +96,32 @@ public class To
         return new Vector3(point.x + x, point.y + y, point.z + z);
     }
     /// <summary>
-    /// »ñÈ¡ÏòÁ¿
+    /// è·å–å‘é‡
     /// </summary>
-    /// <param name="point">¼«µã×ø±ê</param>
-    /// <param name="vt2">2DÏòÁ¿</param>
-    /// <returns>ÒÔ¼«µã×ø±êÎªÔ­µã2DÏòÁ¿</returns>
+    /// <param name="point">æç‚¹åæ ‡</param>
+    /// <param name="vt2">2Då‘é‡</param>
+    /// <returns>ä»¥æç‚¹åæ ‡ä¸ºåŸç‚¹2Då‘é‡</returns>
     Vector2 GetVector(Vector2 point, Vector2 vt2)
     {
         return (vt2 + point);
     }
     /// <summary>
-    /// »ñÈ¡ÏòÁ¿
+    /// è·å–å‘é‡
     /// </summary>
-    /// <param name="point">¼«µã×ø±ê</param>
-    /// <param name="vt3">3DÏòÁ¿</param>
-    /// <returns>ÒÔ¼«µã×ø±êÎªÔ­µã3DÏòÁ¿</returns>
+    /// <param name="point">æç‚¹åæ ‡</param>
+    /// <param name="vt3">3Då‘é‡</param>
+    /// <returns>ä»¥æç‚¹åæ ‡ä¸ºåŸç‚¹3Då‘é‡</returns>
     Vector3 GetVector(Vector3 point, Vector3 vt3)
     {
         return (vt3 + point);
     }
     /// <summary>
-    /// »ñÈ¡ÏòÁ¿
+    /// è·å–å‘é‡
     /// </summary>
-    /// <param name="point">¼«µã×ø±ê</param>
-    /// <param name="dir">¾¶Ïò¾àÀë</param>
-    /// <param name="qt">ËÄÔªÊı</param>
-    /// <returns>ÒÔ¼«µã×ø±êÎªÔ­µã2DÏòÁ¿</returns>
+    /// <param name="point">æç‚¹åæ ‡</param>
+    /// <param name="dir">å¾„å‘è·ç¦»</param>
+    /// <param name="qt">å››å…ƒæ•°</param>
+    /// <returns>ä»¥æç‚¹åæ ‡ä¸ºåŸç‚¹2Då‘é‡</returns>
     Vector2 GetVector(Vector2 point, float dir, Quaternion qt)
     {
         Vector3 targVt2 = new Vector2(dir, 0);
@@ -129,12 +129,12 @@ public class To
         return new Vector2(point.x + targVt2.x, point.y + targVt2.y);
     }
     /// <summary>
-    /// »ñÈ¡ÏòÁ¿
+    /// è·å–å‘é‡
     /// </summary>
-    /// <param name="point">¼«µã×ø±ê</param>
-    /// <param name="dir">¾¶Ïò¾àÀë</param>
-    /// <param name="qt">ËÄÔªÊı</param>
-    /// <returns>ÒÔ¼«µã×ø±êÎªÔ­µã3DÏòÁ¿</returns>
+    /// <param name="point">æç‚¹åæ ‡</param>
+    /// <param name="dir">å¾„å‘è·ç¦»</param>
+    /// <param name="qt">å››å…ƒæ•°</param>
+    /// <returns>ä»¥æç‚¹åæ ‡ä¸ºåŸç‚¹3Då‘é‡</returns>
     Vector3 GetVector(Vector3 point, float dir, Quaternion qt)
     {
         Vector3 targVt3 = qt * Vector3.right;
@@ -143,11 +143,11 @@ public class To
     }
 
 
-    # region Vector2¶ş½×±´Èû¶ûÇúÏß
+    # region Vector2äºŒé˜¶è´å¡å°”æ›²çº¿
     /// <summary>
-    /// Vector2¶ş½×±´Èû¶ûÇúÏß
+    /// Vector2äºŒé˜¶è´å¡å°”æ›²çº¿
     /// </summary>
-    /// <param name="accuracy">¾«¶ÈÖµ</param>
+    /// <param name="accuracy">ç²¾åº¦å€¼</param>
     Vector2 QuardaticBezier2D(float accuracy)
     {
         Vector2 startPos;
@@ -172,11 +172,11 @@ public class To
         return newVet1 + (newVet2 - newVet1) * accuracy;
     }
     #endregion
-    #region Vector3¶ş½×±´Èû¶ûÇúÏß
+    #region Vector3äºŒé˜¶è´å¡å°”æ›²çº¿
     /// <summary>
-    /// Vector3¶ş½×±´Èû¶ûÇúÏß
+    /// Vector3äºŒé˜¶è´å¡å°”æ›²çº¿
     /// </summary>
-    /// <param name="accuracy">¾«¶È</param>
+    /// <param name="accuracy">ç²¾åº¦</param>
     /// <returns></returns>
     Vector3 QuardaticBezier3D(float accuracy)
     {
@@ -202,7 +202,7 @@ public class To
     }
     #endregion
 
-    #region Vector2Èı½×±´Èû¶ûÇúÏß
+    #region Vector2ä¸‰é˜¶è´å¡å°”æ›²çº¿
     Vector2 CubicBezier2D(float accuracy)
     {
         Vector2 startPos;
@@ -235,11 +235,11 @@ public class To
         return newVet4 + (newVet5 - newVet4) * accuracy;
     }
     #endregion
-    #region Vector3Èı½×±´Èû¶ûÇúÏß
+    #region Vector3ä¸‰é˜¶è´å¡å°”æ›²çº¿
     /// <summary>
-    /// Vector3Èı½×±´Èû¶ûÇúÏß
+    /// Vector3ä¸‰é˜¶è´å¡å°”æ›²çº¿
     /// </summary>
-    /// <param name="accuracy">¾«¶È</param>
+    /// <param name="accuracy">ç²¾åº¦</param>
     Vector3 CubicBezier3D(float accuracy)
     {
         Vector3 startPos;
@@ -272,7 +272,7 @@ public class To
     }
     #endregion
 
-    #region Vector2ËÄ½×±´Èû¶ûÇúÏß
+    #region Vector2å››é˜¶è´å¡å°”æ›²çº¿
     Vector2 QuarticBezier2D(float accuracy)
     {
         Vector2 startPos;
@@ -312,11 +312,11 @@ public class To
         return newVet8 + (newVet9 - newVet8) * accuracy;
     }
     #endregion
-    #region Vector3ËÄ½×±´Èû¶ûÇúÏß
+    #region Vector3å››é˜¶è´å¡å°”æ›²çº¿
     /// <summary>
-    /// Vector3ËÄ½×±´Èû¶ûÇúÏß
+    /// Vector3å››é˜¶è´å¡å°”æ›²çº¿
     /// </summary>
-    /// <param name="accuracy">¾«¶È</param>
+    /// <param name="accuracy">ç²¾åº¦</param>
     /// <returns></returns>
     Vector3 QuarticBezier3D(float accuracy)
     {
@@ -358,7 +358,7 @@ public class To
     }
     #endregion
 
-    #region Vector2Îå½×±´Èû¶ûÇúÏß
+    #region Vector2äº”é˜¶è´å¡å°”æ›²çº¿
     Vector2 QuinticBezier2D(float accuracy)
     {
         Vector2 startPos;
@@ -407,11 +407,11 @@ public class To
         return newVet13 + (newVet14 - newVet13) * accuracy;
     }
     #endregion
-    #region Vector3Îå½×±´Èû¶ûÇúÏß
+    #region Vector3äº”é˜¶è´å¡å°”æ›²çº¿
     /// <summary>
-    /// Vector3Îå½×±´Èû¶ûÇúÏß
+    /// Vector3äº”é˜¶è´å¡å°”æ›²çº¿
     /// </summary>
-    /// <param name="accuracy">¾«¶È</param>
+    /// <param name="accuracy">ç²¾åº¦</param>
     /// <returns></returns>
     public Vector3 QuinticBezier3D(float accuracy)
     {
@@ -463,7 +463,7 @@ public class To
     }
     #endregion
     /// <summary>
-    /// Vector2±´Èû¶ûÇúÏß¹«Ê½
+    /// Vector2è´å¡å°”æ›²çº¿å…¬å¼
     /// </summary>
     public Vector2 Formula2D(Transform[] positions, float accuracy)
     {
@@ -480,7 +480,7 @@ public class To
         return Vector2.zero;
     }
     /// <summary>
-    /// Vector3±´Èû¶ûÇúÏß¹«Ê½
+    /// Vector3è´å¡å°”æ›²çº¿å…¬å¼
     /// </summary>
     public Vector3 Formula3D(Transform[] positions, float accuracy)
     {
@@ -497,7 +497,7 @@ public class To
         return Vector3.zero;
     }
     /// <summary>
-    /// Vector2±´Èû¶ûÇúÏß¹«Ê½
+    /// Vector2è´å¡å°”æ›²çº¿å…¬å¼
     /// </summary>
     public Vector2 Formula2D(Vector2[] vector2s, float accuracy)
     {
@@ -514,7 +514,7 @@ public class To
         return Vector2.zero;
     }
     /// <summary>
-    /// Vector3±´Èû¶ûÇúÏß¹«Ê½
+    /// Vector3è´å¡å°”æ›²çº¿å…¬å¼
     /// </summary>
     public Vector3 Formula3D(Vector3[] vector3s, float accuracy)
     {

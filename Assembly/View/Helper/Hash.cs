@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 public class Hash : MonoBehaviour
 {
-    private const int BlockSize = 32768; // Ã¿¸öÊı¾İ¿éµÄ´óĞ¡ 32kb
+    private const int BlockSize = 32768; // æ¯ä¸ªæ•°æ®å—çš„å¤§å° 32kb
 
     private async void Start()
     {
-        string folderPath = "path/to/large/file";  // ĞŞ¸Ä³É×Ô¼ºµÄÎÄ¼şÂ·¾¶
+        string folderPath = "path/to/large/file";  // ä¿®æ”¹æˆè‡ªå·±çš„æ–‡ä»¶è·¯å¾„
 
         Dictionary<string, Dictionary<string, string>> fileHashes = await CalculateFolderFileHashesAsync(folderPath);
 
@@ -22,18 +22,18 @@ public class Hash : MonoBehaviour
             string filePath = kvp.Key;
             Dictionary<string, string> hashValues = kvp.Value;
 
-            Debug.Log("ÎÄ¼şÂ·¾¶: " + filePath);
-            Debug.Log("MD5 ¹şÏ£Öµ: " + hashValues["md5"]);
-            Debug.Log("SHA-1 ¹şÏ£Öµ: " + hashValues["sha1"]);
+            Debug.Log("æ–‡ä»¶è·¯å¾„: " + filePath);
+            Debug.Log("MD5 å“ˆå¸Œå€¼: " + hashValues["md5"]);
+            Debug.Log("SHA-1 å“ˆå¸Œå€¼: " + hashValues["sha1"]);
         }
 
         string folderHash = CalculateFolderHash(fileHashes);
 
-        Debug.Log("ÎÄ¼ş¼Ğ¹şÏ£Öµ: " + folderHash);
+        Debug.Log("æ–‡ä»¶å¤¹å“ˆå¸Œå€¼: " + folderHash);
     }
 
 
-    //// ¼ÆËã MD5 ¹şÏ£Öµ
+    //// è®¡ç®— MD5 å“ˆå¸Œå€¼
     //public string CalculateMD5Hash(string filePath)
     //{
     //    using var md5 = MD5.Create();
@@ -51,7 +51,7 @@ public class Hash : MonoBehaviour
     //    return BytesToHexString(md5.Hash);
     //}
 
-    //// ¼ÆËã SHA-1 ¹şÏ£Öµ
+    //// è®¡ç®— SHA-1 å“ˆå¸Œå€¼
     //public string CalculateSHA1Hash(string filePath)
     //{
     //    using var sha1 = SHA1.Create();
@@ -71,29 +71,29 @@ public class Hash : MonoBehaviour
 
 
     /// <summary>
-    /// Òì²½¼ÆËã MD5 ¹şÏ£Öµ
+    /// å¼‚æ­¥è®¡ç®— MD5 å“ˆå¸Œå€¼
     /// </summary>
     /// <param name="filePath"></param>
     /// <returns></returns>
     public Task<string> CalculateMD5HashAsync(string filePath)
     {
-        using var md5 = MD5.Create(); // ´´½¨ MD5 ÊµÀı
-        using FileStream fs = File.OpenRead(filePath); // ´ò¿ªÎÄ¼şÁ÷¶ÁÈ¡ÎÄ¼şÄÚÈİ
-        byte[] buffer = new byte[BlockSize]; // ´´½¨»º³åÇøÓÃÓÚ´æ´¢¶ÁÈ¡µÄÊı¾İ¿é
+        using var md5 = MD5.Create(); // åˆ›å»º MD5 å®ä¾‹
+        using FileStream fs = File.OpenRead(filePath); // æ‰“å¼€æ–‡ä»¶æµè¯»å–æ–‡ä»¶å†…å®¹
+        byte[] buffer = new byte[BlockSize]; // åˆ›å»ºç¼“å†²åŒºç”¨äºå­˜å‚¨è¯»å–çš„æ•°æ®å—
         int bytesRead = 0;
 
-        while ((bytesRead = fs.Read(buffer, 0, BlockSize)) > 0) // ÒÔ¿éÎªµ¥Î»¶ÁÈ¡ÎÄ¼şÄÚÈİ
+        while ((bytesRead = fs.Read(buffer, 0, BlockSize)) > 0) // ä»¥å—ä¸ºå•ä½è¯»å–æ–‡ä»¶å†…å®¹
         {
-            md5.TransformBlock(buffer, 0, bytesRead, null, 0); // ¸üĞÂ MD5 ¼ÆËãµÄÖĞ¼ä½á¹û
+            md5.TransformBlock(buffer, 0, bytesRead, null, 0); // æ›´æ–° MD5 è®¡ç®—çš„ä¸­é—´ç»“æœ
         }
 
-        md5.TransformFinalBlock(new byte[0], 0, 0); // Íê³É MD5 ¼ÆËãµÄ×îºóÒ»¸ö¿é
+        md5.TransformFinalBlock(new byte[0], 0, 0); // å®Œæˆ MD5 è®¡ç®—çš„æœ€åä¸€ä¸ªå—
 
-        return Task.FromResult(BytesToHexString(md5.Hash)); // ½«¼ÆËãµÃµ½µÄ¹şÏ£Öµ×ª»»ÎªÊ®Áù½øÖÆ×Ö·û´®²¢·µ»Ø
+        return Task.FromResult(BytesToHexString(md5.Hash)); // å°†è®¡ç®—å¾—åˆ°çš„å“ˆå¸Œå€¼è½¬æ¢ä¸ºåå…­è¿›åˆ¶å­—ç¬¦ä¸²å¹¶è¿”å›
     }
 
     /// <summary>
-    /// Òì²½¼ÆËã SHA-1 ¹şÏ£Öµ
+    /// å¼‚æ­¥è®¡ç®— SHA-1 å“ˆå¸Œå€¼
     /// </summary>
     /// <param name="filePath"></param>
     /// <returns></returns>
@@ -115,7 +115,7 @@ public class Hash : MonoBehaviour
 
 
     /// <summary>
-    /// ¼ÆËãÖ¸¶¨ÎÄ¼ş¼ĞÏÂËùÓĞÎÄ¼şµÄ MD5 ºÍ SHA-1 ¹şÏ£Öµ£¬²¢½«½á¹û´æ´¢ÔÚÒ»¸ö×ÖµäÖĞ
+    /// è®¡ç®—æŒ‡å®šæ–‡ä»¶å¤¹ä¸‹æ‰€æœ‰æ–‡ä»¶çš„ MD5 å’Œ SHA-1 å“ˆå¸Œå€¼ï¼Œå¹¶å°†ç»“æœå­˜å‚¨åœ¨ä¸€ä¸ªå­—å…¸ä¸­
     /// </summary>
     /// <param name="folderPath"></param>
     /// <returns></returns>
@@ -144,22 +144,22 @@ public class Hash : MonoBehaviour
         }
         catch (DirectoryNotFoundException)
         {
-            Debug.LogError("ÎÄ¼ş¼Ğ²»´æÔÚ£º" + folderPath);
+            Debug.LogError("æ–‡ä»¶å¤¹ä¸å­˜åœ¨ï¼š" + folderPath);
         }
         catch (IOException ex)
         {
-            Debug.LogError("¼ÆËã¹şÏ£ÖµÊ±·¢ÉúIOÒì³££º" + ex.Message);
+            Debug.LogError("è®¡ç®—å“ˆå¸Œå€¼æ—¶å‘ç”ŸIOå¼‚å¸¸ï¼š" + ex.Message);
         }
         catch (Exception ex)
         {
-            Debug.LogError("¼ÆËã¹şÏ£ÖµÊ±·¢ÉúÒì³££º" + ex.Message);
+            Debug.LogError("è®¡ç®—å“ˆå¸Œå€¼æ—¶å‘ç”Ÿå¼‚å¸¸ï¼š" + ex.Message);
         }
 
         return fileHashes;
     }
 
 
-    // ¼ÆËãÎÄ¼ş¼Ğ¹şÏ£
+    // è®¡ç®—æ–‡ä»¶å¤¹å“ˆå¸Œ
     public string CalculateFolderHash(Dictionary<string, Dictionary<string, string>> fileHashes)
     {
         List<byte[]> hashBytesList = new List<byte[]>();
@@ -178,7 +178,7 @@ public class Hash : MonoBehaviour
         return BytesToHexString(combinedHashBytes);
     }
 
-    // ½«¶à¸ö×Ö½ÚÊı×éºÏ²¢ÎªÒ»¸ö×Ö½ÚÊı×é
+    // å°†å¤šä¸ªå­—èŠ‚æ•°ç»„åˆå¹¶ä¸ºä¸€ä¸ªå­—èŠ‚æ•°ç»„
     private static byte[] CombineHashBytes(List<byte[]> hashBytesList)
     {
         int totalLength = hashBytesList.Sum(bytes => bytes.Length);
@@ -194,7 +194,7 @@ public class Hash : MonoBehaviour
         return combinedBytes;
     }
 
-    // ½«×Ö½ÚÊı×é×ª»»ÎªÊ®Áù½øÖÆ×Ö·û´®
+    // å°†å­—èŠ‚æ•°ç»„è½¬æ¢ä¸ºåå…­è¿›åˆ¶å­—ç¬¦ä¸²
     private static string BytesToHexString(byte[] bytes)
     {
         StringBuilder sb = new StringBuilder();
