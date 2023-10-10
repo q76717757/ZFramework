@@ -78,14 +78,10 @@ namespace ZFramework
             }
             if (!IsExists)
             {
-                Log.Error("BootProfile文件不存在");
+                Log.Error("BootProfile.json Not Exists");
                 return null;
             }
-            using (DownloadHandler download = UnityWebRequestUtility.DownLoad(FilePath))
-            {
-                _instance = JsonUtility.FromJson<BootProfile>(download.text);
-            }
-            return _instance;
+            return  _instance = JsonUtility.FromJson<BootProfile>(DiskFilesLoadingUtility.DownLoadText(FilePath));
         }
         internal void Save()
         {

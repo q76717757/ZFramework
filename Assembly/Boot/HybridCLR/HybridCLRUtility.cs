@@ -1,13 +1,9 @@
 #if ENABLE_HYBRIDCLR
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Networking;
 using HybridCLR;
 using System.Reflection;
-using System.Linq;
 
 namespace ZFramework
 {
@@ -69,8 +65,8 @@ namespace ZFramework
 
         private static void LoadMetadataForAOTAssembly(string uri)
         {
-            using DownloadHandler download = UnityWebRequestUtility.DownLoad(uri);
-            AssetBundle bundle = AssetBundle.LoadFromMemory(download.data);
+            byte[] data = DiskFilesLoadingUtility.DownLoadBytes(uri);
+            AssetBundle bundle = AssetBundle.LoadFromMemory(data);
             TextAsset[] assets = bundle.LoadAllAssets<TextAsset>();
             foreach (TextAsset asset in assets)
             {
@@ -88,31 +84,23 @@ namespace ZFramework
         }
         private static void LoadHotfixAssembly(string uri)
         {
-            using DownloadHandler download = UnityWebRequestUtility.DownLoad(uri);
-            AssetBundle bundle = AssetBundle.LoadFromMemory(download.data);
+            byte[] data = DiskFilesLoadingUtility.DownLoadBytes(uri);
+            AssetBundle bundle = AssetBundle.LoadFromMemory(data);
             TextAsset[] assets = bundle.LoadAllAssets<TextAsset>();
-
-            foreach (string name in BootProfile.GetInstance().hotfixAssemblyNames)
+            foreach (TextAsset asset in assets)
             {
-                TextAsset asset = assets.First(asset => asset.name == name + ".dll");
-                Assembly.Load(asset.bytes);
-                Log.Info("加载热更程序集->" + asset.name);
+                try
+                {
+                    Assembly.Load(asset.bytes);
+                    Log.Info("加载热更程序集->" + asset.name);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
-            //foreach (TextAsset asset in assets)
-            //{
-            //    try
-            //    {
-            //        Assembly.Load(asset.bytes);
-            //        Log.Info("加载热更程序集->" + asset.name);
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        throw e;
-            //    }
-            //}
             bundle.Unload(true);
         }
-
     }
 }
 #endif
