@@ -11,10 +11,10 @@ using System.IO;
 using System.Reflection;
 
 #if ENABLE_HYBRIDCLR
-using HybridCLR;
 using HybridCLR.Editor.Commands;
 using HybridCLR.Editor;
 using HybridCLR.Editor.Installer;
+using HybridCLR.Editor.Settings;
 #endif
 
 namespace ZFramework.Editor
@@ -24,6 +24,7 @@ namespace ZFramework.Editor
         public override string Title => $"代码热更新({Defines.TargetRuntimePlatform})";
 
         static string gitURL = "https://gitee.com/focus-creative-games/hybridclr_unity.git";
+        static string packageVersion = "4.0.8";
         static AddRequest addRequest;
         BootProfile Profile
         {
@@ -59,7 +60,7 @@ namespace ZFramework.Editor
         {
             Rect rect = EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
 
-            EditorGUILayout.LabelField("热更新方案:HybridCLR", EditorStyles.centeredGreyMiniLabel);
+            EditorGUILayout.LabelField($"热更新方案:HybridCLR {packageVersion}", EditorStyles.centeredGreyMiniLabel);
             Rect linkRect =  EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight, EditorStyles.linkLabel,GUILayout.ExpandWidth(true));
             EditorGUIUtility.AddCursorRect(linkRect, MouseCursor.Link);
             if(GUI.Button(linkRect,$"官方文档: https://hybridclr.doc.code-philosophy.com",EditorStyles.linkLabel))
@@ -84,7 +85,7 @@ namespace ZFramework.Editor
             EditorGUI.BeginDisabledGroup(isInstalling);
             if (GUILayout.Button(isInstalling ? "安装中..." : "点击从Package Manager安装"))
             {
-                addRequest = Client.Add(gitURL);
+                addRequest = Client.Add($"{gitURL}#v{packageVersion}");
             }
             EditorGUI.EndDisabledGroup();
         }
@@ -111,7 +112,24 @@ namespace ZFramework.Editor
         }
         bool SettingsIsCorrect()
         { 
-            return IsFullInstall() && IsEnable() && IsSupported() && IsIL2CPP() && IsDotNet4X() && CheckGC();//判断是有顺序的;
+            return PackageVersion() && IsFullInstall() && IsEnable() && IsSupported() && IsIL2CPP() && IsDotNet4X() && CheckGC();//判断是有顺序的;
+        }
+        bool PackageVersion()
+        {
+            var installVersion = new InstallerController().PackageVersion;
+            bool version = installVersion == packageVersion;
+            if (!version)//当前安装的package版本和指定的版本不一致
+            {
+                EditorGUILayout.HelpBox($"当前HybridCLER的安装版本和设定的版本不一致\r\n当前版本:{installVersion}\r\n目标版本:{packageVersion}", MessageType.Error);
+                bool isInstalling = addRequest != null && addRequest.Status == StatusCode.InProgress;
+                EditorGUI.BeginDisabledGroup(isInstalling);
+                if (GUILayout.Button(isInstalling ? "安装中..." : "更换为指定版本"))
+                {
+                    addRequest = Client.Add($"{gitURL}#v{packageVersion}");
+                }
+                EditorGUI.EndDisabledGroup();
+            }
+            return version;
         }
         bool IsFullInstall()
         {
