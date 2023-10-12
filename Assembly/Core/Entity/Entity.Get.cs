@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ZFramework
 {
@@ -10,7 +11,7 @@ namespace ZFramework
         Entity GetParent()
         {
             ThrowIfDisposed();
-            if (IsDomainRoot || parent.IsDomainRoot)
+            if (IsRoot || parent.IsRoot)
             {
                 return null;
             }
@@ -19,51 +20,38 @@ namespace ZFramework
         void SetParent(Entity parent)
         {
             ThrowIfDisposed();
-            if (IsDomainRoot)
+            if (this.parent == parent)
             {
-                throw new Exception("dont set root entity.parent");
+                return;
             }
             if (parent == this)
             {
                 throw new Exception("entity.parent can not be set self");
             }
-            if (parent.Domain != this.Domain)
-            {
-                throw new Exception("You cannot move an entity to a tree in another domain");
-            }
-
             this.parent.childrens.Remove(this.InstanceID);
-            if (parent == null)
+            if (parent == null) //绑定到新的parent上
             {
-                domain.Root.childrens.Add(this.InstanceID, this);
-                this.parent = domain.Root;
+                SetDependencies(Game.Root, this);
             }
             else
             {
-                parent.childrens.Add(this.InstanceID, this);
-                this.parent = parent;
+                SetDependencies(parent, this);
             }
         }
 
-        //domain
-        Domain GetDomain()
-        {
-            ThrowIfDisposed();
-            return domain;
-        }
-
         //child
+        //TODO Entity.GetChild相关内容未实现
         public Entity GetChild(int index)
         {
             ThrowIfDisposed();
             throw new NotImplementedException();
         }
-        public Entity[] GetEntities()
+        public Entity[] GetChildren()
         {
             ThrowIfDisposed();
             throw new NotImplementedException();
         }
-        public void GetEntities(List<Entity> result)
+        public void GetChildren(List<Entity> result)
         {
             ThrowIfDisposed();
             throw new NotImplementedException();
@@ -73,6 +61,7 @@ namespace ZFramework
         //获取同级组件
         public Component GetComponent(Type type)
         {
+            ThrowIfDisposed();
             if (components.TryGetValue(type, out Component component))
             {
                 return component;
@@ -84,7 +73,8 @@ namespace ZFramework
         }
         public T GetComponent<T>()
         {
-            if (components.TryGetValue(typeof(T),out Component component) && component is T t)
+            Component component = GetComponent(typeof(T));//TODO Entity.GetComponent 目前不能拿接口,抽象类型
+            if (component is T t)
             {
                 return t;
             }
@@ -95,13 +85,15 @@ namespace ZFramework
         }
         public bool TryGetComponent(Type type, out Component component)
         {
+            ThrowIfDisposed();
             return components.TryGetValue(type, out component);
         }
         public bool TryGetComponent<T>(out T component)
         {
+            ThrowIfDisposed();
             if (components.TryGetValue(typeof(T), out Component com) &&  com is T t)
             {
-                component= t;
+                component = t;
                 return true;
             }
             else
@@ -112,73 +104,159 @@ namespace ZFramework
         }
         public Component[] GetComponents()
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+            return components.Values.ToArray();
         }
         public void GetComponents(List<Component> results)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+            if (results != null)
+            {
+                results.AddRange(components.Values);
+            }
         }
 
         //获取子级的组件
         public Component GetComponentInChildren(Type type)
         {
-            throw new NotImplementedException();
+            if (TryGetComponent(type, out Component component))
+            {
+                return component;
+            }
+            else
+            {
+                foreach (Entity child in childrens.Values)
+                {
+                    return child.GetComponentInChildren(type);
+                }
+            }
+            return null;
         }
         public T GetComponentInChildren<T>()
         {
-            throw new NotImplementedException();
+            Component component = GetComponentInChildren(typeof(T));
+            if (component is T t)
+            {
+                return t;
+            }
+            else
+            {
+                return default;
+            }
         }
         public Component[] GetComponentsInChildren(Type type)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+            List<Component> results = new List<Component>();
+            GetComponentsInChildren(type, results);
+            return results.ToArray();
         }
         public T[] GetComponentsInChildren<T>()
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+            List<T> results = new List<T>();
+            GetComponentsInChildren(results);
+            return results.ToArray();
         }
         public void GetComponentsInChildren<T>(List<T> results)
         {
-            throw new NotImplementedException();
+            if (results != null)
+            {
+                if (TryGetComponent(typeof(T),out Component component) && component is T t)
+                {
+                    results.Add(t);
+                }
+                foreach (Entity child in childrens.Values)
+                {
+                    child.GetComponentsInChildren(results);
+                }
+            }
         }
         public void GetComponentsInChildren(Type type, List<Component> results)
         {
-            throw new NotImplementedException();
+            if (results != null)
+            {
+                if (TryGetComponent(type, out Component component))
+                {
+                    results.Add(component);
+                }
+                foreach (Entity child in childrens.Values)
+                {
+                    child.GetComponentsInChildren(type, results);
+                }
+            }
         }
 
         //获取父级组件
         public Component GetComponentInParent(Type type)
         {
-            throw new NotImplementedException();
+            if (TryGetComponent(type,out Component component))
+            {
+                return component;
+            }
+            else
+            {
+                if (Parent != null)
+                {
+                    return parent.GetComponentInParent(type);
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
         public T GetComponentInParent<T>()
         {
-            throw new NotImplementedException();
+            Component component = GetComponentInParent(typeof(T));
+            if (component is T t)
+            {
+                return t;
+            }
+            else
+            {
+                return default;
+            }
         }
         public Component[] GetComponentsInParent(Type type)
         {
-            throw new NotImplementedException();
+            List<Component> results = new List<Component>();
+            GetComponentsInParent(type, results);
+            return results.ToArray();
         }
         public T[] GetComponentsInParent<T>()
         {
-            throw new NotImplementedException();
+            List<T> results = new List<T>();
+            GetComponentsInParent<T>();
+            return results.ToArray();
         }
         public void GetComponentsInParent<T>(List<T> results)
         {
-            throw new NotImplementedException();
+            if (results != null)
+            {
+                if (TryGetComponent(out T component))
+                {
+                    results.Add(component);
+                }
+                if (Parent != null)
+                {
+                    parent.GetComponentsInParent<T>();
+                }
+            }
         }
         public void GetComponentsInParent(Type type, List<Component> results)
         {
-            throw new NotImplementedException();
-        }
-
-        //获取域级组件
-        public Component GetComponentInDomain(Type type)
-        {
-            return Domain.GetComponentInDomain(type);
-        }
-        public T GetComponentInDomain<T>()
-        {
-            return Domain.GetComponentInDomain<T>();
+            if (results != null)
+            {
+                if (TryGetComponent(type,out Component component))
+                {
+                    results.Add(component);
+                }
+                if (Parent != null)
+                {
+                    parent.GetComponentsInParent(type, results);
+                }
+            }
         }
     }
 }

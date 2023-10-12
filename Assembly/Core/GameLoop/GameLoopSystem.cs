@@ -27,10 +27,10 @@ namespace ZFramework
         private Queue<Component> lateupdate = new Queue<Component>();
         private Queue<Component> lateupdate2 = new Queue<Component>();
 
-        internal void Load(Type[] allTypes)
+        internal void Load()
         {
             gameloopMaps.Clear();
-            foreach (Type type in allTypes)
+            foreach (Type type in Game.GetTypesByAttribute<GameLoopAttribute>())
             {
                 if (Activator.CreateInstance(type) is IGameLoop gameloopObj)
                 {
@@ -51,17 +51,14 @@ namespace ZFramework
         }
         internal void Reload()
         {
+            //TODO 目前重载执行的生命周期是重载后的方法,且并没有在帧末处理,应该改成执行在帧末统一调用旧重载的生命周期
             updates.Clear();
             updates2.Clear();
             lateupdate.Clear();
             lateupdate2.Clear();
             List<Component> reloadComponents = new List<Component>();
-
-            foreach (var item in aliveComponents)
+            foreach (Component component in aliveComponents.Values)
             {
-                //var componentID = item.Key;
-                var component = item.Value;
-
                 if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, List<IGameLoop>> map))
                 {
                     if (map.ContainsKey(typeof(IUpdate)))
@@ -79,7 +76,7 @@ namespace ZFramework
                 }
             }
 
-            foreach (var item in reloadComponents)
+            foreach (Component item in reloadComponents)
             {
                 CallReload(item);
             }
@@ -149,32 +146,10 @@ namespace ZFramework
                     CallDestory(component);
                 }
                 obj.DisposedFinish();
-                aliveComponents.Remove(obj.InstanceID);
             }
         }
 
-        internal void WaitingAdd(Component component)
-        {
-            waitingAdd.Add(component);
-        }
-        internal void WaitingDestory(Component component)
-        {
-            for (int i = 0; i < waitingAdd.Count; i++)
-            {
-                if (waitingAdd[i] == component)
-                {
-                    waitingAdd.RemoveAt(i);
-                    break;
-                }
-            }
-            waitingRemove.Enqueue(component);
-        }
-        internal void WaitingDestory(Entity entity)
-        {
-            waitingRemove.Enqueue(entity);
-        }
-
-        bool GetGameLoops(Component component, Type gameloopType, out List<IGameLoop> gameloops)
+        private bool GetGameLoops(Component component, Type gameloopType, out List<IGameLoop> gameloops)
         {
             if (gameloopMaps.TryGetValue(component.GetType(), out Dictionary<Type, List<IGameLoop>> gameloopImpls))
             {
@@ -202,6 +177,7 @@ namespace ZFramework
                     }
                 }
             }
+            waitingAdd.Add(component);
         }
         internal void CallEnable(Component component)
         {
@@ -237,6 +213,33 @@ namespace ZFramework
                 }
             }
         }
+        internal void DestoryObject(ZObject @object,bool isImmediate)
+        {
+            if (@object is Component component)
+            {
+                for (int i = 0; i < waitingAdd.Count; i++)
+                {
+                    if (waitingAdd[i] == component)
+                    {
+                        waitingAdd.RemoveAt(i);
+                        break;
+                    }
+                }
+                if (isImmediate)
+                {
+                    CallDestory(component);
+                }
+            }
+            if (isImmediate)
+            {
+                @object.DisposedFinish();
+            }
+            else
+            {
+                waitingRemove.Enqueue(@object);
+            }
+        }
+
         private void CallReload(Component component)
         {
             if (GetGameLoops(component, typeof(IReLoad), out List<IGameLoop> gameloops))
@@ -310,6 +313,7 @@ namespace ZFramework
                     }
                 }
             }
+            aliveComponents.Remove(component.InstanceID);
         }
 
     }

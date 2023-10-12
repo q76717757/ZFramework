@@ -7,77 +7,48 @@ namespace ZFramework
     public abstract partial class Component : ZObject
     {
         private Entity entity;
-        private bool isEnable = true;
+        private bool isEnable;
 
-        public Domain Domain
-        {
-            get
-            {
-                return entity.Domain;
-            }
-        }
         public Entity Entity
         {
             get
             {
-                return GetEntity(true);
+                return GetEntity();
             }
         }
         public bool Enable
         {
             get
-            { 
-                return isEnable;
+            {
+                return GetEnable();
             }
             set
             {
-                if (isEnable != value)
-                {
-                    isEnable = value;
-                    if (value)
-                    {
-                        Game.CallEnable(this);
-                    }
-                    else
-                    {
-                        Game.CallDisable(this);
-                    }
-                }
+                SetEnable(value);
             }
         }
-        private bool IsDomainComopnent
+
+        protected Component()
         {
-            get
-            {
-                return entity.IsDomainRoot;
-            }
-        }
-        
-        //CREATE
-        internal static Component Create(Type type, Entity entity)
-        {
-            Component component = (Component)Activator.CreateInstance(type);
-            component.entity = entity;
-            return component;
-        }
-        internal static T Create<T>(Entity entity) where T : Component
-        {
-            T component = (T)Activator.CreateInstance(typeof(T));
-            component.entity = entity;
-            return component;
         }
 
 
-        //Remove
-        protected sealed override void BeginDispose()
+        protected sealed override void BeginDispose(bool isImmediate)
         {
-            Game.WaitingDestory(this);
+            Game.DestoryObject(this, isImmediate);
         }
         protected sealed override void EndDispose()
         {
-            entity.RemoveComponent(this);
+            Entity.RemoveComponentFromDictionary(entity, this);
             entity = null;
         }
 
+        internal static Component CreateInstance(Type type, Entity entity)
+        {
+            Component component = (Component)Activator.CreateInstance(type);
+            component.entity = entity;
+            component.isEnable = true;
+            return component;
+        }
     }
 }

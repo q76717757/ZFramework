@@ -9,7 +9,7 @@ namespace ZFramework
         private readonly static TimeTickSystem TimeTickSystem = new TimeTickSystem();
         private readonly static IDGenerationSystem IDGenerationSystem = new IDGenerationSystem(TimeTickSystem);
         private readonly static GameLoopSystem GameLoopSystem = new GameLoopSystem();
-        private readonly static DomainSystem DomainSystem = new DomainSystem();
+        internal readonly static Entity Root = new Entity(null);
 
         private IGameVisual gameVisual;//可视化组件
 
@@ -19,12 +19,13 @@ namespace ZFramework
         void LoadAssembly(Type[] allTypes)
         {
             AttributeMapper.Load(allTypes);
-            GameLoopSystem.Load(GetTypesByAttribute<GameLoopAttribute>());
+            GameLoopSystem.Load();
         }
         void IGameInstance.Start(Type[] allTypes)
         {
             LoadAssembly(allTypes);
-            DomainSystem.Start();
+            Type entryType = GetTypesByAttribute<EntryAttribute>()[0];
+            ((Entry)Activator.CreateInstance(entryType)).OnStart();
         }
         void IGameInstance.Reload(Type[] allTypes)
         {
@@ -42,22 +43,10 @@ namespace ZFramework
         }
         void IGameInstance.Close()
         {
-            DomainSystem.Close();
+            Entity.DestroyImmediate(Root);
         }
 
 
-        internal static void WaitingAdd(Component component)
-        {
-            GameLoopSystem.WaitingAdd(component);
-        }
-        internal static void WaitingDestory(Component component)
-        {
-            GameLoopSystem.WaitingDestory(component);
-        }
-        internal static void WaitingDestory(Entity entity)
-        { 
-            GameLoopSystem.WaitingDestory(entity);
-        }
         internal static void CallAwake(Component component)
         { 
             GameLoopSystem.CallAwake(component);
@@ -70,25 +59,15 @@ namespace ZFramework
         {
             GameLoopSystem.CallDisable(component);
         }
-
+        internal static void DestoryObject(ZObject @object, bool isImmediate)
+        {
+            GameLoopSystem.DestoryObject(@object, isImmediate);
+        }
 
         //Public static
         public static Type[] GetTypesByAttribute<T>() where T :BaseAttribute
         {
             return AttributeMapper.GetTypesByAttribute(typeof(T));
         }
-        public static Domain GetDomain(int domainID)
-        { 
-            return DomainSystem.GetDomain(domainID);
-        }
-        public static void LoadDomain(Domain domain)
-        {
-            DomainSystem.LoadDomain(domain);
-        }
-        public static void UnloadDomain(int domainID)
-        { 
-            DomainSystem.UnloadDomain(domainID);
-        }
-
     }
 }

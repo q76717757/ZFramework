@@ -15,14 +15,20 @@ namespace ZFramework
         private int instanceID;
         public int InstanceID { get => instanceID; }
         public string Name { get; set; }
-        private bool IsDisposed { get => InstanceID == 0; }
+        private bool IsDisposed
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                return instanceID == 0;
+            }
+        }
 
         protected ZObject()
         {
             instanceID = idPosition++;
             objPool.Add(instanceID, this);
         }
-
 
         public static bool operator ==(ZObject obj1, ZObject obj2)
         {
@@ -69,7 +75,7 @@ namespace ZFramework
 
 
         //静态方法
-        public static void Destory(ZObject obj)
+        internal static void Destory(ZObject obj, bool isImmediate)
         {
             if (obj == null)
             {
@@ -77,16 +83,24 @@ namespace ZFramework
             }
             try
             {
-                obj.BeginDispose();
+                obj.BeginDispose(isImmediate);
             }
             catch (Exception e)
             {
                 Log.Error(e);
             }
         }
+        public static void Destory(ZObject obj)
+        {
+            Destory(obj, false);
+        }
+        public static void DestroyImmediate(ZObject obj)
+        {
+            Destory(obj, true);
+        }
 
 
-        protected abstract void BeginDispose();
+        protected abstract void BeginDispose(bool isImmediate);
         protected abstract void EndDispose();
         internal void DisposedFinish()//延迟删除
         {

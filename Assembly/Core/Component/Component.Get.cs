@@ -5,108 +5,110 @@ namespace ZFramework
 {
     public partial class Component
     {
-        private Entity GetEntity(bool ignoreRoot = false)
+        private Entity GetEntity()
         {
             ThrowIfDisposed();
-            if (IsDomainComopnent && ignoreRoot)//这是域组件
-            {
-                return null;
-            }
-            else
-            {
-                //实体组件
-                return entity;
-            }
+            return entity;
         }
 
+        private bool GetEnable()
+        {
+            ThrowIfDisposed();
+            return isEnable;
+        }
+        private void SetEnable(bool enable)
+        {
+            ThrowIfDisposed();
+            if (isEnable != enable)
+            {
+                isEnable = enable;
+                if (enable)
+                {
+                    Game.CallEnable(this);
+                }
+                else
+                {
+                    Game.CallDisable(this);
+                }
+            }
+        }
 
         //获取同级组件
         public Component GetComponent(Type type)
         {
-            return GetEntity().GetComponent(type);
+            return Entity.GetComponent(type);
         }
         public T GetComponent<T>()
         {
-            return GetEntity().GetComponent<T>();
+            return Entity.GetComponent<T>();
         }
         public bool TryGetComponent(Type type, out Component component)
         {
-            return GetEntity().TryGetComponent(type, out component);
+            return Entity.TryGetComponent(type, out component);
         }
         public bool TryGetComponent<T>(out T component)
         {
-            return GetEntity().TryGetComponent<T>(out component);
+            return Entity.TryGetComponent<T>(out component);
         }
         public Component[] GetComponents()
         {
-            return GetEntity().GetComponents();
+            return Entity.GetComponents();
         }
         public void GetComponents(List<Component> results)
         {
-            GetEntity().GetComponents(results);
+            Entity.GetComponents(results);
         }
 
         //获取子级的组件
         public Component GetComponentInChildren(Type type)
         {
-            return GetEntity().GetComponentInChildren(type);
+            return Entity.GetComponentInChildren(type);
         }
         public T GetComponentInChildren<T>()
         {
-            return GetEntity().GetComponentInChildren<T>();
+            return Entity.GetComponentInChildren<T>();
         }
         public Component[] GetComponentsInChildren(Type type)
         {
-            return GetEntity().GetComponentsInChildren(type);
+            return Entity.GetComponentsInChildren(type);
         }
         public T[] GetComponentsInChildren<T>()
         {
-            return GetEntity().GetComponentsInChildren<T>();
+            return Entity.GetComponentsInChildren<T>();
         }
         public void GetComponentsInChildren<T>(List<T> results)
         {
-            GetEntity().GetComponentsInChildren(results);
+            Entity.GetComponentsInChildren(results);
         }
         public void GetComponentsInChildren(Type type, List<Component> results)
         {
-            GetEntity().GetComponentsInChildren(type, results);
+            Entity.GetComponentsInChildren(type, results);
         }
 
         //获取父级组件
         public Component GetComponentInParent(Type type)
         {
-            return GetEntity().GetComponentInParent(type);
+            return Entity.GetComponentInParent(type);
         }
         public T GetComponentInParent<T>()
         {
-            return GetEntity().GetComponentInParent<T>();
+            return Entity.GetComponentInParent<T>();
         }
         public Component[] GetComponentsInParent(Type type)
         {
-            return GetEntity().GetComponentsInParent(type);
+            return Entity.GetComponentsInParent(type);
         }
         public T[] GetComponentsInParent<T>()
         {
-            return GetEntity().GetComponentsInParent<T>();
+            return Entity.GetComponentsInParent<T>();
         }
         public void GetComponentsInParent<T>(List<T> results)
         {
-            GetEntity().GetComponentsInParent(results);
+            Entity.GetComponentsInParent(results);
         }
         public void GetComponentsInParent(Type type, List<Component> results)
         {
-            GetEntity().GetComponentsInParent(type, results);
-        }
-
-
-        //获取域级组件
-        public Component GetComponentInDomain(Type type)
-        {
-            return GetEntity().GetComponentInDomain(type);
-        }
-        public T GetComponentInDomain<T>()
-        { 
-            return GetEntity().GetComponentInDomain<T>();
+            Entity.GetComponentsInParent(type, results);
         }
 
     }
