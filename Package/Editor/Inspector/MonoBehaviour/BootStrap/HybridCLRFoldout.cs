@@ -24,7 +24,7 @@ namespace ZFramework.Editor
         public override string Title => $"代码热更新({Defines.TargetRuntimePlatform})";
 
         static string gitURL = "https://gitee.com/focus-creative-games/hybridclr_unity.git";
-        static string packageVersion = "4.0.8";
+        static string packageVersion = "4.0.10";
         static AddRequest addRequest;
         BootProfile Profile
         {
