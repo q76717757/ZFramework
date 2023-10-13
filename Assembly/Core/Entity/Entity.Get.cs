@@ -127,7 +127,11 @@ namespace ZFramework
             {
                 foreach (Entity child in childrens.Values)
                 {
-                    return child.GetComponentInChildren(type);
+                    component = child.GetComponentInChildren(type);
+                    if (component != null)
+                    {
+                        return component;
+                    }
                 }
             }
             return null;
