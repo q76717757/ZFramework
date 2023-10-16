@@ -29,8 +29,12 @@ namespace ZFramework
             {
                 try
                 {
-                    Log.Info("Entry Start -> " + type.Name);
-                    ((Entry)Activator.CreateInstance(type)).OnStart();
+                    Entry entry = (Entry)Activator.CreateInstance(type);
+                    if (entry.IsActivate)
+                    {
+                        Log.Info("Entry Start -> " + type.Name);
+                        entry.OnStart();
+                    }
                 }
                 catch (Exception e)
                 {
