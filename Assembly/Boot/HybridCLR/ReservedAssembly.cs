@@ -1,3 +1,4 @@
+#if ENABLE_HYBRIDCLR
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -12,12 +13,14 @@ namespace ZFramework
         private void Awake()
         {
             StringBuilder sb = new StringBuilder();
-
 #if UNITY_STANDALONE_WIN
+#if NET_UNITY_4_8 || NET_4_6
             sb.AppendLine(typeof(Microsoft.Win32.SafeHandles.SafeRegistryHandle).ToString());//mscorlib.dll
             sb.AppendLine(typeof(Microsoft.Win32.IntranetZoneCredentialPolicy).ToString());//System.dll
             sb.AppendLine(typeof(Microsoft.Win32.SafeHandles.SafePipeHandle).ToString());//System.Core.dll
 #endif
+#endif
+
             sb.AppendLine(typeof(AOT.MonoPInvokeCallbackAttribute).ToString());//UnityEngine.CoreModule.dll
             sb.AppendLine(typeof(UnityEngine.Event).ToString());//UnityEngine.IMGUIModule.dll
             sb.AppendLine(typeof(UnityEngine.AndroidJavaRunnable).ToString());//UnityEngine.AndroidJNIModule.dll
@@ -33,8 +36,8 @@ namespace ZFramework
             sb.AppendLine(typeof(UnityEngine.Video.VideoPlayer).ToString());//UnityEngine.VideoModule.dll
             sb.AppendLine(typeof(UnityEngine.LocationService).ToString());//UnityEngine.InputLegacyModule.dll
             sb.AppendLine(typeof(UnityEngine.Networking.DownloadHandlerTexture).ToString());//UnityEngine.UnityWebRequestTextureModule.dll
-
             Debug.Log(sb.ToString());
         }
     }
 }
+#endif
