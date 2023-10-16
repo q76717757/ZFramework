@@ -13,10 +13,5 @@ namespace ZFramework
             Log.ILog = new ConsoleLog();
             Log.Info("Server Start!");
         }
-
-        public override void OnStop()
-        {
-            Log.Info("Server Stop!");
-        }
     }
 }
