@@ -2,6 +2,7 @@
     "name": "Unity.Assembly.View",
     "rootNamespace": "ZFramework",
     "references": [
+        "MPUIKit",
         "Unity.Package.Runtime",
         "Unity.Assembly.Boot",
         "Unity.Assembly.Core",
