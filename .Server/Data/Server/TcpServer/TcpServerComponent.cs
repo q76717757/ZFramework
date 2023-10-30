@@ -14,7 +14,6 @@ namespace ZFramework
     {
         public override void OnAwake(TcpServerComponent self)
         {
-            UrlUtility.coder = new UrlHelper();
         }
     }
 

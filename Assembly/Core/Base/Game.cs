@@ -24,8 +24,23 @@ namespace ZFramework
         void IGameInstance.Start(Type[] allTypes)
         {
             LoadAssembly(allTypes);
-            Type entryType = GetTypesByAttribute<EntryAttribute>()[0];
-            ((Entry)Activator.CreateInstance(entryType)).OnStart();
+            Type[] entryTypes = GetTypesByAttribute<EntryAttribute>();
+            foreach (Type type in entryTypes)
+            {
+                try
+                {
+                    Entry entry = (Entry)Activator.CreateInstance(type);
+                    if (entry.IsActivate)
+                    {
+                        Log.Info("Entry Start -> " + type.Name);
+                        entry.OnStart();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"[{type}] Start Entry Fail : {e}");
+                }
+            }
         }
         void IGameInstance.Reload(Type[] allTypes)
         {

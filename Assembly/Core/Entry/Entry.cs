@@ -14,6 +14,10 @@ namespace ZFramework
     [Entry]
     public abstract class Entry
     {
+        /// <summary>
+        /// 如果是True,则框架会自动执行OnStart方法,否则忽略这个Entry实现,默认为True
+        /// </summary>
+        public virtual bool IsActivate { get; } = true;
         public abstract void OnStart();
     }
 }

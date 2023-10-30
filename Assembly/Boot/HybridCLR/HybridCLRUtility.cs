@@ -62,9 +62,14 @@ namespace ZFramework
             }
         }
 
-
         private static void LoadMetadataForAOTAssembly(string uri)
         {
+            if (!File.Exists(uri))
+            {
+                Log.Warning("AOT Assembly Not Exists,存在没有AOT的情况,但通常情况下都会有 可以检查一下打包设置是不是漏了");
+                return;
+            }
+
             byte[] data = DiskFilesLoadingUtility.DownLoadBytes(uri);
             AssetBundle bundle = AssetBundle.LoadFromMemory(data);
             TextAsset[] assets = bundle.LoadAllAssets<TextAsset>();

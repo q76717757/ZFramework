@@ -311,6 +311,7 @@ namespace ZFramework.Editor
                     SyncSettings(assemblyNameValues);
                 }
             }
+            //TODO  fix bug 不会自动同步 可能是对比逻辑有问题  手动点击可以重置
         }
         void SyncSettings(string[] assemblyNameValues)
         {
@@ -403,6 +404,12 @@ namespace ZFramework.Editor
         }
         void PackagingMetaAssembly(List<string> aotList)
         {
+            if (aotList.Count == 0)
+            {
+                Log.Info("启发文档的AOT列表为空");
+                return;
+            }
+
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
             //复制aot源文件到工程内
             string aotAssembliesSrcDir = SettingsUtil.GetAssembliesPostIl2CppStripDir(target);
