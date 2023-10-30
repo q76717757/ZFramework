@@ -21,9 +21,8 @@ namespace ZFramework
         }
     }
 
-
     /// <summary>
-    /// �����������
+    /// 场景管理组件
     /// </summary>
     public class SceneManagementComponent : Component
     {
@@ -41,9 +40,7 @@ namespace ZFramework
                 GameScene scene = Activator.CreateInstance(type) as GameScene;
                 gameScenes.Add(scene.SceneName, scene);
             }
-            OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
-
         private void OnSceneLoaded(Scene scene, LoadSceneMode loadMode)
         {
             if (gameScenes.TryGetValue(scene.name, out GameScene gameScene) && activeScene.Add(gameScene))
@@ -64,7 +61,6 @@ namespace ZFramework
                 gameScene.OnUnload();
             }
         }
-
         public void OnDestory()
         {
             foreach (GameScene gameScene in activeScene)
@@ -76,5 +72,33 @@ namespace ZFramework
             }
             activeScene.Clear();
         }
+
+        public void CreateScene(string sceneName, LoadSceneMode loadScene)
+        {
+            Scene scene = SceneManager.CreateScene(sceneName);//这个API不会触发SceneOnLoad事件  这里手动处理一下
+            if (scene.IsValid())
+            {
+                OnSceneLoaded(scene, loadScene);
+                if (loadScene == LoadSceneMode.Single)
+                {
+                    SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene().name);
+                }
+            }
+        }
+        public void LoadScene(string sceneName, LoadSceneMode loadScene)
+        {
+            //切换到Loading场景
+
+            //检查场景的资源是否已经被加载??
+
+            //加载场景资源
+
+            SceneManager.LoadScene(sceneName, loadScene);
+        }
+        public void CallActiveSceneOnLoaded()
+        {
+            OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
+        }
+
     }
 }
