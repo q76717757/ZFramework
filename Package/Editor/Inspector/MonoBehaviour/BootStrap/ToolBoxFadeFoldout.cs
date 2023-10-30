@@ -11,6 +11,10 @@ namespace ZFramework.Editor
 
         protected override void OnGUI()
         {
+            if (GUILayout.Button("VFS"))
+            {
+                VirtualFileSystemBrowser.OpenWindow();
+            }
         }
     }
 }
