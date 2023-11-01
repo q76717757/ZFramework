@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace ZFramework.Editor
@@ -10,26 +11,25 @@ namespace ZFramework.Editor
 	public class ReferencesInspector : UnityEditor.Editor
 	{
 		private References references;
-		string searchKey;
+        SearchField searchField;
+        string searchKey;
 
 		private void OnEnable()
 		{
 			references = (References)target;
+			if (searchField == null)
+			{
+				searchField = new SearchField();
+            }
 		}
 
         public override void OnInspectorGUI()
 		{
 			Undo.RecordObject(references, "Changed References");
 
-			//搜索栏
-			EditorGUILayout.BeginHorizontal();
-			searchKey = EditorGUILayout.TextField(searchKey, new GUIStyle("ToolbarSeachTextField"));
-			if (GUILayout.Button("clear", !string.IsNullOrEmpty(searchKey) ? new GUIStyle("ToolbarSeachCancelButton") : new GUIStyle("ToolbarSeachCancelButtonEmpty")))
-			{
-				searchKey = string.Empty;
-				EditorGUI.FocusTextInControl(string.Empty);
-			}
-			EditorGUILayout.EndHorizontal();
+            //搜索栏
+            Rect rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight + 3);
+            searchKey = searchField.OnGUI(rect, searchKey);
 
 			var serializedArray = serializedObject.FindProperty("data");
 
