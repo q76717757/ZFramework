@@ -38,6 +38,7 @@ namespace ZFramework.Editor
                 new HybridCLRFoldout().JoinGroup(fadeFoldouts);
                 new BuildFadeFoldout().JoinGroup(fadeFoldouts);
                 new ToolBoxFadeFoldout().JoinGroup(fadeFoldouts);
+                new TencentCOSFoldout().JoinGroup(fadeFoldouts);
 
                 foreach (FadeFoldout item in fadeFoldouts)
                 {
