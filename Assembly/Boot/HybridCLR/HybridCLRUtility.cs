@@ -13,7 +13,10 @@ namespace ZFramework
         /// 热更程序集的包名
         /// </summary>
         public static string HotfixAssemblyBundleName => "hotfixassembly.ab";//ab包的名字是全小写的
-
+        /// <summary>
+        /// 热更程序集摘要记录文件名
+        /// </summary>
+        public static string HotfixAssemblyXmlName => "hotfixassemblyInfo.xml";//记录编译时间和ab包的hash,用于版本对比
         /// <summary>
         /// AOT元数据程序集的包名
         /// </summary>

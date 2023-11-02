@@ -9,6 +9,8 @@ using System;
 using UnityEditorInternal;
 using System.IO;
 using System.Reflection;
+using System.Xml;
+using System.Text;
 
 #if ENABLE_HYBRIDCLR
 using HybridCLR.Editor.Commands;
@@ -490,9 +492,23 @@ namespace ZFramework.Editor
             Directory.CreateDirectory(HybridCLRUtility.BuildInAssemblyBundleLoadAPath);
             File.Copy($"{aotAssembliesDstDir}/{build.assetBundleName}", $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}", true);
 
-            Log.Info("打包JIT程序集完成 hash->" + aotabm.GetAssetBundleHash(build.assetBundleName) + " path->" + $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}");
+            //生成xml记录文件
+            var xml = new XmlDocument();
+            var element = xml.CreateElement("HotfixAssemblyInfo");
+            var hash = xml.CreateElement("Hash");
+            hash.InnerText = MD5Helper.FileMD5($"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}");
+            var time = xml.CreateElement("Time");
+            time.InnerText = TimestampUtility.GetCurrentTimestamp(TimeUnit.Seconds).ToString();
+            element.AppendChild(hash);
+            element.AppendChild(time);
+            xml.AppendChild(element);
+
+            var xmlPath = Path.Combine(HybridCLRUtility.BuildInAssemblyBundleLoadAPath, HybridCLRUtility.HotfixAssemblyXmlName);
+            File.WriteAllText(xmlPath, xml.FormatString(), Encoding.UTF8);
 
             AssetDatabase.Refresh();
+
+            Log.Info("打包JIT程序集完成 hash->" + aotabm.GetAssetBundleHash(build.assetBundleName) + " path->" + $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}");
         }
     }
 #endif
