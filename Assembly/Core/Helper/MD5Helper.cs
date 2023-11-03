@@ -9,15 +9,7 @@ namespace ZFramework
 	{
 		public static string FileMD5(string filePath)
 		{
-			byte[] retVal;
-            using (FileStream file = new FileStream(filePath, FileMode.Open))
-			{
-				using (MD5 md5 = MD5.Create())
-				{
-					retVal = md5.ComputeHash(file);
-				}
-            }
-
+            byte[] retVal = FileMD5ToBytes(filePath);
             StringBuilder stringBuilder = new StringBuilder();
 			foreach (byte b in retVal)
 			{
@@ -26,6 +18,18 @@ namespace ZFramework
 			return stringBuilder.ToString();
 
 		}
+        public static byte[] FileMD5ToBytes(string filePath)
+        {
+            byte[] retVal;
+            using (FileStream file = new FileStream(filePath, FileMode.Open))
+            {
+                using (MD5 md5 = MD5.Create())
+                {
+                    retVal = md5.ComputeHash(file);
+                }
+            }
+            return retVal;
+        }
 		public static string BytesMD5(byte[] bytes)
 		{
             byte[] retVal;
