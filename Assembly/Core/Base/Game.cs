@@ -9,7 +9,7 @@ namespace ZFramework
         private readonly static TimeTickSystem TimeTickSystem = new TimeTickSystem();
         private readonly static IDGenerationSystem IDGenerationSystem = new IDGenerationSystem(TimeTickSystem);
         private readonly static GameLoopSystem GameLoopSystem = new GameLoopSystem();
-        internal readonly static Entity Root = new Entity(null);
+        private readonly static Entity Root = new Entity(null);
 
         private IGameVisual gameVisual;//可视化组件
 
@@ -29,16 +29,13 @@ namespace ZFramework
             {
                 try
                 {
-                    Entry entry = (Entry)Activator.CreateInstance(type);
-                    if (entry.IsActivate)
-                    {
-                        Log.Info("Entry Start -> " + type.Name);
-                        entry.OnStart();
-                    }
+                    Log.Info($"{type.Name} Start");
+                    IEntry entry = (IEntry)Activator.CreateInstance(type);
+                    entry.OnStart(Root);
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"[{type}] Start Entry Fail : {e}");
+                    Log.Error(e);
                 }
             }
         }

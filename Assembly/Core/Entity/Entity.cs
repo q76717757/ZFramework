@@ -40,11 +40,6 @@ namespace ZFramework
             }
         }
 
-        public Entity()
-        {
-            //直接new出来的Entity默认作为game.root的子物体
-            SetDependencies(Game.Root, this);
-        }
         internal Entity(Entity parent)//内部使用的构造方法
         {
             if (parent != null)
@@ -76,7 +71,7 @@ namespace ZFramework
         {
             if (!IsRoot)
             {
-                Entity.RemoveChildFromDictionary(parent, this.InstanceID);
+                RemoveChildFromDictionary(parent, this.InstanceID);
                 parent = null;
             }
         }
