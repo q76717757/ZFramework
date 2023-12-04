@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using HybridCLR;
 using System.Reflection;
+using System.Xml;
 
 namespace ZFramework
 {
@@ -42,7 +43,7 @@ namespace ZFramework
                 return Path.Combine(Defines.PersistenceDataAPath, "Assembly");
             }
         }
-
+        public static string Hash { get; private set; }
 
         /// <summary>
         /// 加载程序集
@@ -52,19 +53,30 @@ namespace ZFramework
             //补充元数据
             LoadMetadataForAOTAssembly(Path.Combine(BuildInAssemblyBundleLoadAPath, AOTMetaAssemblyBundleName));
 
-            //加载热更程序集
-            string hotfixDLLPath = Path.Combine(PersistenceAssemblyBundleLoadAPath, HotfixAssemblyBundleName);
-            string buildinDLLPath = Path.Combine(BuildInAssemblyBundleLoadAPath, HotfixAssemblyBundleName);
-            if (File.Exists(hotfixDLLPath))
+            //加载程序集配置单
+            string xmlPath = Path.Combine(PersistenceAssemblyBundleLoadAPath, HotfixAssemblyXmlName);//持久化路径
+            string xmlPath2 = Path.Combine(BuildInAssemblyBundleLoadAPath, HotfixAssemblyXmlName);//内置路径
+
+            if (File.Exists(xmlPath))
             {
-                LoadHotfixAssembly(hotfixDLLPath);
+                LoadAssemblyInfoXML(xmlPath);
+                LoadHotfixAssembly(Path.Combine(PersistenceAssemblyBundleLoadAPath, HotfixAssemblyBundleName));
             }
             else
             {
-                LoadHotfixAssembly(buildinDLLPath);
+                LoadAssemblyInfoXML(xmlPath2);
+                LoadHotfixAssembly(Path.Combine(BuildInAssemblyBundleLoadAPath, HotfixAssemblyBundleName));
             }
         }
 
+
+        private static void LoadAssemblyInfoXML(string uri)
+        {
+            var xmlStr = DiskFilesLoadingUtility.DownLoadText(uri);
+            var xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(xmlStr);
+            Hash = xmlDoc.SelectSingleNode("HotfixAssemblyInfo").Attributes["Hash"].Value;
+        }
         private static void LoadMetadataForAOTAssembly(string uri)
         {
             if (!File.Exists(uri))
