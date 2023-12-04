@@ -32,18 +32,12 @@ namespace ZFramework.Editor
 
         public sealed override void OnGUI(string searchContext)
         {
-            if (BootProfile.IsExists)
+            if (!enableIsCalled)
             {
-                if (!enableIsCalled)
-                {
-                    enableIsCalled = true;
-                    OnEnable();
-                }
-                OnGUI();
+                enableIsCalled = true;
+                OnEnable();
             }
-            else
-            {
-            }
+            OnGUI();
         }
         public sealed override void OnActivate(string searchContext, VisualElement rootElement)
         {
