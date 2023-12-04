@@ -11,24 +11,9 @@ namespace ZFramework.Editor
 
         public override void OnInspectorGUI()
         {
-            if (!BootProfile.IsExists)
-            {
-                CreateProfile();
-            }
-            else
-            {
-                DrawElements();
-            }
+            DrawElements();
         }
 
-        void CreateProfile()
-        {
-            if (GUILayout.Button("创建配置文件", GUILayout.Height(50)))
-            {
-                new BootProfile().Save();
-                AssetDatabase.Refresh();
-            }
-        }
         void DrawElements()
         {
             if (fadeFoldouts == null)

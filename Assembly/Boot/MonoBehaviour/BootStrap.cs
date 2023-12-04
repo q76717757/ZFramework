@@ -11,6 +11,7 @@ namespace ZFramework
     public sealed class BootStrap : MonoBehaviour
     {
         internal static IGameInstance game;
+        public static string projectCode = "DaschowVitrualWorld";//属于file server的 临时写在这里
 
         void Start()
         {
@@ -27,21 +28,16 @@ namespace ZFramework
 
         IGameInstance StartGame()
         {
-            BootProfile profile = BootProfile.GetInstance();
-
-            //根据引导配置预加载程序集
-            if (profile.isEnableHotfixCode)
-            {
+            //预加载程序集
 #if !UNITY_EDITOR && ENABLE_HYBRIDCLR
-                HybridCLRUtility.LoadAssembly();
+            HybridCLRUtility.LoadAssembly();
 #endif
-            }
             //遍历域中所有已加载的程序集,获取框架管理的目标程序集
             List<Type> allTypes = new List<Type>();
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (Assembly assembly in assemblies)
             {
-                if (profile.assemblyNames.Contains(assembly.GetName().Name))
+                if (Defines.AssemblyNames.Contains(assembly.GetName().Name))
                 {
                     allTypes.AddRange(assembly.GetTypes());
                 }
