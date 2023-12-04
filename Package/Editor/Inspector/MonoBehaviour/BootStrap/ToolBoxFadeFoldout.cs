@@ -13,7 +13,7 @@ namespace ZFramework.Editor
         {
             if (GUILayout.Button("VFS"))
             {
-                VirtualFileSystemBrowser.OpenWindow();
+                VFSBrowser.OpenWindow();
             }
         }
     }

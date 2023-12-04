@@ -106,8 +106,8 @@ namespace ZFramework.Editor
             return m_TreeModel.GetAllTreeElements();
         }
 
-        //添加    
-        public TreeViewItem AddTreeViewItem(T element, TreeElement parent, int insertPosition) //parent传空 则默认添加到root上
+        //添加
+        public TreeViewItem AddTreeViewItem(T element, TreeElement parent, int insertPosition,bool select = true) //parent传空 则默认添加到root上
         {
             if (element == null)
             {
@@ -118,10 +118,13 @@ namespace ZFramework.Editor
                 parent = m_TreeModel.Root;
             }
             m_TreeModel.AddElement(element, parent, insertPosition);
-            SetSelection(new int[] { element.id }, TreeViewSelectionOptions.RevealAndFrame);
+            if (select)//创建后选中
+            {
+                SetSelection(new int[] { element.id }, TreeViewSelectionOptions.RevealAndFrame);
+            }
             return GetTreeViewItem(element.id);
         }
-        public TreeViewItem AddTreeViewItemToTail(T element,TreeElement parent)
+        public TreeViewItem AddTreeViewItemToTail(T element,TreeElement parent,bool select = true)
         {
             if (parent == null)
             {
@@ -132,18 +135,21 @@ namespace ZFramework.Editor
             {
                 index = parent.children.Count;
             }
-            return AddTreeViewItem(element, parent, index);
+            return AddTreeViewItem(element, parent, index, select);
         }
-        public void AddTreeViewItems(IList<T> element, TreeElement parent, int insertPosition)
+        public void AddTreeViewItems(IList<T> element, TreeElement parent, int insertPosition,bool select = true)
         {
             if (element != null && element.Count > 0)
             {
                 m_TreeModel.AddElements(element, parent, insertPosition);
                 int[] selectedIDs = element.Select(x => x.id).ToArray();
-                SetSelection(selectedIDs, TreeViewSelectionOptions.RevealAndFrame);
+                if (select)
+                {
+                    SetSelection(selectedIDs, TreeViewSelectionOptions.RevealAndFrame);
+                }
             }
         }
-
+        
         //删除
         public void RemoveTreeViewItem(int id)
         {
@@ -156,7 +162,12 @@ namespace ZFramework.Editor
 
 
         //重命名
-        protected bool RenameOfNewItem;
+        private bool RenameOfNewItem;
+        protected new void BeginRename(TreeViewItem item)
+        {
+            RenameOfNewItem = true;
+            base.BeginRename(item);
+        }
         protected override sealed void RenameEnded(RenameEndedArgs args)
         {
             if (args.acceptedRename && !string.IsNullOrEmpty(args.newName) && args.originalName != args.newName)
@@ -219,13 +230,13 @@ namespace ZFramework.Editor
         const string k_GenericDragID = "GenericDragColumnDragging";
         protected override sealed bool CanStartDrag(CanStartDragArgs args)
         {
-            return CanStartDragFromInside();
+            return CanStartDragFromInside(args.draggedItemIDs);
         }
         protected virtual bool CanStartDragFromOutside(UnityEngine.Object[] objs)//可以通过外部拖拽元素进来
         {
             return false;
         }
-        protected virtual bool CanStartDragFromInside()//可以拖拽自身元素
+        protected virtual bool CanStartDragFromInside(IList<int> itemIDs)//可以拖拽自身元素
         {
             return false;
         }
@@ -251,7 +262,8 @@ namespace ZFramework.Editor
             else
             {
                 var draggedRows = DragAndDrop.GetGenericData(k_GenericDragID) as List<TreeViewItem>;
-                if (draggedRows != null && draggedRows.Count != 0 && CanStartDragFromInside())
+                var ids = draggedRows.Select((x) => x.id).ToList();
+                if (draggedRows != null && draggedRows.Count != 0 && CanStartDragFromInside(ids))
                 {
                     return HandleDragAndDropInside(draggedRows, args);
                 }
@@ -273,6 +285,7 @@ namespace ZFramework.Editor
                             int insertAtIndex = args.insertAtIndex == -1 ? (parentElement.HasChildren ? parentElement.children.Count : 0) : args.insertAtIndex;
                             IList<T> addElements = CreateTreeElementsFromOutside(objs);
                             AddTreeViewItems(addElements, parentElement, insertAtIndex);
+                            OnAddTreeElementsFromOutside(addElements);
                         }
                         return DragAndDropVisualMode.Generic;
                     }
@@ -282,6 +295,7 @@ namespace ZFramework.Editor
                         {
                             IList<T> addElements = CreateTreeElementsFromOutside(objs);
                             AddTreeViewItems(addElements, m_TreeModel.Root, m_TreeModel.Root.children.Count);
+                            OnAddTreeElementsFromOutside(addElements);
                         }
                         return DragAndDropVisualMode.Generic;
                     }
@@ -305,6 +319,9 @@ namespace ZFramework.Editor
         protected virtual T CreateTreeElementFromOutside(UnityEngine.Object obj)//TreeElement是抽象的 从外部添加元素时 需要子类去执行实例化
         {
             throw new NotImplementedException("CanStartDragFromOutside() Is True,But Not Implemented CreateTreeElementFromOutside()");
+        }
+        public virtual void OnAddTreeElementsFromOutside(IList<T> addElements)//从外部添加元素进去的回调
+        {
         }
         //处理内部拖拽的元素
         DragAndDropVisualMode HandleDragAndDropInside(List<TreeViewItem> draggedRows, DragAndDropArgs args)
