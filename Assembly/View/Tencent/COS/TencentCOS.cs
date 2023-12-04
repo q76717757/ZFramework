@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +26,9 @@ namespace ZFramework
         /// 存储桶
         /// </summary>
         public string Bucket { get; set; }
+        private string Host => $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
 
+        public TencentCOS() { }
         public TencentCOS(string appid,string secretId,string secretKey)
         {
             APPID = appid;
@@ -33,6 +36,7 @@ namespace ZFramework
             SecretKey = secretKey;
         }
 
+        //请求签名过程  文档:https://cloud.tencent.com/document/product/436/7778
         string 请求签名(string UriPathname, string HttpMethod, Dictionary<string, string> paramaMap, Dictionary<string, string> headerMap)
         {
             //步骤1：生成 KeyTime
@@ -60,7 +64,7 @@ namespace ZFramework
             //请求方法小写  get put 
             //请求路径(不带域名)  /或/exampleobject
             string HttpString = $"{HttpMethod.ToLower()}\n/{UriPathname}\n{HttpParameters}\n{HttpHeaders}\n";
-            //Log.Info("HttpString->" + HttpString);
+            Log.Info("HttpString->" + HttpString);
 
             //步骤6：生成 StringToSign
             string StringToSign = $"sha1\n{keyTime}\n{new SHA1Helper().ComputeHashStringToHexString(HttpString)}\n";
@@ -147,6 +151,7 @@ namespace ZFramework
             }
             if (!string.IsNullOrEmpty(pamarasValue)) 
             {
+                Log.Info(pamarasValue);
                 webRequest.uri = new Uri($"https://{host}/{path}?{pamarasValue}");
             }
             else
@@ -166,38 +171,38 @@ namespace ZFramework
             }
             return webRequest;
         }
-        void PrintErrorXML(string xml)
+        string PrintErrorXML(string xml)
         {
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xml);
             var code = xmlDoc.SelectSingleNode("Error/Code").InnerText;
             var message = xmlDoc.SelectSingleNode("Error/Message").InnerText;
-            Log.Error($"[{code}]{message}");
+            var errorString = $"[{code}]{message}";
+            Log.Error(errorString);
+            return errorString;
         }
 
 
         /// <summary>
         /// 存储桶是否存在，是否有权限访问
         /// </summary>
-        public void HEADBucket()
+        public async ATask<bool> HEADBucket()
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
-            UnityWebRequest webRequest = GetRequest(host, "", UnityWebRequest.kHttpVerbHEAD, default, default);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            UnityWebRequest webRequest = GetRequest(Host, "", UnityWebRequest.kHttpVerbHEAD, default, default);
+            await webRequest.SendWebRequest();
             switch (webRequest.responseCode)
             {
                 case 200:
                     Log.Info("存储桶存在且有读取权限");
-                    break;
+                    return true;
                 case 403:
                     Log.Error("无存储桶读取权限");
-                    break;
+                    return false;
                 case 404:
                     Log.Error("存储桶不存在");
-                    break;
+                    return false;
+                default:
+                    return false;
             }
         }
 
@@ -206,76 +211,71 @@ namespace ZFramework
         /// </summary>
         /// <param name="bucket">存储桶的名字(不包括-appid)</param>
         /// <param name="region">区域</param>
-        public void GETBucket()
+        public async ATask<IList<string>> GETBucket()
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
-            UnityWebRequest webRequest = GetRequest(host, "", UnityWebRequest.kHttpVerbGET, default, default);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
+            List<string> output = new List<string>();
+            UnityWebRequest webRequest = GetRequest(Host, "", UnityWebRequest.kHttpVerbGET, default, default);
+            DownloadHandler download = await webRequest.SendWebRequest();
+            if (!string.IsNullOrEmpty(download.error))
             {
-            }
-            if (!string.IsNullOrEmpty(webRequest.error))
-            {
-                PrintErrorXML(webRequest.downloadHandler.text);
+                PrintErrorXML(download.text);
             }
             else
             {
-                var xml = webRequest.downloadHandler.text;
+                var xml = download.text;
                 var xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(xml);
                 var list = xmlDoc.SelectNodes("ListBucketResult/Contents/Key");
                 var count = list.Count;
+            
                 for (int i = 0; i < count; i++)
                 {
                     Log.Info(list.Item(i).InnerText);
+                    output.Add(list.Item(i).InnerText);
                 }
             }
+            return output;
         }
 
         /// <summary>
         /// 将本地的对象（Object）上传至指定存储桶中  savePath以下划线开头,相对于存储桶的完整路径  如/foloder1/foloder2/*.*
         /// </summary>
-        public void PUTObject(string filePath, byte[] uploadBytes)
+        public async ATask<bool> PUTObject(string filePath, byte[] uploadBytes)
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
             var header = new Dictionary<string, string>() // HTTP 请求头部
             {
                 ["Content-Type"] = "application/octet-stream", //image/jpeg  text/html video/mp4 ...  //暂时默认二进制文件
                 ["Content-Length"] = uploadBytes.Length.ToString(),
                 ["Content-MD5"] = MD5Helper.BytesMD5Base64(uploadBytes),
             };
-            UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbPUT, default, header);
+            UnityWebRequest webRequest = GetRequest(Host, filePath, UnityWebRequest.kHttpVerbPUT, default, header);
             webRequest.uploadHandler = new UploadHandlerRaw(uploadBytes);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
+                return false;
             }
             else
             {
                 Log.Info("PUTObject Success");
+                return true;
             }
         }
 
         /// <summary>
         /// 判断指定对象是否存在和有权限，并在指定对象可访问时获取其元数据
         /// </summary>
-        public void HEADObject(string filePath)
+        public async ATask<(bool,int)> HEADObject(string filePath)
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
-            UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbHEAD, default, default);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            UnityWebRequest webRequest = GetRequest(Host, filePath, UnityWebRequest.kHttpVerbHEAD, default, default);
+            await webRequest.SendWebRequest();
             switch (webRequest.responseCode)
             {
                 case 200:
-                    Log.Info($"对象存在且有读取权限,Content-Length={webRequest.GetResponseHeader("Content-Length")}");
-                    break;
+                    int size = int.Parse(webRequest.GetResponseHeader("Content-Length"));
+                    Log.Info($"对象存在且有读取权限,Content-Length={size}");
+                    return (true, size);
                 case 403:
                     Log.Error("无对象读取权限");
                     break;
@@ -283,27 +283,25 @@ namespace ZFramework
                     Log.Error("对象不存在");
                     break;
             }
+            return (false, 0);
         }
 
         /// <summary>
         /// 将 COS 存储桶中的对象（Object）下载至本地
         /// </summary>
-        public void GETObject(string filePath)
+        public async ATask<byte[]> GETObject(string filePath)
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
-            UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbGET, default, default);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            UnityWebRequest webRequest = GetRequest(Host, filePath, UnityWebRequest.kHttpVerbGET, default, default);
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
+                return null;
             }
             else
             {
                 Log.Info("GETObject Success");
-                Log.Info(webRequest.downloadHandler.text);
+                return webRequest.downloadHandler.data;
             }
         }
         /// <summary>
@@ -312,54 +310,51 @@ namespace ZFramework
         /// bytes=10-表示下载对象的第10到最后字节的数据。
         /// bytes=0-表示下载对象的第一个字节到最后一个字节，即完整的文件内容。
         /// </summary>
-        public void GETObjectRange(string filePath, string first,string last)
+        public async ATask<byte[]> GETObjectRange(string filePath, string first,string last)
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
             Dictionary<string, string> header = new Dictionary<string, string>()
             {
                 ["Range"] = $"bytes={first}-{last}"
             };
-            UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbGET, default, header);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            UnityWebRequest webRequest = GetRequest(Host, filePath, UnityWebRequest.kHttpVerbGET, default, header);
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
+                return null;
             }
             else
             {
                 Log.Info("GETObjectRange Success");
                 Log.Info(webRequest.downloadHandler.data.Length);
+                return webRequest.downloadHandler.data;
             }
         }
 
         /// <summary>
         /// 删除一个指定的对象（Object）
         /// </summary>
-        public void DELETEObject(string filePath)
+        public async ATask<bool> DELETEObject(string filePath)
         {
             string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
             UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbDELETE, default, default);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
+                return false;
             }
             else
             {
-                Log.Info("DELETEObject Success");//执行成功 如果是虚拟文件夹 接口还是返回成功  但不会删除虚拟文件夹 及时这是个空文件夹
+                Log.Info("DELETEObject Success");
+                return true;
             }
         }
 
         /// <summary>
         /// 一次性删除多个对象  单次最多1000个
         /// </summary>
-        public void DELETEMultipleObjects(string[] keys)
+        public async ATask<bool> DELETEMultipleObjects(string[] keys)
         {
             XmlDocument xmlDoc = new XmlDocument();
             var delete = xmlDoc.CreateElement("Delete");
@@ -378,8 +373,6 @@ namespace ZFramework
             Log.Info(xmlDoc.OuterXml);
             byte[] uploadBytes = Encoding.UTF8.GetBytes(xmlDoc.OuterXml);
 
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
-
             var paramas = new Dictionary<string, string>()//请求参数
             {
                 ["delete"] = "",
@@ -390,15 +383,13 @@ namespace ZFramework
                 ["Content-Length"] = uploadBytes.Length.ToString(),
                 ["Content-MD5"] = MD5Helper.BytesMD5Base64(uploadBytes),
             };
-            UnityWebRequest webRequest = GetRequest(host, "", UnityWebRequest.kHttpVerbPOST, paramas, header);
+            UnityWebRequest webRequest = GetRequest(Host, "", UnityWebRequest.kHttpVerbPOST, paramas, header);
             webRequest.uploadHandler = new UploadHandlerRaw(uploadBytes);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
+                return false;
             }
             else
             {
@@ -416,6 +407,7 @@ namespace ZFramework
                 {
                     Log.Info(listError.Item(i).InnerText);
                 }
+                return true;
             }
         }
 
@@ -425,9 +417,8 @@ namespace ZFramework
         /// <summary>
         /// 初始化  申请一个分片上传的ID
         /// </summary>
-        public void MultipartUpload_Initiate(string filePath)
+        public async ATask<(bool,string)> MultipartUpload_Initiate(string filePath)
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
             var paramas = new Dictionary<string, string>()
             {
                 ["uploads"] = "",
@@ -438,26 +429,27 @@ namespace ZFramework
                 ["Content-Length"] = "0",
             };
 
-            UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbPOST, paramas, header);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            UnityWebRequest webRequest = GetRequest(Host, filePath, UnityWebRequest.kHttpVerbPOST, paramas, header);
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
-                PrintErrorXML(webRequest.downloadHandler.text);
+                var error = PrintErrorXML(webRequest.downloadHandler.text);
+                return (false, error);
             }
             else
             {
                 Log.Info(webRequest.downloadHandler.text);
+                XmlDocument xml = new XmlDocument();
+                xml.LoadXml(webRequest.downloadHandler.text);
+                var uploadID =  xml.SelectSingleNode("InitiateMultipartUploadResult/UploadId").InnerText;
+                return (true, uploadID);
             }
         }
         /// <summary>
         /// 分块上传到 COS。最多支持10000分块，每个分块大小为1MB - 5GB  index从1~10000
         /// </summary>
-        public void UploadPart(string filePath ,string uploadID, int index, byte[] bytes)
+        public async ATask<(bool,string)> UploadPart(string filePath ,string uploadID, int index, byte[] bytes)
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
             var paramas = new Dictionary<string, string>()
             {
                 ["uploadId"] = uploadID,
@@ -469,29 +461,25 @@ namespace ZFramework
                 ["Content-Length"] = bytes.Length.ToString(),
                 ["Content-MD5"] = MD5Helper.BytesMD5Base64(bytes),
             };
-
-            UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbPUT, paramas, header);
+            UnityWebRequest webRequest = GetRequest(Host, filePath, UnityWebRequest.kHttpVerbPUT, paramas, header);
             webRequest.uploadHandler = new UploadHandlerRaw(bytes);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
-                Log.Info(webRequest.error);
-                PrintErrorXML(webRequest.downloadHandler.text);
+                var error =  PrintErrorXML(webRequest.downloadHandler.text);
+                return (false, error);
             }
             else
             {
-                Log.Info(webRequest.downloadHandler.text);
                 var eTag = webRequest.GetResponseHeader("ETag");
                 Log.Info("ETag->" + eTag);
+                return (true, eTag);
             }
         }
         /// <summary>
         /// 完成整个分块上传
         /// </summary>
-        public void CompleteMultipartUpload(string filePath,string uploadID,Dictionary<int,string> etags)
+        public async ATask<bool> CompleteMultipartUpload(string filePath,string uploadID,Dictionary<int,string> etags)
         {
             XmlDocument xmlDoc = new XmlDocument();
             var root = xmlDoc.CreateElement("CompleteMultipartUpload");
@@ -522,35 +510,32 @@ namespace ZFramework
             };
             UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbPOST, paramas, header);
             webRequest.uploadHandler = new UploadHandlerRaw(bytes);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
+                return false;
             }
             else
             {
                 Log.Info(webRequest.downloadHandler.text);
+                return true;
             }
         }
 
         /// <summary>
         /// 查询正在进行中的分块上传任务 最多列出1000个
         /// </summary>
-        public void ListMultipartUploads()
+        public async ATask<IList<string>> ListMultipartUploads()
         {
+            List<string> output = new List<string>();
             string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
             var paramas = new Dictionary<string, string>()
             {
                 ["uploads"] = "",
             };
             UnityWebRequest webRequest = GetRequest(host, "", UnityWebRequest.kHttpVerbGET, paramas, default);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
@@ -571,26 +556,24 @@ namespace ZFramework
                         var key = node.SelectSingleNode("Key").InnerText;
                         var uploadID = node.SelectSingleNode("UploadId").InnerText;
                         Log.Info(key + " : " + uploadID);
+                        output.Add(uploadID);
                     }
                 }
             }
+            return output;
         }
 
         /// <summary>
         /// 舍弃一个分块上传并删除已上传的块
         /// </summary>
-        public void AbortMultipartUpload(string filePath ,string uploadID)
+        public async ATask AbortMultipartUpload(string filePath ,string uploadID)
         {
-            string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
             var paramas = new Dictionary<string, string>()
             {
                 ["uploadId"] = uploadID,
             };
-            UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbDELETE, paramas, default);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            UnityWebRequest webRequest = GetRequest(Host, filePath, UnityWebRequest.kHttpVerbDELETE, paramas, default);
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
@@ -603,7 +586,7 @@ namespace ZFramework
         /// <summary>
         /// 查询特定分块上传中的已上传的块  列出所有已上传成功的
         /// </summary>
-        public void ListParts(string filePath,string uploadID)
+        public async ATask ListParts(string filePath,string uploadID)
         {
             string host = $"{Bucket}-{APPID}.cos.{Region}.myqcloud.com";
             var paramas = new Dictionary<string, string>()
@@ -611,10 +594,7 @@ namespace ZFramework
                 ["uploadId"] = uploadID,
             };
             UnityWebRequest webRequest = GetRequest(host, filePath, UnityWebRequest.kHttpVerbGET, paramas, default);
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-            }
+            await webRequest.SendWebRequest();
             if (!string.IsNullOrEmpty(webRequest.error))
             {
                 PrintErrorXML(webRequest.downloadHandler.text);
