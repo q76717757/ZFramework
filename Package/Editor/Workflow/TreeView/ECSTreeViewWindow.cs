@@ -25,7 +25,7 @@ namespace ZFramework.Editor
             }
             else
             {
-                EditorGUILayout.LabelField("Runtime����Ч");
+                EditorGUILayout.LabelField("Runtime下生效");
             }
         }
 
@@ -41,8 +41,8 @@ namespace ZFramework.Editor
             }
         }
 
-        //��Ҫ�ѷ������Ǳ�Ҳ������,��ô�������Ǳ���Ҫ��ecs���������л�֮�����ݴ�����,��߷����л��ɶ���,Ȼ�󴴽�ViewItem���а�
-        //�����ſ��Ի��Ƴ�Server�Ǳߵ����ṹ,�ͻ��˺ͷ���˹���,���Կͻ���Ҳ��Ҫ���������л�
+        //想要把服务器那边也画出来,那么服务器那边需要将ecs的内容序列化之后将内容传过来,这边反序列化成对象,然后创建ViewItem进行绑定
+        //这样才可以绘制出Server那边的树结构,客户端和服务端共用,所以客户端也需要将树先序列化
         void DrawGameInstance()
         {
             Rect rect = this.rootVisualElement.contentRect;

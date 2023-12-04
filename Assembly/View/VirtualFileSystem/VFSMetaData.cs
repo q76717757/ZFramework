@@ -1,42 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 
 namespace ZFramework
 {
     public class VFSMetaData
     {
-        public string name;//VFS浏览器上的名字  拼接路径也是使用的这个
-        public string fileName;//实际文件的名字 assetbundle读文件是通过文件名读的
-        public string guid;
+        public enum MetaType
+        {
+            None,//未初始化
+            Asset,//实际资源
+            Bundle,//独立资源包
+            VirtualFolder,//虚拟文件夹
+            ReferenceFolder,//引用文件夹
+            ReferenceFolderSubAsset,//引用文件夹下的资源
+            ReferenceFolderSunbFolder,//引用文件夹下的文件夹
+        }
 
-        public string filehash;//文件夹没有
-        public string metahash;//文件夹和资源都有   
+        public string guid;//唯一标识  定位用
+        public MetaType type;//元数据的类型
 
-        [JsonIgnore]
-        public bool IsAsset
+        public string name;//VFS浏览器上的名字 拼接路径也是使用的这个 默认和资产名一样 可以自定义
+        public string path;//资产路径  Asset/../..
+        //public string hash;//混合file和meta的hash  暂时用不上
+
+        public VFSMetaData(MetaType type, string guid = null)
         {
-            get
-            {
-                return !string.IsNullOrEmpty(filehash);//只有资源有文件hash
-            }
+            this.type = type;
+            this.guid = guid;
         }
-        [JsonIgnore]
-        public bool IsVirtualFolder //只有虚拟文件夹  没有guid
-        {
-            get
-            {
-                return string.IsNullOrEmpty(guid);
-            }
-        }
-        [JsonIgnore]
-        public bool IsReferenceFolder //引用文件夹  有guid 没有文件hash 没有matehash 
-        {
-            get
-            {
-                return !IsAsset && !IsVirtualFolder;
-            }
-        }
+
+        public bool IsAsset => TypeIs(MetaType.Asset);
+        public bool IsBundle => TypeIs(MetaType.Bundle);
+        public bool IsVirtualFolder => TypeIs(MetaType.VirtualFolder);
+        public bool IsReferenceFolder => TypeIs(MetaType.ReferenceFolder);
+        private bool TypeIs(MetaType type) => this.type == type;
 
     }
 }

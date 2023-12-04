@@ -4,11 +4,10 @@ using UnityEngine;
 
 namespace ZFramework
 {
-    public sealed class UnityEntry : Entry
+    public sealed class UnityEntry : Entry<UnityEntry>
     {
         public override void OnStart()
         {
-            Log.Info("Game Start!");
         }
     }
 }

@@ -13,35 +13,8 @@ namespace ZFramework.Editor
         [SettingsProvider] public static SettingsProvider Register() => new ZFrameworkSettingProvider();
         public static void OpenSettings() => SettingsService.OpenProjectSettings(Path);
 
-        Vector2 pos;
         public override void OnGUI(string searchContext)
         {
-            if (BootProfile.IsExists)
-            {
-                var readme = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/ZFramework/README.md");
-                if (readme == null) return;
-
-                var text = readme.text;
-                pos = EditorGUILayout.BeginScrollView(pos);
-
-                using (StringReader sr = new StringReader(text))
-                {
-                    while (true)
-                    {
-                        var line = sr.ReadLine();
-                        if (line == null)
-                        {
-                            break;
-                        }
-                        EditorGUILayout.LabelField(line);
-                    }
-                }
-
-                EditorGUILayout.EndScrollView();
-            }
-            else
-            {
-            }
         }
     }
 

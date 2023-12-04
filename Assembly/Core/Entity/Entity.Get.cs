@@ -28,15 +28,12 @@ namespace ZFramework
             {
                 throw new Exception("entity.parent can not be set self");
             }
+            if (parent == null)
+            {
+                throw new Exception("entity.parent can not be set null");
+            }
             this.parent.childrens.Remove(this.InstanceID);
-            if (parent == null) //绑定到新的parent上
-            {
-                SetDependencies(Game.Root, this);
-            }
-            else
-            {
-                SetDependencies(parent, this);
-            }
+            SetDependencies(parent, this);
         }
 
         //child

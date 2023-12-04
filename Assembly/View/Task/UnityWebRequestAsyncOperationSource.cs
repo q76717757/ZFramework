@@ -14,7 +14,7 @@ namespace ZFramework
         UnityWebRequestAsyncOperation request;
         Action moveNext;
 
-        ushort ITaskCompletionSource.Ver { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        ushort ITaskCompletionSource.Ver { get; set; }
 
         internal UnityWebRequestAsyncOperationSource(UnityWebRequestAsyncOperation request)
         {
@@ -24,7 +24,7 @@ namespace ZFramework
 
         void ITaskCompletionSource.TryStart()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
         void Completed(AsyncOperation operation)
         {
@@ -32,7 +32,7 @@ namespace ZFramework
 
             var temp = moveNext;
             moveNext = null;
-            temp.Invoke();
+            temp?.Invoke();
         }
         void ITaskCompletionSource.OnCompleted(Action continuation)
         {

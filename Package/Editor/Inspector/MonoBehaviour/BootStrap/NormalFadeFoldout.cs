@@ -10,49 +10,12 @@ namespace ZFramework.Editor
     {
         public override string Title => "基本设置";
 
-        ReorderableList _assemblyList;
-
-        BootProfile Profile
-        {
-            get
-            {
-                return BootProfile.GetInstance();
-            }
-        }
-        ReorderableList AssemblyList
-        {
-            get
-            {
-                if (_assemblyList == null)
-                {
-                    _assemblyList = new ReorderableList(Profile.assemblyNames, typeof(string), true, false, true, true);
-                    _assemblyList.drawElementCallback += OnDrawAotMetaElement;
-                    _assemblyList.onChangedCallback += OnListChange;
-                }
-                return _assemblyList;
-            }
-        }
+        //ReorderableList _assemblyList;
 
         protected override void OnGUI()
         {
             ShowDoc();
 
-            var rect = EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
-
-            EditorGUILayout.LabelField("框架加载程序集", EditorStyles.centeredGreyMiniLabel);
-            AssemblyList.DoLayoutList();
-
-            EditorGUILayout.EndVertical();
-
-            if (GUI.Button(new Rect(rect.x + rect.width - 43, rect.y + 3, 40, 15), "重置", EditorStyles.miniButton))
-            {
-                GUI.FocusControl(null);
-                Profile.assemblyNames.Clear();
-                Profile.assemblyNames.AddRange(new BootProfile().assemblyNames);
-                OnListChange();
-            }
-
-            Profile.SaveIfDirty();
         }
 
         void ShowDoc()
@@ -71,24 +34,5 @@ namespace ZFramework.Editor
 
             EditorGUILayout.EndVertical();
         }
-
-        void OnDrawAotMetaElement(Rect rect, int index, bool isActive, bool isFocused)
-        {
-            string next = EditorGUI.DelayedTextField(rect, Profile.assemblyNames[index]);
-            if (string.IsNullOrEmpty(next))
-            {
-                EditorGUI.LabelField(rect, "不能为空", EditorStyles.centeredGreyMiniLabel);
-            }
-            if (next != Profile.assemblyNames[index])
-            {
-                Profile.assemblyNames[index] = next;
-                OnListChange();
-            }
-        }
-        void OnListChange(ReorderableList list = default)
-        {
-            Profile.SetDirty();
-        }
-
     }
 }

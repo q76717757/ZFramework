@@ -28,6 +28,27 @@ namespace ZFramework
             OnlineSupported = OfflineSupported | Android | iOS,
         }
 
+        public static bool Hotfix
+        {
+            get
+            {
+#if ENABLE_HYBRIDCLR
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
+
+        internal static string[] AssemblyNames = new string[]
+        {
+            "Unity.Assembly.Core",
+            "Unity.Assembly.Data",
+            "Unity.Assembly.Func",
+            "Unity.Assembly.View",
+            "Assembly-CSharp",
+        };
+
         /// <summary>
         /// 目标运行时平台
         /// </summary>
@@ -96,6 +117,9 @@ namespace ZFramework
         public static string GetPresistenceDataAPath(PlatformType platform)
         {
             DirectoryInfo directory;
+#if UNITY_EDITOR
+            directory = new DirectoryInfo(Path.Combine(Application.dataPath, "..", "AssetFiles"));
+#else
             if ((platform & PlatformType.OfflineSupported) == platform)
             {
                 //windows平台放在根目录下 方便用户自己替换资源
@@ -103,8 +127,9 @@ namespace ZFramework
             }
             else
             {
-                directory = new DirectoryInfo(Path.Combine(Application.persistentDataPath, "AssetFiles"));
+                directory = new DirectoryInfo(Application.persistentDataPath);
             }
+#endif
             return directory.FullName;
         }
     }

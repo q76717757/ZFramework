@@ -9,6 +9,8 @@ using System;
 using UnityEditorInternal;
 using System.IO;
 using System.Reflection;
+using System.Xml;
+using System.Text;
 
 #if ENABLE_HYBRIDCLR
 using HybridCLR.Editor.Commands;
@@ -24,18 +26,17 @@ namespace ZFramework.Editor
         public override string Title => $"代码热更新({Defines.TargetRuntimePlatform})";
 
         static string gitURL = "https://gitee.com/focus-creative-games/hybridclr_unity.git";
-        static string packageVersion = "4.0.10";
+        static string packageVersion = "4.0.12";
         static AddRequest addRequest;
-        BootProfile Profile
-        {
-            get
-            {
-                return BootProfile.GetInstance();
-            }
-        }
+        static IFileServer fileServer;
 
         protected override void OnGUI()
         {
+            if (fileServer == null)
+            {
+                fileServer = new CosFileServer();
+            }
+
             if (IsEnableHotfix())
             {
 #if ENABLE_HYBRIDCLR //已安装HybridCLR Package
@@ -54,7 +55,6 @@ namespace ZFramework.Editor
                 IsDisable();
 #endif
             }
-            Profile.SaveIfDirty();
         }
         bool IsEnableHotfix()
         {
@@ -70,13 +70,7 @@ namespace ZFramework.Editor
 
             EditorGUILayout.EndVertical();
 
-            bool enable = EditorGUI.ToggleLeft(new Rect(rect.x + 3, rect.y + 2, 50, EditorGUIUtility.singleLineHeight), "启用", Profile.isEnableHotfixCode, EditorStyles.miniLabel);
-            if (enable != Profile.isEnableHotfixCode)
-            {
-                Profile.isEnableHotfixCode = enable;
-                Profile.SetDirty();
-            }
-            return enable;
+            return true;
         }
         void IntallPackage()
         {
@@ -96,20 +90,6 @@ namespace ZFramework.Editor
     public partial class HybridCLRFoldout
     { 
         static string packageName = "com.code-philosophy.hybridclr";
-        ReorderableList _hotfixList;
-        ReorderableList HotfixList
-        {
-            get
-            {
-                if (_hotfixList == null)
-                {
-                    _hotfixList = new ReorderableList(Profile.hotfixAssemblyNames, typeof(string), true, false, true, true);
-                    _hotfixList.drawElementCallback += OnDrawHotfixElement;
-                    _hotfixList.onChangedCallback += OnListChange;
-                }
-                return _hotfixList;
-            }
-        }
         bool SettingsIsCorrect()
         { 
             return PackageVersion() && IsFullInstall() && IsEnable() && IsSupported() && IsIL2CPP() && IsDotNet4X() && CheckGC();//判断是有顺序的;
@@ -166,46 +146,41 @@ namespace ZFramework.Editor
             if (isUnsupport)
             {
                 EditorGUILayout.HelpBox("当前的目标运行时不被支持,请关闭代码热更新流程", MessageType.Error);
-                if (GUILayout.Button("点击关闭"))
+                if (GUILayout.Button("点击移除HybridCLR"))
                 {
-                    SettingsUtil.Enable = false;
-                    BootProfile profile = BootProfile.GetInstance();
-                    if (profile.isEnableHotfixCode)
-                    {
-                        profile.isEnableHotfixCode = false;
-                        profile.SetDirty();
-                    }
                 }
             }
             return !isUnsupport;
         }
         bool IsIL2CPP()
         {
-            var isILCPP = PlayerSettings.GetScriptingBackend(EditorUserBuildSettings.selectedBuildTargetGroup) == ScriptingImplementation.IL2CPP;
+            var group = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+            var isILCPP = PlayerSettings.GetScriptingBackend(group) == ScriptingImplementation.IL2CPP;
             if (!isILCPP)
             {
                 EditorGUILayout.HelpBox("HybridCLR是基于IL2CPP的,需要将编译后端改为IL2CPP", MessageType.Error);
                 if (GUILayout.Button("切换到IL2CPP"))
                 {
-                    PlayerSettings.SetScriptingBackend(EditorUserBuildSettings.selectedBuildTargetGroup, ScriptingImplementation.IL2CPP);
+                    PlayerSettings.SetScriptingBackend(group, ScriptingImplementation.IL2CPP);
                 }
             }
             return isILCPP;
         }
         bool IsDotNet4X()
         {
+            var group = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
 #if UNITY_2021_1_OR_NEWER
             var targetAPILevel = ApiCompatibilityLevel.NET_Unity_4_8;
 #else
             var targetAPILevel = ApiCompatibilityLevel.NET_4_6;
 #endif
-            var isDotNetFramework = PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup) == targetAPILevel;
+            var isDotNetFramework = PlayerSettings.GetApiCompatibilityLevel(group) == targetAPILevel;
             if (!isDotNetFramework)
             {
                 EditorGUILayout.HelpBox("HybridCLR要求目标框架APILevel需要是.Net Framework", MessageType.Error);
                 if (GUILayout.Button("切换.Net Framework"))
                 {
-                    PlayerSettings.SetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup, targetAPILevel);
+                    PlayerSettings.SetApiCompatibilityLevel(group, targetAPILevel);
                 }
             }
             return isDotNetFramework;
@@ -232,10 +207,6 @@ namespace ZFramework.Editor
             {
                 EditorGUILayout.HelpBox("HybridCLR已开启,如不启用代码热更新流程,需要将HybridCLR关闭", MessageType.Error);
                 EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("禁用HybridCLR"))
-                {
-                    SettingsUtil.Enable = false;
-                }
                 if (GUILayout.Button("移除HybridCLR Package"))
                 {
                     Client.Remove(packageName);
@@ -250,52 +221,33 @@ namespace ZFramework.Editor
         {
             Rect rect = EditorGUILayout.BeginVertical("GroupBox", GUILayout.ExpandWidth(true));
             EditorGUILayout.LabelField("热更新程序集", EditorStyles.centeredGreyMiniLabel);
-            HotfixList.DoLayoutList();
 
             if (GUILayout.Button("编译+打包热更程序集"))
             {
                 CompileDllCommand.CompileDll(EditorUserBuildSettings.activeBuildTarget);
                 PackagingHotfixAssembly();
-                Application.OpenURL(HybridCLRUtility.BuildInAssemblyBundleLoadAPath);
+                //Application.OpenURL(HybridCLRUtility.BuildInAssemblyBundleLoadAPath);
+            }
+            if (GUILayout.Button("上传热更程序集到COS"))
+            {
+                string cosPath = $"{BootStrap.projectCode}/{Defines.TargetRuntimePlatform}/Assembly/";
+                //上传xml
+                var xmlBytes = File.ReadAllBytes($"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{HybridCLRUtility.HotfixAssemblyXmlName}");
+                var xmlPath = $"{cosPath}{HybridCLRUtility.HotfixAssemblyXmlName}";
+                fileServer.UploadFile(xmlPath, xmlBytes).Invoke();
+                //上传assetbundle
+                var dllBytes = File.ReadAllBytes($"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{HybridCLRUtility.HotfixAssemblyBundleName}");
+                var dllPath = $"{cosPath}{HybridCLRUtility.HotfixAssemblyBundleName}";
+                fileServer.UploadFile(dllPath, dllBytes).Invoke();
             }
             EditorGUILayout.EndVertical();
 
             CheckAssemblyConsistency();
+        }
 
-            if (GUI.Button(new Rect(rect.x + rect.width - 43, rect.y + 3, 40, 15), "重置", EditorStyles.miniButton))
-            {
-                GUI.FocusControl(null);
-                BootProfile defaultValue = new BootProfile();
-                Profile.hotfixAssemblyNames.Clear();
-                Profile.hotfixAssemblyNames.AddRange(defaultValue.hotfixAssemblyNames);
-                OnListChange();
-            }
-        }
-        void OnDrawHotfixElement(Rect rect, int index, bool isActive, bool isFocused)
-        {
-            DrawList(in Profile.hotfixAssemblyNames, rect, index);
-        }
-        void DrawList(in List<string> list, Rect rect, int index)
-        {
-            string next = EditorGUI.DelayedTextField(rect, list[index]);
-            if (string.IsNullOrEmpty(next))
-            {
-                EditorGUI.LabelField(rect, "不能为空", EditorStyles.centeredGreyMiniLabel);
-            }
-            if (next != list[index])
-            {
-                list[index] = next;
-                OnListChange();
-            }
-        }
-        void OnListChange(ReorderableList list = default)
-        {
-            SyncSettings(Profile.hotfixAssemblyNames.ToArray());
-            Profile.SetDirty();
-        }
         void CheckAssemblyConsistency()
         {
-            string[] assemblyNameValues = Profile.hotfixAssemblyNames.ToArray();
+            string[] assemblyNameValues = Defines.AssemblyNames.ToArray();
 
             List<string> clr = new List<string>();
             if (HybridCLRSettings.Instance.hotUpdateAssemblies != null)
@@ -453,13 +405,12 @@ namespace ZFramework.Editor
         }
         void PackagingHotfixAssembly()
         {
-            BootProfile profile = BootProfile.GetInstance();
             BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
             string aotAssembliesSrcDir = SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
             string aotAssembliesDstDir = $"Assets/07.Bundles/{Defines.TargetRuntimePlatform}/JITPackingCache";
             Directory.CreateDirectory(aotAssembliesDstDir);
             List<string> assemblyNames = new List<string>();
-            List<string> names = profile.hotfixAssemblyNames;
+            List<string> names = Defines.AssemblyNames.ToList();
             foreach (var dll in names)
             {
                 string srcDllPath = $"{aotAssembliesSrcDir}/{dll}.dll";
@@ -490,9 +441,22 @@ namespace ZFramework.Editor
             Directory.CreateDirectory(HybridCLRUtility.BuildInAssemblyBundleLoadAPath);
             File.Copy($"{aotAssembliesDstDir}/{build.assetBundleName}", $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}", true);
 
-            Log.Info("打包JIT程序集完成 hash->" + aotabm.GetAssetBundleHash(build.assetBundleName) + " path->" + $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}");
+            //生成xml记录文件
+            var xml = new XmlDocument();
+            var element = xml.CreateElement("HotfixAssemblyInfo");
+            var time = TimestampUtility.GetCurrentTimestamp(TimeUnit.Seconds).ToString();
+            element.SetAttribute("Time",time);
+            var md5 = MD5Helper.FileMD5($"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}");
+            element.SetAttribute("Hash",md5);
+            xml.AppendChild(element);
+
+            var xmlPath = Path.Combine(HybridCLRUtility.BuildInAssemblyBundleLoadAPath, HybridCLRUtility.HotfixAssemblyXmlName);
+            var xmlString = xml.FormatString();
+            File.WriteAllText(xmlPath, xmlString, new UTF8Encoding(false));
 
             AssetDatabase.Refresh();
+
+            Log.Info("打包JIT程序集完成 hash->" + aotabm.GetAssetBundleHash(build.assetBundleName) + " path->" + $"{HybridCLRUtility.BuildInAssemblyBundleLoadAPath}/{build.assetBundleName}");
         }
     }
 #endif

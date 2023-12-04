@@ -12,7 +12,7 @@ namespace ZFramework.Editor
     //当工程是多平台的复合工程的时候,StreamingAssets下会存放包括其他目标平台的一些文件,如配置,资源等
     //将这些文件和文件夹添加.前缀,并移到Assets/下  (.开头的会被unity排除,认为是隐藏文件)
     //等构建完成后再给移回来,这样不是目标平台的文件就不会被打包出去了
-    public class IgnoreStreamingAssets : IPreprocessBuildWithReport, IPostprocessBuildWithReport
+    public class IgnoreStreamingAssets// : IPreprocessBuildWithReport, IPostprocessBuildWithReport 这个方法有问题!!和hybridCLR有冲突  暂时取消
     {
         private class MoveJob
         {
