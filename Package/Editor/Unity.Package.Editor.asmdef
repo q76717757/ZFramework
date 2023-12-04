@@ -9,7 +9,9 @@
         "Unity.Assembly.Func",
         "Unity.Assembly.View",
         "HybridCLR.Editor",
-        "Unity.RenderPipelines.Universal.Runtime"
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.ScriptableBuildPipeline.Editor",
+        "Unity.ScriptableBuildPipeline"
     ],
     "includePlatforms": [
         "Editor"
@@ -25,6 +27,11 @@
             "name": "com.code-philosophy.hybridclr",
             "expression": "",
             "define": "ENABLE_HYBRIDCLR"
+        },
+        {
+            "name": "com.unity.scriptablebuildpipeline",
+            "expression": "",
+            "define": "ENABLE_SBP"
         }
     ],
     "noEngineReferences": false
