@@ -13,7 +13,7 @@ namespace ZFramework
     public static class UrlUtility
     {
         ///  URL Encode: 
-        ///  未保留字符:[a~z][A~A][0~9][._-~]
+        ///  未保留字符:[a~z][A~Z][0~9][._-~]
         ///  保留字符:!*'();:@&=+$,/?#[]
         ///  除了Reserved(保留字符)和Unreserved(非保留字符)之外的所有字符，均需要percent编码；
         ///  某些情况下Reserved(保留字符)也需要进行percent编码：
@@ -46,10 +46,10 @@ namespace ZFramework
         }
 
         /// <summary>
-        /// 除非保留字符外  自行控制保留字符面对各种情况  其余字符全部进行编码
-        /// reservedChars  将不希望进行百分号编码的保留符号加进这个字符串中
+        /// 除非保留字符[a~z][A~Z][0~9][._-~]外  自行控制保留字符面对各种情况  其余字符全部进行编码
+        /// uncodeChars  将不希望进行百分号编码的保留符号加进这个字符串中
         /// </summary>
-        public static string Encode_ExcludedCustomReserved(string value,string reservedChars, Encoding encoding)
+        public static string Encode_ExcludedCustomReserved(string value,string uncodeChars, Encoding encoding)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -58,12 +58,12 @@ namespace ZFramework
             StringBuilder result = new StringBuilder(value.Length * 2);
             byte[] bytes = encoding.GetBytes(value);
             byte space = 32;//空格
-            bool hasReservedChars = !string.IsNullOrEmpty(reservedChars);
+            bool hasReservedChars = !string.IsNullOrEmpty(uncodeChars);
 
             foreach (byte b in bytes)
             {
                 char ch = (char)b;
-                if (UnreservedChars.IndexOf(ch) != -1 || (hasReservedChars && reservedChars.IndexOf(ch) != -1))
+                if (UnreservedChars.IndexOf(ch) != -1 || (hasReservedChars && uncodeChars.IndexOf(ch) != -1))
                 {
                     result.Append(ch);
                 }
