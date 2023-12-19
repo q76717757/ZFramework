@@ -1,0 +1,17 @@
+{
+    "name": "Unity.Share.Model",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.Basic.Runtime",
+        "Unity.Share.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
