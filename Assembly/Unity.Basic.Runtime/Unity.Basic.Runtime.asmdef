@@ -1,0 +1,22 @@
+{
+    "name": "Unity.Basic.Runtime",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "HybridCLR.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.code-philosophy.hybridclr",
+            "expression": "",
+            "define": "ENABLE_HYBRIDCLR"
+        }
+    ],
+    "noEngineReferences": false
+}

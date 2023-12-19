@@ -1,0 +1,35 @@
+{
+    "name": "Unity.Workspace.View",
+    "rootNamespace": "ZFramework",
+    "references": [
+        "Unity.Packages.Runtime",
+        "Unity.Basic.Runtime",
+        "Unity.Share.Core",
+        "Unity.Share.Model",
+        "Unity.Workspace.Module",
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.XR.Management",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "ENABLE_URP"
+        },
+        {
+            "name": "com.unity.xr.management",
+            "expression": "",
+            "define": "ENABLE_XR"
+        }
+    ],
+    "noEngineReferences": false
+}

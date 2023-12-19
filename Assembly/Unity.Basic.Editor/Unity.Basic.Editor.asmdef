@@ -1,0 +1,46 @@
+{
+    "name": "Unity.Basic.Editor",
+    "rootNamespace": "ZFramework.Editor",
+    "references": [
+        "Unity.Basic.Runtime",
+        "Unity.Share.Core",
+        "Unity.Share.Model",
+        "Unity.Workspace.Module",
+        "Unity.Workspace.View",
+        "Unity.ScriptableBuildPipeline",
+        "Unity.ScriptableBuildPipeline.Editor",
+        "HybridCLR.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "ENABLE_URP"
+        },
+        {
+            "name": "com.unity.xr.management",
+            "expression": "",
+            "define": "ENABLE_XR"
+        },
+        {
+            "name": "com.unity.scriptablebuildpipeline",
+            "expression": "",
+            "define": "ENABLE_SBP"
+        },
+        {
+            "name": "com.code-philosophy.hybridclr",
+            "expression": "",
+            "define": "ENABLE_HYBRIDCLR"
+        }
+    ],
+    "noEngineReferences": false
+}
