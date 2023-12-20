@@ -10,7 +10,7 @@ namespace ZFramework
     {
         public int id;
         public UIGroupType groupType;
-        public UIPopType popType;
+        public bool isModal;
         public string uiWindowName;
         public string uiWindowType;
 
@@ -18,7 +18,7 @@ namespace ZFramework
         {
             id = ui.ID;
             groupType = ui.GroupType;
-            popType = ui.PopType;
+            isModal = ui.IsModal;
             uiWindowType = ui.GetType().ToString();
             uiWindowName = ui.GetType().Name;
         }

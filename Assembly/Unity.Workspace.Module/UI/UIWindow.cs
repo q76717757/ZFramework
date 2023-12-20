@@ -1,27 +1,17 @@
-using System;
-using System.Collections;
+ï»¿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace ZFramework
 {
-    public interface IUIGameLoop
-    {
-        void OnAwake();
-        void OnDestroy();
-        void OnOpen();
-        void OnClose();
-        void OnFocus();
-        void OnLoseFocus();
-        void OnUpdate();//¿¼ÂÇÔö¼ÓÒ»¸öÉúÃüÖÜÆÚ Ò»¸öÊÇActive²ÅUpdate Ò»¸öÊÇÈ«³ÌUpdate(ÔÊĞíUIºóÌ¨³ÖĞø×öĞ©ÊÂÇé)
-        void SetInteractable(bool state);
-    }
-
+    /// <summary>
+    /// UIçª—ä½“  ä»¥Canvasä¸ºå•ä½
+    /// </summary>
     [FoucsCall]
-    public abstract partial class UIWindowBase : IUIGameLoop
+    public abstract class UIWindowBase : IUIGameLoop
     {
         internal UIWindowBase Parent { get; private set; }
         internal UIWindowBase Root
@@ -40,10 +30,11 @@ namespace ZFramework
             }
         }
         public int ID { get; private set; }
-        internal UIPopType PopType { get; private set; }
+        public bool IsModal { get; private set; }
+
         internal UIGroupType GroupType { get; private set; }
         internal bool Active { get; private set; }
-        internal Transform Transform { get; private set; }
+        internal GameObject GameObject { get; private set; }
         internal Canvas Canvas
         {
             get;
@@ -74,10 +65,10 @@ namespace ZFramework
             {
                 if (canvasGroup == null)
                 {
-                    canvasGroup = Transform.GetComponent<CanvasGroup>();
+                    canvasGroup = GameObject.GetComponent<CanvasGroup>();
                     if (canvasGroup == null)
                     {
-                        canvasGroup = Transform.gameObject.AddComponent<CanvasGroup>();
+                        canvasGroup = GameObject.AddComponent<CanvasGroup>();
                         canvasGroup.alpha = Active ? 1 : 0;
                     }
                 }
@@ -86,21 +77,21 @@ namespace ZFramework
         }
         internal Dictionary<int, UIWindowBase> Children { get; private set; } = new Dictionary<int, UIWindowBase>();
         internal List<UIControl> uiContorls = new List<UIControl>();
-        internal UIWindowBase Register(int id, UIGroupType groupType, UIPopType popType, Transform transform)
+        internal UIWindowBase Register(int id, UIGroupType groupType, bool isModal, GameObject gameObject)
         {
             this.ID = id;
             this.GroupType = groupType;
-            this.PopType = popType;
-            this.Transform = transform;
-            this.Canvas = transform.GetComponent<Canvas>();
-            this.References = transform.GetComponent<References>();
+            this.IsModal = isModal;
+            this.GameObject = gameObject;
+            this.Canvas = gameObject.GetComponent<Canvas>();
+            this.References = gameObject.GetComponent<References>();
             return this;
         }
         void IUIGameLoop.OnAwake()
         {
             OnAwake();
 #if UNITY_EDITOR
-            Transform.gameObject.AddComponent<UIWindowVisible>().Register(this);
+            GameObject.AddComponent<UIWindowVisible>().Register(this);
 #endif
         }
         void IUIGameLoop.OnDestroy()
@@ -178,22 +169,22 @@ namespace ZFramework
             return default;
         }
 
-        public async ATask<T> OpenNewChildAsync<T>() where T : UIWindowBase
+        public async ATask<T> OpenNewChildAsync<T>(bool isModal) where T : UIWindowBase
         {
-            T instance = await AddChildAsync<T>();
+            T instance = await AddChildAsync<T>(isModal);
             UIManager.Instance.Open(instance);
             return instance;
         }
 
-        public async ATask<T> AddChildAsync<T>() where T : UIWindowBase
+        public async ATask<T> AddChildAsync<T>(bool isModal ) where T : UIWindowBase
         {
-            T instance = await UIManager.Instance.Creat<T>();
+            T instance = await UIManager.Instance.Creat<T>(isModal);
             Children.Add(instance.ID, instance);
             instance.Parent = this;
             return instance;
         }
 
-        //Éî¶ÈÓÅÏÈ,µİ¹éÌí¼Ó×ÓUI
+        //æ·±åº¦ä¼˜å…ˆ,é€’å½’æ·»åŠ å­UI
         internal void GetAllChildrenWindow(ref List<UIWindowBase> list, Func<UIWindowBase, bool> func)
         {
             if (Children != null)
@@ -208,64 +199,6 @@ namespace ZFramework
                 }
             }
         }
-
     }
-
-    public abstract class UIControl
-    {
-        public UIWindowBase uiWindow;
-        public UIControl(UIWindowBase ui)
-        {
-            this.uiWindow = ui;
-        }
-    }
-
-    public class Button : UIControl
-    {
-        protected Graphic graphic;
-        protected Action<UIEventDataBase> btnCallBack;
-        public Button(UIWindowBase ui, Graphic graphic) : base(ui)
-        {
-            this.graphic = graphic;
-        }
-
-        public Button ×¢²áÊÂ¼ş(Action<UIEventData> data)
-        {
-            ZEvent.UIEvent.AddListener(graphic.gameObject, data);
-            return this;
-        }
-
-        public Button ×¢²áÊÂ¼ş<T>(Action<UIEventData<T>> data)
-        {
-            ZEvent.UIEvent.AddListener(graphic.gameObject, data);
-            return this;
-        }
-
-        public Button ×¢²áÊÂ¼ş<T, T1>(Action<UIEventData<T, T1>> data)
-        {
-            ZEvent.UIEvent.AddListener(graphic.gameObject, data);
-            return this;
-        }
-
-        public Button ÒÆ³ıÊÂ¼ş(Action<UIEventData> data)
-        {
-            ZEvent.UIEvent.RemoveListener(graphic.gameObject, data);
-            return this;
-        }
-
-        public Button ÒÆ³ıÊÂ¼ş<T>(Action<UIEventData<T>> data)
-        {
-            ZEvent.UIEvent.RemoveListener(graphic.gameObject, data);
-            return this;
-        }
-
-        public Button ÒÆ³ıÊÂ¼ş<T, T1>(Action<UIEventData<T, T1>> data)
-        {
-            ZEvent.UIEvent.RemoveListener(graphic.gameObject, data);
-            return this;
-        }
-
-    }
-
 
 }

@@ -12,6 +12,23 @@ using UnityEngine.InputSystem.Utilities;
 
 namespace ZFramework
 {
+    public interface IUIInput
+    {
+        void OnInput(UIFoucsEventData data);
+    }
+
+    public class UIFoucsEventData
+    {
+        public enum KeyType
+        {
+            hold,
+            up,
+            down
+        }
+        public KeyType keyType;
+        public InputAction.CallbackContext callbackContext;
+    }
+
     public class FouseInputModel : GlobalComponent<FouseInputModel>,IAwake,IDestory ,IUpdate
     {
         UIFoucsEventData eventData = new UIFoucsEventData();

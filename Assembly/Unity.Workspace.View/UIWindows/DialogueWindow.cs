@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace ZFramework
 {
-    [UISetting("Prefabs/Canvas_Dialogue", UIGroupType.Middle, UIPopType.Pop)]
+    [UISetting("Prefabs/Canvas_Dialogue", UIGroupType.Middle)]
     internal class DialogueWindow : UIWindowBase, IUIInput
     {
         protected override void OnAwake()
@@ -35,7 +35,7 @@ namespace ZFramework
         Cnavas_冻结 child;
         async ATask AA()
         {
-            Cnavas_冻结 a = await AddChildAsync<Cnavas_冻结>();
+            Cnavas_冻结 a = await AddChildAsync<Cnavas_冻结>(true);
             child = a;
         }
         protected override void OnOpen()
@@ -76,12 +76,12 @@ namespace ZFramework
                 }
                 if (data.callbackContext.action.name == "Submit")
                 {
-                    OpenNewChildAsync<Cnavas_冻结>().Invoke();
+                    OpenNewChildAsync<Cnavas_冻结>(true).Invoke();
                 }
 
                 if (data.callbackContext.action.name == "RightClick")
                 {
-                    OpenNewChildAsync<Canvas_Pop>().Invoke();
+                    OpenNewChildAsync<Canvas_Pop>(false).Invoke();
                 }
             }
         }

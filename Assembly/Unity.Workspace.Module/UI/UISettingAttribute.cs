@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-
-namespace ZFramework
+﻿namespace ZFramework
 {
     public class UISettingAttribute : BaseAttribute
     {
-        public string Path { get; }
+        public string AssetPath { get; }
         public UIGroupType GroupType { get; }
-        public UIPopType UIPopType { get; }
-        private UISettingAttribute() { }
-        public UISettingAttribute(string path, UIGroupType groupType, UIPopType uiPopType = UIPopType.Pop)
+        public UISettingAttribute(string assetPath, UIGroupType groupType)
         {
-            this.Path = path;
-            this.GroupType = groupType;
-            this.UIPopType = uiPopType;
+            AssetPath = assetPath;
+            GroupType = groupType;
         }
     }
 }

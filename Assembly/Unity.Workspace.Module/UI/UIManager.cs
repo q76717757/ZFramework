@@ -2,46 +2,65 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
+using UnityEngine; 
 
 namespace ZFramework
 {
-    public enum UIPopType
-    {
-        Pop,
-        Modal
-    }
-
-    public class UIManager : GlobalComponent<UIManager> ,IAwake,IUpdate
+    public class UIManager : GlobalComponent<UIManager>, IUpdate
     {
         private static int idIndex;//ui实例ID
+        //UI设置映射表
         private Dictionary<Type, UISettingAttribute> uiSettingMap;
-        //所有实例的UI对象
+        //所有实例的UI对象  type  ID           instance
         private Dictionary<Type, Dictionary<int, UIWindowBase>> uiInstancesMap;
-        private Dictionary<UIGroupType, List<UIWindowBase>> groupListMap;
-        private Transform root;
-        void IAwake.Awake()
-        {
-            Init().Invoke();
-        }
-        private async ATask Init()
-        {
-            GameObject GO = await VirtualFileSystem.LoadAsync<GameObject>("UIManager/UIManager");//-->root canvas
-            GO = GameObject.Instantiate<GameObject>(GO);
-            root = GO.transform;
+        //所有UI组
+        private Dictionary<UIGroupType, UIGroup> uiGruops;
+        //缓冲队列 解决父生命周期中调子开关方法 打断父生命周期顺序的问题
+        Queue<UIWindowBase> queue = new Queue<UIWindowBase>();
 
-            uiSettingMap = new Dictionary<Type, UISettingAttribute>();
+        public void Init(Canvas rootCanvas)
+        {
+            InitSettings();
+
+            InitUIGroup(rootCanvas.GetComponent<RectTransform>());
+
             uiInstancesMap = new Dictionary<Type, Dictionary<int, UIWindowBase>>();
-            //groupListMap = new Dictionary<UIGroupType, List<UIWindowBase>>();
-            groupListMap = new Dictionary<UIGroupType, List<UIWindowBase>>();
+
+            Game.AddGlobalComponent<UIEventSystem>();
+            Game.AddGlobalComponent<FouseInputModel>();
+        }
+
+        void InitSettings()
+        {
+            uiSettingMap = new Dictionary<Type, UISettingAttribute>();
             foreach (var item in Game.GetTypesByAttribute<UISettingAttribute>())
             {
                 UISettingAttribute uiSetting = item.GetCustomAttribute<UISettingAttribute>();
                 uiSettingMap.Add(item, uiSetting);
             }
         }
+        void InitUIGroup(RectTransform rootCanvas)
+        {
+            uiGruops = new Dictionary<UIGroupType, UIGroup>();
+            UIGroupType[] groupTypes = Enum.GetValues(typeof(UIGroupType)).Cast<UIGroupType>().ToArray();
+            for (int i = 0,size = groupTypes.Length-1; i <= size; i++)
+            {
+                UIGroupType type = groupTypes[i];
+                short min = i == 0 ? (short)type : (short)(type + 1);
+                short max = i == size ? short.MaxValue : (short)groupTypes[i + 1];
+                RectTransform instanceGO = new GameObject($"{type}[{min}-{max}]").AddComponent<RectTransform>();
+                instanceGO.SetParent(rootCanvas);
+                instanceGO.anchorMin = Vector2.zero;
+                instanceGO.anchorMax = Vector2.one;
+                instanceGO.offsetMin = Vector2.zero;
+                instanceGO.offsetMax = Vector2.zero;
+                Canvas canvas = instanceGO.gameObject.AddComponent<Canvas>();
 
+                uiGruops.Add(type, new UIGroup(type, min, max, instanceGO));
+            }
+        }
 
+        //ui实例的Update生命周期
         void IUpdate.Update()
         {
             foreach (var uiWindows in uiInstancesMap.Values)
@@ -55,74 +74,7 @@ namespace ZFramework
                 }
             }
         }
-        public async ATask<GameObject> VFSDownLoad<T>() where T : UIWindowBase
-        {
-            Type uiType = typeof(T);
-
-            //拿到VFS中预制件的下载路径
-            if (!uiSettingMap.TryGetValue(uiType, out UISettingAttribute uiSetting))
-                throw new Exception($"UISettingAttribute不存在，请在UI{uiType}上标记特性");
-
-            //启动下载
-            GameObject prefabSource = await VirtualFileSystem.LoadAsync<GameObject>(uiSetting.Path);
-
-            if (prefabSource == null)
-                throw new Exception($"ui:{uiType} 下载失败,下载路径:{uiSetting.Path}");
-
-            return prefabSource;
-        }
-
-        //创建过程 --> 通过Type类型 在设置映射表拿到配置   根据配置下载资源和初始化
-        public async ATask<T> Creat<T>() where T : UIWindowBase
-        {
-            GameObject prefabSource = await VFSDownLoad<T>();
-
-            Type uiType = typeof(T);
-            //实例化
-            GameObject uiInstance = GameObject.Instantiate(prefabSource);
-
-            if (!uiInstancesMap.TryGetValue(uiType, out Dictionary<int, UIWindowBase> map))
-            {
-                map = new Dictionary<int, UIWindowBase>();
-                uiInstancesMap.Add(uiType, map);
-            }
-
-            //创建UIWindowBase
-            T instance = (T)Activator.CreateInstance(uiType);
-
-            //设置UI组
-            UISettingAttribute uiSetting = uiSettingMap[uiType];
-
-            if (!groupListMap.TryGetValue(uiSetting.GroupType, out List<UIWindowBase> groupUIWindow))
-            {
-                groupUIWindow = new List<UIWindowBase>();
-                groupListMap.Add(uiSetting.GroupType, groupUIWindow);
-
-                GameObject instanceGO = new GameObject("UIGroup-" + uiSetting.GroupType.ToString());
-                UIGroupData groupData = UIGroupExtends.GetData(uiSetting.GroupType);
-                instanceGO.transform.SetParent(root);
-                groupData.SetRoot(instanceGO.transform);
-            }
-
-            //设置父物体
-            Transform groupRoot = UIGroupExtends.GetData(uiSetting.GroupType).Root;
-            uiInstance.transform.SetParent(groupRoot);
-
-            map.Add(++idIndex, instance);
-            instance.Register(idIndex, uiSetting.GroupType, uiSetting.UIPopType, uiInstance.transform);
-            uiInstance.name = $"(id:{idIndex})" + uiInstance.name.Replace("(Clone)", "");
-            ToGameloop(instance).OnAwake();
-            return instance;
-        }
         private IUIGameLoop ToGameloop(UIWindowBase uiWindow) => uiWindow;
-        private short ClampShort(short value, short min, short max)
-        {
-            if (value < min)
-                value = min;
-            else if (value > max)
-                value = max;
-            return value;
-        }
 
         /// <summary>
         /// 从uiWindow的根开始，获取所有开着的子窗口并且是有序的。
@@ -159,73 +111,140 @@ namespace ZFramework
             }
         }
 
-        static Queue<UIWindowBase> queue = new Queue<UIWindowBase>();
-        static LinkedList<UIWindowBase> link = new LinkedList<UIWindowBase>();
-
-        //打开UI的处理逻辑,调用UI实例的生命周期
-        private void OpenInternal(UIWindowBase uiWindow)
+        private bool AlreadyTop(UIWindowBase uiWindow)//检查我的root是不是当前group的top root  是则POP+排序自己一脉
         {
-            UIWindowBase parent = uiWindow.Parent;
-            while (parent != null)
+            List<UIWindowBase> groupList = uiGruops[uiWindow.GroupType].instances;
+            if (!groupList.Contains(uiWindow))
             {
-                if (parent.Active == false)
-                    throw new Exception($"有父窗体:{parent.GetType()}没开，要先开父窗体");
-                parent = parent.Parent;
+                return false;
             }
-
-            PopTop(uiWindow);
-
-            //CallSelf
-            queue.Enqueue(uiWindow);
-            if (queue.Count == 1)
-            {
-                var self = queue.Peek();
-                Open生命周期(self);
-                queue.Dequeue();
-                TryCallNextWindow生命周期();//开始递归内部开启的生命周期
-            }
+            UIWindowBase topRoot = groupList[groupList.Count - 1].Root;
+            return topRoot == uiWindow.Root;
         }
-        public void Pop(UIWindowBase uiWindow)
+        private void PopTop(UIWindowBase uiWindow)
         {
-            if (uiWindow.Active == false)
+            //检查现在是不是最顶层的一组childParent
+            //如果是，startOrder uiWindow从根，带着所有的孩子一起弹
+            //否则,从最高的order开始,带着所有的孩子一起弹
+            //把自己和自己的孩子移除,到当前parent的最后一个开始诸葛店家
+            UIGroup groupData = uiGruops[uiWindow.GroupType];
+            List<UIWindowBase> groupList = groupData.instances;
+
+            if (uiWindow.Parent == null)
             {
-                return;
+                short startOrder = groupList.Count > 0
+                    ? ShortUtility.Clamp((short)(groupList[groupList.Count - 1].Order + 1), groupData.MinOrder, groupData.MaxOrder)
+                    : groupData.MinOrder;
+
+                List<UIWindowBase> childActiveUI = new List<UIWindowBase>();
+                uiWindow.GetAllChildrenWindow(ref childActiveUI, (child) =>
+                {
+                    return child.Active;
+                });
+
+                //冒泡排Order 小->大
+                for (int i = 0; i < childActiveUI.Count - 1; i++)
+                {
+                    for (int j = 0; j < childActiveUI.Count - 1 - i; j++)
+                    {
+                        if (childActiveUI[j].Order > childActiveUI[j + 1].Order)
+                        {
+                            UIWindowBase temp = childActiveUI[j];
+                            childActiveUI[j] = childActiveUI[j + 1];
+                            childActiveUI[j + 1] = temp;
+                        }
+                    }
+                }
+                childActiveUI.Insert(0, uiWindow);
+                for (int i = 0; i < childActiveUI.Count; i++)
+                {
+                    if (groupList.Contains(childActiveUI[i]))
+                        groupList.Remove(childActiveUI[i]);
+                    groupList.Add(childActiveUI[i]);
+                    childActiveUI[i].Order = ShortUtility.Clamp(startOrder++, groupData.MinOrder, groupData.MaxOrder);
+                }
             }
-            PopTop(uiWindow);
-            Open生命周期(uiWindow);
-        }
-        //递归
-        private void TryCallNextWindow生命周期()
-        {
-            if (queue.Count > 0)//有在Self的时候Open其他的UI,会加进队列待call生命周期
+            else
             {
-                var child = queue.Peek();
-                Open生命周期(child);  //-->
-                queue.Dequeue();
-                TryCallNextWindow生命周期();
+                //所有的子
+                List<UIWindowBase> childActiveUI = new List<UIWindowBase>();
+                uiWindow.GetAllChildrenWindow(ref childActiveUI, (child) =>
+                {
+                    return child.Active;
+                });
+
+                //冒泡排Order 小->大
+                for (int i = 0; i < childActiveUI.Count - 1; i++)
+                {
+                    for (int j = 0; j < childActiveUI.Count - 1 - i; j++)
+                    {
+                        if (childActiveUI[j].Order > childActiveUI[j + 1].Order)
+                        {
+                            UIWindowBase temp = childActiveUI[j];
+                            childActiveUI[j] = childActiveUI[j + 1];
+                            childActiveUI[j + 1] = temp;
+                        }
+                    }
+                }
+                childActiveUI.Insert(0, uiWindow);
+
+                UIWindowBase rootUI = uiWindow.Root;
+                GetRelative(rootUI, out List<UIWindowBase> allActiveWindow);
+                //移除
+                for (int i = 0; i < childActiveUI.Count; i++)
+                {
+                    if (allActiveWindow.Contains(childActiveUI[i]))
+                        allActiveWindow.Remove(childActiveUI[i]);
+                }
+                //添加 目的是排序,把一组UI从中间移动到最后
+                for (int i = 0; i < childActiveUI.Count; i++)
+                {
+                    allActiveWindow.Add(childActiveUI[i]);
+                }
+
+                //StartOrder 要么是root.order,要么是Group-1 order;
+                int startOrder = 0;
+                if (AlreadyTop(uiWindow))
+                {
+                    startOrder = rootUI.Order;
+                }
+                else
+                {
+                    startOrder = groupList.Count > 0
+                      ? ShortUtility.Clamp((short)(groupList[groupList.Count - 1].Order + 1), groupData.MinOrder, groupData.MaxOrder)
+                      : groupData.MinOrder;
+                }
+                for (int i = 0; i < allActiveWindow.Count; i++)
+                {
+                    if (groupList.Contains(allActiveWindow[i]))
+                        groupList.Remove(allActiveWindow[i]);
+                    groupList.Add(allActiveWindow[i]);
+
+                    allActiveWindow[i].Order = ShortUtility.Clamp((short)startOrder++, groupData.MinOrder, groupData.MaxOrder);
+                }
             }
+
         }
         private void Open生命周期(UIWindowBase uiWindow)
         {
             UIGroupType groupType = uiWindow.GroupType;
-            List<UIWindowBase> groupLinkedList = groupListMap[groupType];
-            UIGroupData groupData = UIGroupExtends.GetData(groupType);
+            List<UIWindowBase> groupLinkedList = uiGruops[groupType].instances;
+            UIGroup groupData = uiGruops[uiWindow.GroupType];
             short minOrder = groupData.MinOrder;
             short maxOrder = groupData.MaxOrder;
-            short uiCapcity = (short)(maxOrder - minOrder);
 
             UIWindowBase currentFouse = UIEventSystem.Instance.GetCurrentFoucs();
             //这里检查弹出的ui是否能作为焦点UI,有可能弹出的UI的子是模态窗体
             //那么进行焦点响应的应该是这个最高的模态窗体才对
             UIWindowBase topFouse = uiWindow;
             List<UIWindowBase> modalInChildren = new List<UIWindowBase>();
-            if (uiWindow.PopType == UIPopType.Modal)
+            if (uiWindow.IsModal)
             {
                 modalInChildren.Add(uiWindow);
             }
             uiWindow.GetAllChildrenWindow(ref modalInChildren, (ui) =>
             {
-                return ui.Active && ui.PopType == UIPopType.Modal;
+                return ui.Active && ui.IsModal;
             });
             if (modalInChildren.Count > 0)
             {
@@ -257,7 +276,7 @@ namespace ZFramework
                 UIEventSystem.Instance.SetFoucs(null);
             }
 
-            if (uiWindow.PopType == UIPopType.Modal)
+            if (uiWindow.IsModal)
             {
                 //模态的定义 是当前开着的子父窗体中，比模态order低的窗口都失去可交互
                 GetRelative(uiWindow, out List<UIWindowBase> allWindow);
@@ -306,177 +325,81 @@ namespace ZFramework
 
             //当前组激活的UI中,最高Order== 组设置的最大Order 并且组内可装载UI的容量大于显示UI的个数时。
             //重建所有Order排序
-            if (groupLinkedList.Count > 0 && groupLinkedList[groupLinkedList.Count - 1].Order >= maxOrder && uiCapcity >= groupLinkedList.Count)
+            if (groupLinkedList.Count > 0 && groupLinkedList[groupLinkedList.Count - 1].Order >= maxOrder)
             {
-                ReBuildCanvasOrder(groupType);
+                uiGruops[groupType].Soft();//UI重排
             }
-
         }
 
-        private bool AlreadyTop(UIWindowBase uiWindow)
+        private T GetUIAndMap<T>(int id, out Dictionary<int, UIWindowBase> allTypeOfUI) where T : UIWindowBase
         {
-            List<UIWindowBase> groupList = groupListMap[uiWindow.GroupType];
-            if (!groupList.Contains(uiWindow))
+            Type type = typeof(T);
+            if (uiInstancesMap.TryGetValue(type, out allTypeOfUI))
             {
-                return false;
+                if (allTypeOfUI.TryGetValue(id, out UIWindowBase uiWindow))
+                {
+                    return (T)uiWindow;
+                }
             }
-            UIWindowBase topRoot = groupList[groupList.Count - 1].Root;
-            return topRoot == uiWindow.Root;
+            return default;
         }
-        private void PopTop(UIWindowBase uiWindow)
+
+        //将UI弹到栈顶
+        public void Pop(UIWindowBase uiWindow)
         {
-
-            //检查现在是不是最顶层的一组childParent
-            //如果是，startOrder uiWindow从根，带着所有的孩子一起弹
-            //否则,从最高的order开始,带着所有的孩子一起弹
-            //把自己和自己的孩子移除,到当前parent的最后一个开始诸葛店家
-            UIGroupData groupData = UIGroupExtends.GetData(uiWindow.GroupType);
-            List<UIWindowBase> groupList = groupListMap[uiWindow.GroupType];
-
-            if (uiWindow.Parent == null)
+            if (uiWindow.Active == false)
             {
-                int startOrder = groupList.Count > 0
-                    ? ClampShort((short)(groupList[groupList.Count - 1].Order + 1), groupData.MinOrder, groupData.MaxOrder)
-                    : groupData.MinOrder;
-
-                List<UIWindowBase> childActiveUI = new List<UIWindowBase>();
-                uiWindow.GetAllChildrenWindow(ref childActiveUI, (child) =>
-                {
-                    return child.Active;
-                });
-
-                //冒泡排Order 小->大
-                for (int i = 0; i < childActiveUI.Count - 1; i++)
-                {
-                    for (int j = 0; j < childActiveUI.Count - 1 - i; j++)
-                    {
-                        if (childActiveUI[j].Order > childActiveUI[j + 1].Order)
-                        {
-                            UIWindowBase temp = childActiveUI[j];
-                            childActiveUI[j] = childActiveUI[j + 1];
-                            childActiveUI[j + 1] = temp;
-                        }
-                    }
-                }
-                childActiveUI.Insert(0, uiWindow);
-                for (int i = 0; i < childActiveUI.Count; i++)
-                {
-                    if (groupList.Contains(childActiveUI[i]))
-                        groupList.Remove(childActiveUI[i]);
-                    groupList.Add(childActiveUI[i]);
-                    childActiveUI[i].Order = ClampShort((short)startOrder++, groupData.MinOrder, groupData.MaxOrder);
-                }
+                return;
             }
-            else
-            {
-                UIWindowBase rootUI = uiWindow.Root;
-
-                GetRelative(rootUI, out List<UIWindowBase> allActiveWindow);
-
-                //所有的子
-                List<UIWindowBase> childActiveUI = new List<UIWindowBase>();
-                uiWindow.GetAllChildrenWindow(ref childActiveUI, (child) =>
-                {
-                    return child.Active;
-                });
-
-                //冒泡排Order 小->大
-                for (int i = 0; i < childActiveUI.Count - 1; i++)
-                {
-                    for (int j = 0; j < childActiveUI.Count - 1 - i; j++)
-                    {
-                        if (childActiveUI[j].Order > childActiveUI[j + 1].Order)
-                        {
-                            UIWindowBase temp = childActiveUI[j];
-                            childActiveUI[j] = childActiveUI[j + 1];
-                            childActiveUI[j + 1] = temp;
-                        }
-                    }
-                }
-                childActiveUI.Insert(0, uiWindow);
-
-                //移除
-                for (int i = 0; i < childActiveUI.Count; i++)
-                {
-                    if (allActiveWindow.Contains(childActiveUI[i]))
-                        allActiveWindow.Remove(childActiveUI[i]);
-                }
-                //添加 目的是排序,把一组UI从中间移动到最后
-                for (int i = 0; i < childActiveUI.Count; i++)
-                {
-                    allActiveWindow.Add(childActiveUI[i]);
-                }
-
-                //StartOrder 要么是root.order,要么是Group-1 order;
-                int startOrder = 0;
-                if (AlreadyTop(uiWindow))
-                {
-                    startOrder = rootUI.Order;
-
-
-                }
-                else
-                {
-                    startOrder = groupList.Count > 0
-                      ? ClampShort((short)(groupList[groupList.Count - 1].Order + 1), groupData.MinOrder, groupData.MaxOrder)
-                      : groupData.MinOrder;
-                }
-                for (int i = 0; i < allActiveWindow.Count; i++)
-                {
-                    if (groupList.Contains(allActiveWindow[i]))
-                        groupList.Remove(allActiveWindow[i]);
-                    groupList.Add(allActiveWindow[i]);
-
-                    allActiveWindow[i].Order = ClampShort((short)startOrder++, groupData.MinOrder, groupData.MaxOrder);
-                }
-            }
-
-
-
-            ////uiWindow开着的情况， 就是排序父到子
-            ////uiWindow管着的情况， 检查当前开着的的所有窗体，排好序的，我排到最后
-
-            //GetRelative(uiWindow, out List<UIWindowBase> childrenParentActiveSortUI);
-            //int order = groupList.Count > 0 ? groupList[groupList.Count - 1].Order : groupData.MinOrder;
-            ////不包含自己就加进去，准备添加到列表末端进行排序
-            //if (childrenParentActiveSortUI.Contains(uiWindow))
-            //{
-            //    childrenParentActiveSortUI.Remove(uiWindow);
-            //}
-            //childrenParentActiveSortUI.Add(uiWindow);
-
-            //for (int i = 0; i < childrenParentActiveSortUI.Count; i++)
-            //{
-            //    if (groupList.Contains(childrenParentActiveSortUI[i]))
-            //        groupList.Remove(childrenParentActiveSortUI[i]);
-            //    childrenParentActiveSortUI[i].Order = ClampShort((short)(++order), groupData.MinOrder, groupData.MaxOrder);
-            //    groupList.Add(childrenParentActiveSortUI[i]);
-            //}
-
+            PopTop(uiWindow);
+            Open生命周期(uiWindow);
         }
-        /// <summary>
-        /// 重建UI组的UI渲染排序
-        /// </summary>
-        /// <param name="groupType"></param>
-        private void ReBuildCanvasOrder(UIGroupType groupType)
+
+
+        //创建过程 --> 通过Type类型 在设置映射表拿到配置   根据配置下载资源和初始化
+        public async ATask<T> Creat<T>(bool isModal) where T : UIWindowBase
         {
-            List<UIWindowBase> groupList = groupListMap[groupType];
-            UIGroupData groupData = UIGroupExtends.GetData(groupType);
-            short minOrder = groupData.MinOrder;
-            short maxOrder = groupData.MaxOrder;
-            for (int i = 0; i < groupList.Count; i++)
+            Type uiType = typeof(T);
+
+            //实例化
+            GameObject prefabSource = await VFSDownLoad<T>();
+            GameObject uiInstance = GameObject.Instantiate(prefabSource);
+
+            //设置父物体
+            UISettingAttribute uiSetting = uiSettingMap[uiType];
+            RectTransform groupRoot = uiGruops[uiSetting.GroupType].Root;
+            uiInstance.name = $"[ID:{idIndex}] {prefabSource.name}";
+            uiInstance.transform.SetParent(groupRoot);
+
+            //注册  创建UIWindowBase
+            if (!uiInstancesMap.TryGetValue(uiType, out Dictionary<int, UIWindowBase> map))
             {
-                groupList[i].Order = minOrder++;
+                map = new Dictionary<int, UIWindowBase>();
+                uiInstancesMap.Add(uiType, map);
             }
+            T instance = (T)Activator.CreateInstance(uiType);
+            map.Add(++idIndex, instance);
+            instance.Register(idIndex, uiSetting.GroupType, isModal, uiInstance);
+
+            //awake
+            ToGameloop(instance).OnAwake();
+            return instance;
         }
-        public async ATask<T> OpenAsync<T>() where T : UIWindowBase
+        public async ATask<T> OpenNew<T>(bool isModal) where T : UIWindowBase
+        {
+            //创建新的
+            T uiInstance = await Creat<T>(isModal);
+            Open<T>(uiInstance.ID);
+            return uiInstance;
+        }
+        public async ATask<T> OpenAsync<T>(bool isModal) where T : UIWindowBase
         {
             Type uiType = typeof(T);
             T uiWindow = null;
             //没有的话就去下载
             if (!uiInstancesMap.TryGetValue(uiType, out Dictionary<int, UIWindowBase> uis))
             {
-                uiWindow = await Creat<T>();
+                uiWindow = await Creat<T>(isModal);
             }
             //否则,直接打开第一个
             else
@@ -486,12 +409,57 @@ namespace ZFramework
             OpenInternal(uiWindow);
             return uiWindow;
         }
-        public async ATask<T> OpenNew<T>() where T : UIWindowBase
+        public async ATask<GameObject> VFSDownLoad<T>() where T : UIWindowBase
         {
-            //创建新的
-            T uiInstance = await Creat<T>();
-            Open<T>(uiInstance.ID);
-            return uiInstance;
+            Type uiType = typeof(T);
+
+            //拿到VFS中预制件的下载路径
+            if (!uiSettingMap.TryGetValue(uiType, out UISettingAttribute uiSetting))
+                throw new Exception($"UISettingAttribute不存在，请在UI{uiType}上标记特性");
+
+            //启动下载
+            GameObject prefabSource = await VirtualFileSystem.LoadAsync<GameObject>(uiSetting.AssetPath);
+
+            if (prefabSource == null)
+                throw new Exception($"ui:{uiType} 下载失败,下载路径:{uiSetting.AssetPath}");
+
+            return prefabSource;
+        }
+
+
+        //打开UI的处理逻辑,调用UI实例的生命周期
+        private void OpenInternal(UIWindowBase uiWindow)
+        {
+            UIWindowBase parent = uiWindow.Parent;
+            while (parent != null)
+            {
+                if (parent.Active == false)
+                    throw new Exception($"有父窗体:{parent.GetType()}没开，要先开父窗体");
+                parent = parent.Parent;
+            }
+
+            PopTop(uiWindow);
+
+            //CallSelf
+            queue.Enqueue(uiWindow);
+            if (queue.Count == 1)
+            {
+                var self = queue.Peek();
+                Open生命周期(self);
+                queue.Dequeue();
+                TryCallNextWindow生命周期();//开始递归内部开启的生命周期
+            }
+        //递归
+        }
+        private void TryCallNextWindow生命周期()
+        {
+            if (queue.Count > 0)//有在Self的时候Open其他的UI,会加进队列待call生命周期
+            {
+                var child = queue.Peek();
+                Open生命周期(child);  //-->
+                queue.Dequeue();
+                TryCallNextWindow生命周期();
+            }
         }
         public void Open(int id)
         {
@@ -547,6 +515,8 @@ namespace ZFramework
                 }
             }
         }
+
+
         public T Get<T>(int id) where T : UIWindowBase
         {
             T uiWindow = GetUIAndMap<T>(id, out Dictionary<int, UIWindowBase> allTypeOfUI);
@@ -585,6 +555,8 @@ namespace ZFramework
             }
             return uiWindows;
         }
+
+
         private void CloseInternal(UIWindowBase uiWindow)
         {
             if (uiWindow.Active == false)
@@ -593,9 +565,7 @@ namespace ZFramework
                 return;
             }
 
-            UIGroupType groupType = uiWindow.GroupType;
-            groupListMap.TryGetValue(groupType, out List<UIWindowBase> openedUIInGroup);
-
+        
             //获取当前UI子父层级中，Order高于uiWindow并且激活的UI(包括uiWindow)
             List<UIWindowBase> selfAndChildrenActiveWindow = new List<UIWindowBase>() { uiWindow };
             uiWindow.GetAllChildrenWindow(ref selfAndChildrenActiveWindow, (UI) =>
@@ -604,7 +574,7 @@ namespace ZFramework
             });
 
             //记录最后的模态UI,这个模态窗体前面的
-            UIWindowBase modalUI = selfAndChildrenActiveWindow.Find((ui) => { return ui.PopType == UIPopType.Modal; });
+            UIWindowBase modalUI = selfAndChildrenActiveWindow.Find((ui) => ui.IsModal);
 
             List<UIWindowBase> waitForSetInteractable = null;
             //存一下所有需要解冻的UI
@@ -653,6 +623,8 @@ namespace ZFramework
                     Log.Error(e);
                 }
 
+                UIGroupType groupType = uiWindow.GroupType;
+                List<UIWindowBase> openedUIInGroup = uiGruops[groupType].instances;
                 openedUIInGroup.Remove(selfAndChildrenActiveWindow[i]);
 
                 //拿最前的元素试着作为焦点
@@ -758,23 +730,13 @@ namespace ZFramework
                 }
             }
         }
-        private T GetUIAndMap<T>(int id, out Dictionary<int, UIWindowBase> allTypeOfUI) where T : UIWindowBase
-        {
-            Type type = typeof(T);
-            if (uiInstancesMap.TryGetValue(type, out allTypeOfUI))
-            {
-                if (allTypeOfUI.TryGetValue(id, out UIWindowBase uiWindow))
-                {
-                    return (T)uiWindow;
-                }
-            }
-            return default;
-        }
+
+
         private void DestroyInternal(UIWindowBase uiWindow)
         {
             UIGroupType groupType = uiWindow.GroupType;
             //所有开着的UI
-            groupListMap.TryGetValue(groupType, out List<UIWindowBase> openedUIInGroup);
+            List<UIWindowBase> openedUIInGroup = uiGruops[groupType].instances;
 
             //当前UI的所有子UI
             List<UIWindowBase> selfAndChildrenWindows = new List<UIWindowBase>() { uiWindow };
@@ -782,7 +744,7 @@ namespace ZFramework
             uiWindow.GetAllChildrenWindow(ref selfAndChildrenWindows, null);
 
             //如果销毁的UI中有模态UI，就记录最后的模态UI,这个模态窗体前面的
-            UIWindowBase modalUI = selfAndChildrenWindows.Find((ui) => { return ui.PopType == UIPopType.Modal; });
+            UIWindowBase modalUI = selfAndChildrenWindows.Find(ui => ui.IsModal);
 
             List<UIWindowBase> waitForSetInteractable = null;
             //存一下所有需要解冻的UI
@@ -845,9 +807,9 @@ namespace ZFramework
                 }
 
                 //销毁游戏对象
-                if (destroyUI.Transform != null)
+                if (destroyUI.GameObject != null)
                 {
-                    GameObject.Destroy(destroyUI.Transform.gameObject);
+                    GameObject.Destroy(destroyUI.GameObject);
                 }
                 if (uiInstancesMap.TryGetValue(destroyUI.GetType(), out Dictionary<int, UIWindowBase> instanceMap))
                 {

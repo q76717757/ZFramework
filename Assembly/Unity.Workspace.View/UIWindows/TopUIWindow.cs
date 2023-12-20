@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using TMPro;
 using UnityEngine.UI;
 
@@ -42,7 +41,7 @@ namespace ZFramework
         {
             if (data.EventType == UIEventType.Click)
             {
-                UIManager.Instance.OpenNew<DialogueWindow>().Invoke();
+                UIManager.Instance.OpenNew<DialogueWindow>(false).Invoke();
             }
         }
 

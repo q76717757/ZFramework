@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace ZFramework
 {
-    [UISetting("Prefabs/Cnavas_冻结", UIGroupType.Middle, UIPopType.Modal)]
+    [UISetting("Prefabs/Cnavas_冻结", UIGroupType.Middle)]
     public class Cnavas_冻结 : UIWindowBase, IUIInput
     {
         protected override void OnClose()
@@ -56,7 +56,7 @@ namespace ZFramework
         Canvas_Pop child;
         async ATask AA()
         {
-            Canvas_Pop a = await AddChildAsync<Canvas_Pop>();
+            Canvas_Pop a = await AddChildAsync<Canvas_Pop>(false);
             child = a;
         }
         public void OnInput(UIFoucsEventData data)
