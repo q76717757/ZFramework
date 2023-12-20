@@ -109,13 +109,15 @@ namespace ZFramework.Editor
         }
         bool IsFullInstall()
         {
-            bool isFull = new InstallerController().HasInstalledHybridCLR();
-            if (!isFull)//未完整安装
+            var installer = new InstallerController();
+            bool isFull = installer.HasInstalledHybridCLR();
+            string ilbil2cppVer = installer.InstalledLibil2cppVersion;
+            if (!isFull || string.IsNullOrEmpty(ilbil2cppVer))//未完整安装
             {
                 EditorGUILayout.HelpBox("HybridCLR分为3部分\r\n1.Package(已安装)\r\n2.HybrldCLR(未安装)\r\n3.Il2CPP Plus(未安装)", MessageType.Error);
                 if (GUILayout.Button("继续完成安装(需要有git环境)"))
                 {
-                    new InstallerController().InstallDefaultHybridCLR();
+                    installer.InstallDefaultHybridCLR();
                 }
             }
             return isFull;
