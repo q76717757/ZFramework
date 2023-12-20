@@ -25,24 +25,16 @@ namespace ZFramework.Editor
         SearchField searchField;
         IFileServer fileServer;
 
-        private void OnGUI()
+        private void OnEnable()
         {
             if (!VFSProfile.IsExists)
             {
-                CreateProfile();
+                new VFSProfile().Save();
+                AssetDatabase.Refresh();
             }
-            else
-            {
-                DrawElements();
-            }
-        }
-        void CreateProfile()
-        {
-            new VFSProfile().Save();
-            AssetDatabase.Refresh();
         }
 
-        void DrawElements()
+        private void OnGUI()
         {
             CreateTreeView();
 
@@ -54,6 +46,7 @@ namespace ZFramework.Editor
 
             VFSProfile.GetInstance().SaveIfDirty();
         }
+
 
         void CreateTreeView()
         {
