@@ -35,12 +35,11 @@ namespace ZFramework.Editor
                 {
                     if (AssetDatabase.IsValidFolder(assetPath))
                     {
-                        data.path = null;
+                        assetPath = null;
                         data.type = VFSMetaData.MetaType.ReferenceFolder;
                     }
                     else
                     {
-                        data.path = assetPath;
                         if (obj.GetType() == typeof(SceneAsset))
                         {
                             data.type = VFSMetaData.MetaType.Scene;
@@ -51,6 +50,7 @@ namespace ZFramework.Editor
                         }
                     }
                 }
+                data.path = assetPath;//刷新路径
             }
             return data;
         }
