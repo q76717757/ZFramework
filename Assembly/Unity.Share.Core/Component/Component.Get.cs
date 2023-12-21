@@ -5,6 +5,26 @@ namespace ZFramework
 {
     public partial class Component
     {
+        //添加同级组件
+        public Component AddComponent(Type type)
+        {
+            return Entity.AddComponent(type);
+        }
+        public T AddComponent<T>() where T : Component
+        {
+            return Entity.AddComponent<T>();
+        }
+
+        //添加子级组件
+        public Component AddComponentInChild(Type type)
+        {
+            return Entity.AddComponentInChild(type);
+        }
+        public T AddComponentInChild<T>() where T : Component
+        {
+            return Entity.AddComponentInChild<T>();
+        }
+
         //获取同级组件
         public Component GetComponent(Type type)
         {

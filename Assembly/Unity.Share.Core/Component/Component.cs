@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace ZFramework
 {
-    public abstract partial class Component : ZObject , IComponent
+    public abstract partial class Component : ZObject
     {
         private Entity entity;
         private bool isEnable;
@@ -54,12 +54,12 @@ namespace ZFramework
             ClearInstanceID();
         }
 
-        void IComponent.AddEntityDependenceies(Entity entity)
+        protected internal virtual void AddEntityDependenceies(Entity entity)
         {
             this.entity = entity;
             isEnable = true;
         }
-        void IComponent.RemoveEntityDependenceies()
+        protected internal virtual void RemoveEntityDependenceies()
         {
             entity = null;
         }

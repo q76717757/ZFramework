@@ -11,7 +11,7 @@ namespace ZFramework
         public Entity GetChild(int index)
         {
             ThrowIfDisposed();
-            return GetChildren()[index];
+            return childrens.Values.ElementAt(index);
         }
         public Entity[] GetChildren()
         {
@@ -31,7 +31,7 @@ namespace ZFramework
         public Component GetComponent(Type type)
         {
             ThrowIfDisposed();
-            if (components.TryGetValue(type, out IComponent component))
+            if (components.TryGetValue(type, out Component component))
             {
                 return component as Component;
             }
@@ -55,7 +55,7 @@ namespace ZFramework
         public bool TryGetComponent(Type type, out Component component)
         {
             ThrowIfDisposed();
-            if (components.TryGetValue(type, out IComponent _component))
+            if (components.TryGetValue(type, out Component _component))
             {
                 if (_component is Component component1)
                 {
@@ -69,7 +69,7 @@ namespace ZFramework
         public bool TryGetComponent<T>(out T component)
         {
             ThrowIfDisposed();
-            if (components.TryGetValue(typeof(T), out IComponent com) &&  com is T t)
+            if (components.TryGetValue(typeof(T), out Component com) &&  com is T t)
             {
                 component = t;
                 return true;

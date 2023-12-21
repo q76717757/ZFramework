@@ -47,15 +47,15 @@ namespace ZFramework
             ZObject.DestroyImmediate(Root);
         }
 
-        internal static void CallAwake(IComponent component)
+        internal static void CallAwake(Component component)
         {
             GameLoopSystem.CallAwake(component);
         }
-        internal static void CallEnable(IComponent component)
+        internal static void CallEnable(Component component)
         {
             GameLoopSystem.CallEnable(component);
         }
-        internal static void CallDisable(IComponent component)
+        internal static void CallDisable(Component component)
         {
             GameLoopSystem.CallDisable(component);
         }
@@ -72,7 +72,7 @@ namespace ZFramework
         }
         public static T AddGlobalComponent<T>() where T : GlobalComponent<T>
         {
-            return Root.AddComponentInner(typeof(T)) as T;
+            return Root.AddComponentInChild(typeof(T)) as T;
         }
     }
 }

@@ -9,61 +9,26 @@ namespace ZFramework
     /// <summary>
     /// 全局组件不支持多层继承
     /// </summary>
-    public abstract class GlobalComponent<T> : ZObject, IComponent where T : GlobalComponent<T>
+    public abstract class GlobalComponent<T> : Component where T : GlobalComponent<T>
     {
         private static T _instance;
         public static T Instance => _instance;
-
-        private Entity entity;
-        private bool isEnable;
-        public bool Enable
-        {
-            get
-            {
-                ThrowIfDisposed();
-                return isEnable;
-            }
-            set
-            {
-                ThrowIfDisposed();
-                if (isEnable != value)
-                {
-                    isEnable = value;
-                    if (value)
-                    {
-                        Game.CallEnable(this);
-                    }
-                    else
-                    {
-                        Game.CallDisable(this);
-                    }
-                }
-            }
-        }
         protected GlobalComponent() { }
 
-
-
-        protected internal sealed override void BeginDispose(bool isImmediate)
+        protected internal sealed override void AddEntityDependenceies(Entity entity)
         {
-            Game.DestoryHandler(this, isImmediate);
-        }
-        protected internal sealed override void EndDispose()
-        {
-            Entity.RemoveComponentDependencies(entity, this);
-            ClearInstanceID();
-        }
-
-        void IComponent.AddEntityDependenceies(Entity entity)
-        {
+            if (_instance != null)
+            {
+                throw new NotSupportedException("GlobalComponent只能添加一次");
+            }
             _instance = this as T;
-            this.entity = entity;
-            isEnable = true;
+            base.AddEntityDependenceies(entity);
         }
-        void IComponent.RemoveEntityDependenceies()
+
+        protected internal sealed override void RemoveEntityDependenceies()
         {
+            base.RemoveEntityDependenceies();
             _instance = null;
-            entity = null;
         }
     }
 }

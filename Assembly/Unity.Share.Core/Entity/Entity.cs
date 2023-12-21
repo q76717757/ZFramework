@@ -8,7 +8,7 @@ namespace ZFramework
     public sealed partial class Entity : ZObject
     {
         private readonly Dictionary<int, Entity> childrens = new Dictionary<int, Entity>();//子物体
-        private readonly Dictionary<Type, IComponent> components = new Dictionary<Type, IComponent>();//组件
+        private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();//组件
         private Entity parent;
         private bool isRoot;
 
@@ -72,7 +72,7 @@ namespace ZFramework
                 DestoryInner(child, isImmediate);
             }
             //释放自身的组件
-            foreach (IComponent component in components.Values.ToArray())
+            foreach (Component component in components.Values.ToArray())
             {
                 DestoryInner(component, isImmediate);
             }
@@ -100,12 +100,12 @@ namespace ZFramework
             this.parent = null;
         }
         //component
-        internal static void AddComponentDependencies(Entity entity, IComponent component)
+        internal static void AddComponentDependencies(Entity entity, Component component)
         {
             entity.components.Add(component.GetType(), component);
             component.AddEntityDependenceies(entity);
         }
-        internal static void RemoveComponentDependencies(Entity entity, IComponent component)
+        internal static void RemoveComponentDependencies(Entity entity, Component component)
         {
             entity.components.Remove(component.GetType());
             component.RemoveEntityDependenceies();

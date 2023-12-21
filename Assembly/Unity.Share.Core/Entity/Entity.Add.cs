@@ -20,27 +20,11 @@ namespace ZFramework
         //Component
         public Component AddComponent(Type type)
         {
-            if (type.IsSubclassOf(typeof(Component)))
-            {
-                return AddComponentInner(type) as Component;
-            }
-            throw new ArgumentException($"{type} Is Invalid Component");
-        }
-        public T AddComponent<T>() where T : Component
-        {
-            return AddComponentInner(typeof(T)) as T;
-        }
-
-        //internal
-        internal IComponent AddComponentInner(Type type)
-        {
-            if (type == null)
-                throw new ArgumentNullException();
+            ThrowIfTypeError(type);
             ThrowIfDisposed();
-
-            if (!components.TryGetValue(type, out IComponent component))
+            if (!components.TryGetValue(type, out Component component))
             {
-                if (Activator.CreateInstance(type) is IComponent instance)
+                if (Activator.CreateInstance(type) is Component instance)
                 {
                     component = instance;
                     Entity.AddComponentDependencies(this, component);
@@ -48,6 +32,39 @@ namespace ZFramework
                 }
             }
             return component;
+        }
+        public T AddComponent<T>() where T : Component
+        {
+            return AddComponent(typeof(T)) as T;
+        }
+        public Component AddComponentInChild(Type type)
+        {
+            ThrowIfTypeError(type);
+            var child = AddChild();
+            return child.AddComponent(type);
+        }
+        public T AddComponentInChild<T>() where T :Component
+        {
+            ThrowIfTypeError(typeof(T));
+            var child = AddChild();
+            return child.AddComponent<T>();
+        }
+
+        //internal
+        private void ThrowIfTypeError(Type type)
+        {
+            if (type == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (type.IsAbstract)
+            {
+                throw new ArgumentException($"{type} Is Abstract Component");
+            }
+            if (!type.IsSubclassOf(typeof(Component)))
+            {
+                throw new ArgumentException($"{type} Is Invalid Component");
+            }
         }
 
     }

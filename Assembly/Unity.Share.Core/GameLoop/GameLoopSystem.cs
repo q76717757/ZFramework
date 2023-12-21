@@ -9,7 +9,7 @@ namespace ZFramework
     internal sealed class GameLoopSystem
     {
         //已经执行了awake 等待加入update/lateupdate队列
-        private readonly List<IComponent> addedComponents = new List<IComponent>();
+        private readonly List<Component> addedComponents = new List<Component>();
         //被调了destory  等到帧末再执行destory生命周期
         private readonly Queue<IDispose> removedObjects = new Queue<IDispose>();//包括entity和component
 
@@ -23,7 +23,7 @@ namespace ZFramework
             //Add
             if (addedComponents.Count > 0)
             {
-                foreach (IComponent component in addedComponents)
+                foreach (Component component in addedComponents)
                 {
                     //CallEnable(component);  //TODO  未完整实现
 
@@ -91,7 +91,7 @@ namespace ZFramework
             while (removedObjects.Count > 0)
             {
                 IDispose obj = removedObjects.Dequeue();
-                if (obj is IComponent component)
+                if (obj is Component component)
                 {
                     //CallDisable(component);  //TODO  未完整实现
                     CallDestory(component);
@@ -101,7 +101,7 @@ namespace ZFramework
         }
         internal void DestoryHandler(IDispose despose,bool isImmediate)
         {
-            if (despose is IComponent component)
+            if (despose is Component component)
             {
                 for (int i = 0; i < addedComponents.Count; i++)
                 {
@@ -127,7 +127,7 @@ namespace ZFramework
         }
 
 
-        internal void CallAwake(IComponent component)
+        internal void CallAwake(Component component)
         {
             if (component is IAwake awake)
             {
@@ -142,7 +142,7 @@ namespace ZFramework
             }
             addedComponents.Add(component);
         }
-        internal void CallEnable(IComponent component)
+        internal void CallEnable(Component component)
         {
             if (component is IEnable enable)
             {
@@ -156,7 +156,7 @@ namespace ZFramework
                 }
             }
         }
-        internal void CallDisable(IComponent component)
+        internal void CallDisable(Component component)
         {
             if (component is IDisable disable)
             {
@@ -170,7 +170,7 @@ namespace ZFramework
                 }
             }
         }
-        private void CallDestory(IComponent component)
+        private void CallDestory(Component component)
         {
             if (component is IDestory destory)
             {
