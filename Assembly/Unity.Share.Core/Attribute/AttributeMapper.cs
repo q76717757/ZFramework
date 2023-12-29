@@ -33,12 +33,14 @@ namespace ZFramework
 
         internal Type[] GetTypesByAttribute(Type type)
         {
-            if (!mapper.TryGetValue(type, out List<Type> list))
+            if (mapper.TryGetValue(type, out List<Type> list))
             {
-                list = new List<Type>();
-                mapper.Add(type, list);
+                return list.ToArray();
             }
-            return list.ToArray();
+            else
+            {
+                return Array.Empty<Type>();
+            }
         }
     }
 }

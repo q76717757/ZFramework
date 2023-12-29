@@ -13,7 +13,7 @@ namespace ZFramework
         public static Entity Root { get => _root; }
         void IEntry.OnStart(Entity gameRoot)
         {
-            _root = new Entity(gameRoot);
+            _root = gameRoot.AddChild(typeof(T).Name);
             OnStart();
         }
         public abstract void OnStart();

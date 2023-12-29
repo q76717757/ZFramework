@@ -20,8 +20,6 @@ namespace ZFramework
         }
         public void GetChildren(List<Entity> result)
         {
-            if (result == null)
-                throw new NullReferenceException();
             ThrowIfDisposed();
             result.AddRange(childrens.Values);
         }
@@ -30,8 +28,9 @@ namespace ZFramework
         //获取同级组件  //TODO Entity.GetComponent 目前不能拿接口,抽象类型
         public Component GetComponent(Type type)
         {
+            ThrowIfTypeError(type, false);
             ThrowIfDisposed();
-            if (components.TryGetValue(type, out Component component))
+            if (components.TryGetValue(type, out BasedComponent component))
             {
                 return component as Component;
             }
@@ -54,24 +53,24 @@ namespace ZFramework
         }
         public bool TryGetComponent(Type type, out Component component)
         {
+            ThrowIfTypeError(type, false);
             ThrowIfDisposed();
-            if (components.TryGetValue(type, out Component _component))
+            if (components.TryGetValue(type, out BasedComponent value) && value is Component output)
             {
-                if (_component is Component component1)
-                {
-                    component = component1;
-                    return true;
-                }
+                component = output;
+                return true;
             }
-            component = null;
-            return false;
+            else
+            {
+                component = null;
+                return false;
+            }
         }
         public bool TryGetComponent<T>(out T component)
         {
-            ThrowIfDisposed();
-            if (components.TryGetValue(typeof(T), out Component com) &&  com is T t)
+            if (TryGetComponent(typeof(T),out Component value) && value is T output)
             {
-                component = t;
+                component = output;
                 return true;
             }
             else
@@ -83,15 +82,11 @@ namespace ZFramework
         public Component[] GetComponents()
         {
             ThrowIfDisposed();
-            return components.Values.Cast<Component>().ToArray();
+            return components.Values.Where(component => component is Component).Cast<Component>().ToArray();
         }
         public void GetComponents(List<Component> results)
         {
-            ThrowIfDisposed();
-            if (results != null)
-            {
-                results.AddRange(components.Values.Cast<Component>());
-            }
+            results.AddRange(GetComponents());
         }
 
         //获取子级的组件
@@ -142,30 +137,24 @@ namespace ZFramework
         }
         public void GetComponentsInChildren<T>(List<T> results)
         {
-            if (results != null)
+            if (TryGetComponent(typeof(T), out Component component) && component is T t)
             {
-                if (TryGetComponent(typeof(T),out Component component) && component is T t)
-                {
-                    results.Add(t);
-                }
-                foreach (Entity child in childrens.Values)
-                {
-                    child.GetComponentsInChildren(results);
-                }
+                results.Add(t);
+            }
+            foreach (Entity child in childrens.Values)
+            {
+                child.GetComponentsInChildren(results);
             }
         }
         public void GetComponentsInChildren(Type type, List<Component> results)
         {
-            if (results != null)
+            if (TryGetComponent(type, out Component component))
             {
-                if (TryGetComponent(type, out Component component))
-                {
-                    results.Add(component);
-                }
-                foreach (Entity child in childrens.Values)
-                {
-                    child.GetComponentsInChildren(type, results);
-                }
+                results.Add(component);
+            }
+            foreach (Entity child in childrens.Values)
+            {
+                child.GetComponentsInChildren(type, results);
             }
         }
 
@@ -214,30 +203,24 @@ namespace ZFramework
         }
         public void GetComponentsInParent<T>(List<T> results)
         {
-            if (results != null)
+            if (TryGetComponent(out T component))
             {
-                if (TryGetComponent(out T component))
-                {
-                    results.Add(component);
-                }
-                if (Parent != null)
-                {
-                    parent.GetComponentsInParent<T>();
-                }
+                results.Add(component);
+            }
+            if (Parent != null)
+            {
+                parent.GetComponentsInParent<T>();
             }
         }
         public void GetComponentsInParent(Type type, List<Component> results)
         {
-            if (results != null)
+            if (TryGetComponent(type, out Component component))
             {
-                if (TryGetComponent(type,out Component component))
-                {
-                    results.Add(component);
-                }
-                if (Parent != null)
-                {
-                    parent.GetComponentsInParent(type, results);
-                }
+                results.Add(component);
+            }
+            if (Parent != null)
+            {
+                parent.GetComponentsInParent(type, results);
             }
         }
     }

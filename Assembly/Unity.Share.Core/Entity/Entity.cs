@@ -8,16 +8,16 @@ namespace ZFramework
     public sealed partial class Entity : ZObject
     {
         private readonly Dictionary<int, Entity> childrens = new Dictionary<int, Entity>();//子物体
-        private readonly Dictionary<Type, Component> components = new Dictionary<Type, Component>();//组件
+        private readonly Dictionary<Type, BasedComponent> components = new Dictionary<Type, BasedComponent>();//组件
         private Entity parent;
-        private bool isRoot;
+        private bool IsRoot => parent is null;
 
         public Entity Parent
         {
             get
             {
                 ThrowIfDisposed();
-                if (isRoot || parent.isRoot)//隐藏根节点
+                if (IsRoot || parent.IsRoot)//隐藏根节点
                 {
                     return null;
                 }
@@ -30,7 +30,7 @@ namespace ZFramework
                 {
                     return;
                 }
-                if (isRoot)
+                if (IsRoot)
                 {
                     throw new ArgumentException("RootEntity can't set parent");
                 }
@@ -42,8 +42,8 @@ namespace ZFramework
                 {
                     throw new ArgumentException("Entity.Parent can't set null");
                 }
-                this.RemoveParentEntityDependencies(parent);
-                this.AddParentEntityDependenceies(value);
+                RemoveParentEntityDependencies(parent);
+                AddParentEntityDependenceies(value);
             }
         }
         public int ChildCount
@@ -57,14 +57,10 @@ namespace ZFramework
 
         internal Entity(Entity parent)//内部使用的构造方法
         {
-            isRoot = parent == null;
-            if (!isRoot)
-            {
-                this.AddParentEntityDependenceies(parent);
-            }
+            AddParentEntityDependenceies(parent);
         }
 
-        protected internal sealed override void BeginDispose(bool isImmediate)//释放顺序从最深的子开始 先释放组件 再释放实体
+        protected internal sealed override void BeginDispose(bool isImmediate)
         {
             //递归子物体
             foreach (Entity child in childrens.Values.ToArray())
@@ -72,7 +68,7 @@ namespace ZFramework
                 DestoryInner(child, isImmediate);
             }
             //释放自身的组件
-            foreach (Component component in components.Values.ToArray())
+            foreach (BasedComponent component in components.Values.ToArray())
             {
                 DestoryInner(component, isImmediate);
             }
@@ -80,10 +76,7 @@ namespace ZFramework
         }
         protected internal sealed override void EndDispose()
         {
-            if (!isRoot)
-            {
-                this.RemoveParentEntityDependencies(parent);
-            }
+            RemoveParentEntityDependencies(parent);
             ClearInstanceID();
         }
 
@@ -91,24 +84,50 @@ namespace ZFramework
         //entity  两个方法都从入口排除了root
         private void AddParentEntityDependenceies(Entity parent)
         {
-            parent.childrens.Add(this.InstanceID, this);
             this.parent = parent;
+            parent?.childrens.Add(this.InstanceID, this);
         }
         private void RemoveParentEntityDependencies(Entity parent)
         {
-            parent.childrens.Remove(this.InstanceID);
             this.parent = null;
+            parent?.childrens.Remove(this.InstanceID);
         }
         //component
-        internal static void AddComponentDependencies(Entity entity, Component component)
+        internal static void AddComponentDependencies(Entity entity, BasedComponent component)
         {
             entity.components.Add(component.GetType(), component);
             component.AddEntityDependenceies(entity);
         }
-        internal static void RemoveComponentDependencies(Entity entity, Component component)
+        internal static void RemoveComponentDependencies(Entity entity, BasedComponent component)
         {
             entity.components.Remove(component.GetType());
             component.RemoveEntityDependenceies();
+        }
+
+        private void ThrowIfTypeError(Type type, bool global)
+        {
+            if (type == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (type.IsAbstract)
+            {
+                throw new ArgumentException($"{type} Is Abstract Component");
+            }
+            if (global)
+            {
+                if (type.GetInterface(typeof(IGlobalComponent).Name) == null)
+                {
+                    throw new ArgumentException($"{type} Is Invalid GlobalcComponent");
+                }
+            }
+            else
+            {
+                if (!type.IsSubclassOf(typeof(Component)))
+                {
+                    throw new ArgumentException($"{type} Is Invalid Component");
+                }
+            }
         }
 
     }

@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
+    internal interface IGlobalComponent
+    {
+    }
+
     /// <summary>
     /// 全局组件不支持多层继承
     /// </summary>
-    public abstract class GlobalComponent<T> : Component where T : GlobalComponent<T>
+    public abstract class GlobalComponent<T> : BasedComponent, IGlobalComponent where T : GlobalComponent<T>
     {
         private static T _instance;
         public static T Instance => _instance;

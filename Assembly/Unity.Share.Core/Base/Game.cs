@@ -23,9 +23,7 @@ namespace ZFramework
             {
                 try
                 {
-                    Log.Info($"{entryType.Name} Start");
-                    IEntry entry = (IEntry)Activator.CreateInstance(entryType);
-                    entry.OnStart(Root);
+                    ((IEntry)Activator.CreateInstance(entryType)).OnStart(Root);
                 }
                 catch (Exception e)
                 {
@@ -47,15 +45,27 @@ namespace ZFramework
             ZObject.DestroyImmediate(Root);
         }
 
-        internal static void CallAwake(Component component)
+        internal static void CallAwake(BasedComponent component)
         {
             GameLoopSystem.CallAwake(component);
         }
-        internal static void CallEnable(Component component)
+        internal static void CallAwake<A>(BasedComponent component, A a)
+        {
+            GameLoopSystem.CallAwake(component, a);
+        }
+        internal static void CallAwake<A, B>(BasedComponent component, A a, B b)
+        {
+            GameLoopSystem.CallAwake(component, a, b);
+        }
+        internal static void CallAwake<A, B, C>(BasedComponent component, A a, B b, C c)
+        {
+            GameLoopSystem.CallAwake(component, a, b, c);
+        }
+        internal static void CallEnable(BasedComponent component)
         {
             GameLoopSystem.CallEnable(component);
         }
-        internal static void CallDisable(Component component)
+        internal static void CallDisable(BasedComponent component)
         {
             GameLoopSystem.CallDisable(component);
         }
@@ -70,9 +80,57 @@ namespace ZFramework
         {
             return AttributeMapper.GetTypesByAttribute(typeof(T));
         }
+
+        private static bool TryGetGlobalComponent<T>(out T component) where T : GlobalComponent<T>
+        {
+            T instance = GlobalComponent<T>.Instance;
+            component = instance;
+            return component != null;
+        }
         public static T AddGlobalComponent<T>() where T : GlobalComponent<T>
         {
-            return Root.AddComponentInChild(typeof(T)) as T;
+            if (TryGetGlobalComponent(out T component))
+            {
+                return component;
+            }
+            else
+            {
+                return Root.AddChild(typeof(T).Name).AddComponentInner(typeof(T), true) as T;
+            }
         }
+        public static T AddGlobalComponent<T, A>(A a) where T : GlobalComponent<T>
+        {
+            if (TryGetGlobalComponent(out T component))
+            {
+                return component;
+            }
+            else
+            {
+                return Root.AddChild(typeof(T).Name).AddComponentInner(typeof(T), true, a) as T;
+            }
+        }
+        public static T AddGlobalComponent<T, A, B>(A a, B b) where T : GlobalComponent<T>
+        {
+            if (TryGetGlobalComponent(out T component))
+            {
+                return component;
+            }
+            else
+            {
+                return Root.AddChild(typeof(T).Name).AddComponentInner(typeof(T), true, a, b) as T;
+            }
+        }
+        public static T AddGlobalComponent<T, A, B, C>(A a, B b, C c) where T : GlobalComponent<T>
+        {
+            if (TryGetGlobalComponent(out T component))
+            {
+                return component;
+            }
+            else
+            {
+                return Root.AddChild(typeof(T).Name).AddComponentInner(typeof(T), true, a, b, c) as T;
+            }
+        }
+
     }
 }

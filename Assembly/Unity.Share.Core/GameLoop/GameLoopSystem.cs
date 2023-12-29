@@ -9,7 +9,7 @@ namespace ZFramework
     internal sealed class GameLoopSystem
     {
         //已经执行了awake 等待加入update/lateupdate队列
-        private readonly List<Component> addedComponents = new List<Component>();
+        private readonly List<BasedComponent> addedComponents = new List<BasedComponent>();
         //被调了destory  等到帧末再执行destory生命周期
         private readonly Queue<IDispose> removedObjects = new Queue<IDispose>();//包括entity和component
 
@@ -23,7 +23,7 @@ namespace ZFramework
             //Add
             if (addedComponents.Count > 0)
             {
-                foreach (Component component in addedComponents)
+                foreach (BasedComponent component in addedComponents)
                 {
                     //CallEnable(component);  //TODO  未完整实现
 
@@ -91,7 +91,7 @@ namespace ZFramework
             while (removedObjects.Count > 0)
             {
                 IDispose obj = removedObjects.Dequeue();
-                if (obj is Component component)
+                if (obj is BasedComponent component)
                 {
                     //CallDisable(component);  //TODO  未完整实现
                     CallDestory(component);
@@ -101,7 +101,7 @@ namespace ZFramework
         }
         internal void DestoryHandler(IDispose despose,bool isImmediate)
         {
-            if (despose is Component component)
+            if (despose is BasedComponent component)
             {
                 for (int i = 0; i < addedComponents.Count; i++)
                 {
@@ -126,8 +126,9 @@ namespace ZFramework
             }
         }
 
-
-        internal void CallAwake(Component component)
+        //当组件使用带参AddComponent添加组件时, 会执行两次Awake  先执行有参 后执行无参
+        //有时候需要在无参awake执行前就要做点事情,那么用带参的AddComponent正好可以插队在awake前面
+        internal void CallAwake(BasedComponent component)
         {
             if (component is IAwake awake)
             {
@@ -142,7 +143,49 @@ namespace ZFramework
             }
             addedComponents.Add(component);
         }
-        internal void CallEnable(Component component)
+        internal void CallAwake<A>(BasedComponent component,A a)
+        {
+            if (component is IAwake<A> awake)
+            {
+                try
+                {
+                    awake.Awake(a);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                }
+            }
+        }
+        internal void CallAwake<A, B>(BasedComponent component,A a,B b)
+        {
+            if (component is IAwake<A, B> awake)
+            {
+                try
+                {
+                    awake.Awake(a, b);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                }
+            }
+        }
+        internal void CallAwake<A, B, C>(BasedComponent component,A a,B b,C c)
+        {
+            if (component is IAwake<A, B, C> awake)
+            {
+                try
+                {
+                    awake.Awake(a, b, c);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                }
+            }
+        }
+        internal void CallEnable(BasedComponent component)
         {
             if (component is IEnable enable)
             {
@@ -156,7 +199,7 @@ namespace ZFramework
                 }
             }
         }
-        internal void CallDisable(Component component)
+        internal void CallDisable(BasedComponent component)
         {
             if (component is IDisable disable)
             {
@@ -170,7 +213,7 @@ namespace ZFramework
                 }
             }
         }
-        private void CallDestory(Component component)
+        private void CallDestory(BasedComponent component)
         {
             if (component is IDestory destory)
             {
