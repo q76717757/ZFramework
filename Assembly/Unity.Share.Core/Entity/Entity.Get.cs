@@ -179,10 +179,9 @@ namespace ZFramework
         }
         public T GetComponentInParent<T>()
         {
-            Component component = GetComponentInParent(typeof(T));
-            if (component is T t)
+            if (GetComponentInParent(typeof(T)) is T component)
             {
-                return t;
+                return component;
             }
             else
             {
@@ -198,19 +197,8 @@ namespace ZFramework
         public T[] GetComponentsInParent<T>()
         {
             List<T> results = new List<T>();
-            GetComponentsInParent<T>();
+            GetComponentsInParent(results);
             return results.ToArray();
-        }
-        public void GetComponentsInParent<T>(List<T> results)
-        {
-            if (TryGetComponent(out T component))
-            {
-                results.Add(component);
-            }
-            if (Parent != null)
-            {
-                parent.GetComponentsInParent<T>();
-            }
         }
         public void GetComponentsInParent(Type type, List<Component> results)
         {
@@ -221,6 +209,17 @@ namespace ZFramework
             if (Parent != null)
             {
                 parent.GetComponentsInParent(type, results);
+            }
+        }
+        public void GetComponentsInParent<T>(List<T> results)
+        {
+            if (TryGetComponent(out T component))
+            {
+                results.Add(component);
+            }
+            if (Parent != null)
+            {
+                parent.GetComponentsInParent(results);
             }
         }
     }
