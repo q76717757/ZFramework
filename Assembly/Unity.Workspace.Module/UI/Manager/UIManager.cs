@@ -12,7 +12,7 @@ namespace ZFramework
         TwoD,
         ThreeD
     }
-    public sealed partial class UIManager : GlobalComponent<UIManager>, IAwake<int, int>
+    public sealed partial class UIManager : GlobalComponent<UIManager>
     {
         //UI设置映射表
         private readonly UISettingsMapper settings = new UISettingsMapper();
@@ -21,7 +21,7 @@ namespace ZFramework
         //活跃窗口
         internal UIWindow ActiveWindow { get; set; }
 
-        void IAwake<int, int>.Awake(int width, int height)
+        public void Init(int width, int height)
         {
             //加载UI配置
             settings.Load();

@@ -11,10 +11,10 @@ namespace ZFramework
 
         async ATask Init()
         {
+
             Game.AddGlobalComponent<VirtualFileSystem>().Init(new CosFileServer());
 
-            Game.AddGlobalComponent<UIManager, int, int>(1920, 1080);
-
+            Game.AddGlobalComponent<UIManager>().Init(1920, 1080);
         }
     }
 }
