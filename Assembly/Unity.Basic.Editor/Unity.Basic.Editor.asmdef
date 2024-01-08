@@ -2,11 +2,13 @@
     "name": "Unity.Basic.Editor",
     "rootNamespace": "ZFramework.Editor",
     "references": [
+        "Unity.Packages.Runtime",
         "Unity.Basic.Runtime",
         "Unity.Share.Core",
         "Unity.Share.Model",
         "Unity.Workspace.Module",
         "Unity.Workspace.View",
+        "Unity.Packages.Editor",
         "Unity.ScriptableBuildPipeline",
         "Unity.ScriptableBuildPipeline.Editor",
         "HybridCLR.Editor"

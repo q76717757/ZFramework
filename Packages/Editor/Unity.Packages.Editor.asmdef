@@ -2,7 +2,10 @@
     "name": "Unity.Packages.Editor",
     "rootNamespace": "ZFramework.Editor",
     "references": [
-        "Unity.Packages.Runtime"
+        "Unity.Packages.Runtime",
+        "Unity.Basic.Runtime",
+        "Unity.Workspace.Module",
+        "Unity.Workspace.View"
     ],
     "includePlatforms": [
         "Editor"
