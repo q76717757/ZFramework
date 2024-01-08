@@ -26,14 +26,14 @@ namespace ZFramework
         {
             get
             {
-                return Path.Combine(Defines.PersistenceDataAPath, "VFS", "VFSProfile.xml");
+                return Path.Combine(Defines.PersistenceDataAPath, VFSUtility.FOLDER, VFSUtility.FILENAME);
             }
         }
         internal static string BuildInPath
         {
             get
             {
-                return Path.Combine(Defines.BuildInAssetAPath, "VFS", "VFSProfile.xml");
+                return Path.Combine(Defines.BuildInAssetAPath, VFSUtility.FOLDER, VFSUtility.FILENAME);
             }
         }
 

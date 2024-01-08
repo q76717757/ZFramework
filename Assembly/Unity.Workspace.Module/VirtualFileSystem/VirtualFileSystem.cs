@@ -11,18 +11,16 @@ using System.Linq;
 namespace ZFramework
 {
     /// <summary>
-    /// 虚拟文件系统    
-    /// 模拟一个运行时磁盘  要获取某些资源的时候  想从本地磁盘读文件一样  从系统中读文件出来,IO操作由文件系统在底层全部处理完 如远程下载 版本对比 加载依赖等
-    /// 用法参照Resources.Load    Resources怎么用  VFS就怎么用
+    /// 虚拟文件系统
     /// </summary>
-    public static class VirtualFileSystem
+    public class VirtualFileSystem : GlobalComponent<VirtualFileSystem>
     {
         static TreeModel<VFSTreeModelItem> treeModel;
         static Dictionary<string, AssetBundle> loadingBundles = new Dictionary<string, AssetBundle>();//已经加载的ab包 //封装一个壳 登记引用计数
         static VFSProfile profile;
         static IFileServer fileServer;
 
-        public static void Init(IFileServer fileServer)
+        public void Init(IFileServer fileServer)
         {
             profile = VFSProfile.GetInstance();
             treeModel = new TreeModel<VFSTreeModelItem>(profile.elements);
