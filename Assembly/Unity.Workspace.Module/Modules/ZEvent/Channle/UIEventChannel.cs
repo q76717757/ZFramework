@@ -12,7 +12,13 @@ namespace ZFramework
     {
         internal UIEventChannel(UIEventHandler handler) : base(handler) { }
 
+        public UIEventHandler GetHandler()
+        {
+            return _handler;
+        }
+
         #region 注册
+
         public void AddListener(GameObject target, Action<UIEventData> listener, bool autoRemoveInClick = false)
         {
             if (target == null || listener == null) return;

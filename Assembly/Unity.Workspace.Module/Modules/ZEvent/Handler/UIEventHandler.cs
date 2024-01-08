@@ -14,6 +14,15 @@ namespace ZFramework
         private UIEventDataBase TransferContainer = new UIEventDataBase();//传递容器 (盛菜盘子 唯一且复用,临时减少GC用,引用会暴露 以后改成结构体回调?)
         public Dictionary<int, UIEventListenerGroup> AllListenerGroups { get; } = new Dictionary<int, UIEventListenerGroup>();//key = gameobject.instanceID
 
+        internal void AddListenerForUIFramework(UIEventListenerBase newlistener)
+        {
+            if (!AllListenerGroups.TryGetValue(newlistener.TargetInstanceID, out UIEventListenerGroup group))
+            {
+                group = ZEvent.GetNewGroup<UIEventListenerGroup>().SetTarget(newlistener.Target);
+                AllListenerGroups.Add(newlistener.TargetInstanceID, group);
+            }
+            group.AddListenerToGroup(newlistener);
+        }
         internal void AddListener(UIEventListenerBase newlistener)
         {
             if (!AllListenerGroups.TryGetValue(newlistener.TargetInstanceID,out UIEventListenerGroup group))
@@ -27,6 +36,7 @@ namespace ZFramework
             }
             group.AddListenerToGroup(newlistener);
         }
+
         internal void RemoveListener(UIEventListenerBase targetlistener)
         {
             if (AllListenerGroups.TryGetValue(targetlistener.TargetInstanceID,out UIEventListenerGroup group))
