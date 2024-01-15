@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -20,7 +16,6 @@ namespace ZFramework
         private readonly List<CanvasGroup> m_CanvasGroupCache = new List<CanvasGroup>();
         private UIWindowLinker link;
 
-
         public bool InModal
         {
             get
@@ -34,6 +29,21 @@ namespace ZFramework
                     return false;
                 }
                 return link.window != null && link.window.InModal;
+            }
+        }
+        public bool IsVisible
+        {
+            get
+            {
+                if (link == null)
+                {
+                    link = GetComponentInParent<UIWindowLinker>();
+                }
+                if (link == null)
+                {
+                    return false;
+                }
+                return link.window != null && link.window.IsVisible;
             }
         }
         public bool Interactable
@@ -56,7 +66,7 @@ namespace ZFramework
         }
         protected virtual bool CanInteractable()
         {
-            return m_GroupsAllowInteraction && m_Interactable && (m_IgnoreModal || !InModal);
+            return m_GroupsAllowInteraction && m_Interactable && (m_IgnoreModal || !InModal) && IsVisible;
         }
 
 

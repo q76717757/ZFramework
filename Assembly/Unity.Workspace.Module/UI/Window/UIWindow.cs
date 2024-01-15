@@ -8,40 +8,44 @@ namespace ZFramework
     {
         public GameObject gameObject;
         public UIWindow parent;
-        public RenderSortProcessor processor;
         public bool isModal;
+        public UILayer layer;
     }
 
-    public abstract class UIWindow : Component, IAwake<UIWindowInitParams>
+    public abstract class UIWindow : Component, IAwake<UIWindowInitParams> ,IDestory
     {
         [Flags]
-        private enum ModalState : byte
+        private enum WindowState : byte
         {
-            //非模态
-            NotModal = 1 << 0,
-            //模态
+            None = 0,
+            //固定的
+            IsFixed = 1 << 0,  //TODO  固定窗口不参与排序也不能弹栈  未实现  后面看是否有必要??
+            //模态的
             IsModal = 1 << 1,
-            //被模态
-            InModel = 1 << 2,
+            //可见的
+            IsVisible = 1 << 2,
         }
 
-        private ModalState state;
+        private WindowState state;
+        private UILayer layer;
         private Canvas canvas;
+        private UIWindow parent;
         private List<UIWindow> children;
+        private int modalChild;
 
-        public UISortLayer Layer { get; private set; }
         public GameObject gameObject { get; private set; }
         public RectTransform rectTransform { get; private set; }
-        public  UIWindow Parent { get;private set; }
-        public bool InModal { get => StateIs(ModalState.InModel); }
-        public int Order { get => canvas.sortingOrder; set => canvas.sortingOrder = value; }
+        public  UIWindow Parent { get => parent; }
+        public UILayer Layer { get => layer; }
+        public bool InModal { get => modalChild > 0; }
+        public bool IsVisible { get => HasState(WindowState.IsVisible); }
 
         void IAwake<UIWindowInitParams>.Awake(UIWindowInitParams args)
         {
-            Layer = args.processor.layer;
-            state = args.isModal ? ModalState.IsModal : ModalState.NotModal;
+            layer= args.layer;
+            state = args.isModal ? WindowState.IsModal : WindowState.None;
 
-            //绑定window和unity资源
+            //绑定window对象和unity资源
             gameObject = args.gameObject;
             canvas = gameObject.GetComponent<Canvas>();
             canvas.overrideSorting = true;
@@ -57,86 +61,138 @@ namespace ZFramework
             LinkParentAndChild(args.parent, this);
 
             //注册到UI渲染栈上
-            args.processor.Registry(this);
+            UIManager.Instance.RegistryWindow(this);
         }
 
-        bool StateIs(ModalState state)
+        //渲染排序
+        internal void SetDepth(int order)
+        {
+            canvas.sortingOrder = order;
+        }
+
+        //窗口状态
+        bool HasState(WindowState state)
         {
             return (this.state & state) == state;
         }
+        void AddState(WindowState state)
+        {
+            this.state |= state;
+        }
+        void RemoveState(WindowState state)
+        {
+            this.state &= ~state;
+        }
+
+        //模态
+        void AddModal(UIWindow window)
+        {
+            if (window.HasState(WindowState.IsModal))
+            {
+                UIWindow parent = window.parent;
+                while (parent != null)
+                {
+                    parent.modalChild++;
+                    parent = parent.parent;
+                }
+            }
+        }
+        void RemoveModal(UIWindow window)
+        {
+            if (window.HasState(WindowState.IsModal))
+            {
+                UIWindow parent = window.parent;
+                while (parent != null)
+                {
+                    parent.modalChild--;
+                    parent = parent.parent;
+                }
+            }
+        }
+
+        //父子关系
         void LinkParentAndChild(UIWindow parent, UIWindow child)
         {
             if (child != null)
             {
-                child.Parent = parent;
+                child.parent = parent;
                 if (parent != null)
                 {
+                    //添加父子关系
                     if (parent.children == null)
                         parent.children = new List<UIWindow>();
                     parent.children.Add(child);
                 }
-                UpdateModalState(child, true);
             }
         }
         void UnlinkParentAndChild(UIWindow parent, UIWindow child)
         {
             if (child != null)
             {
-                child.Parent = null;
+                child.parent = null;
                 if (parent != null)
                 {
                     parent.children.Remove(child);
                 }
-                UpdateModalState(child, false);
             }
         }
-        void UpdateModalState(UIWindow window,bool additivity)
-        {
-            if (!window.StateIs(ModalState.IsModal))
-            {
-                return;
-            }
-            UIWindow parent = window.Parent;
-            while (parent != null)
-            {
-                if (additivity)
-                {
-                    parent.state |= ModalState.InModel;
-                }
-                else
-                {
-                    parent.state &= ~ModalState.InModel;
-                }
-                if (parent.StateIs(ModalState.IsModal))
-                {
-                    return;
-                }
-                parent = parent.Parent;
-            }
-        }
+
 
         //生命周期
         internal void CallOpen()
         {
+            if (!IsVisible)
+            {
+                AddModal(this);
+                AddState(WindowState.IsVisible);
+                try
+                {
+                    OnShow();
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                }
+            }
         }
         internal void CallClose()
         {
+            if (IsVisible)
+            {
+                RemoveModal(this);
+                RemoveState(WindowState.IsVisible);
+                try
+                {
+                    OnHide();
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                }
+            }
+        }
+        public virtual void OnShow()
+        {
+            canvas.enabled = true;
+        }
+        public virtual void OnHide()
+        {
+            canvas.enabled = false;
         }
         public virtual void OnAcviceChange(bool isActive)
         {
         }
-        public virtual void OnShow()
+        public virtual void OnDestory()
         {
-        }
-        public virtual void OnHide()
-        {
-        }
-        public virtual void OnDestroy()
-        {
+            UIManager.Instance.UnregistryWindow(this);
+            GameObject.Destroy(this.gameObject);
         }
 
 
-        //API  创建子窗口
+
+
+
+        //API
         public void CreateChildWindow<T>(bool isModal) where T : UIWindow
         {
             UIManager.Instance.CreateWindowInner(typeof(T), this, isModal).Invoke();
@@ -153,5 +209,14 @@ namespace ZFramework
         {
             return await UIManager.Instance.CreateWindowInner(type, this, isModal);
         }
+
+
+
+#if UNITY_EDITOR
+        public override string ToString()
+        {
+            return InstanceID + ":" + canvas.sortingOrder + $"[{modalChild}]";
+        }
+#endif
     }
 }

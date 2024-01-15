@@ -7,19 +7,14 @@ using UnityEngine.UI;
 
 namespace ZFramework
 {
-    public enum UISpaceType
-    {
-        TwoD,
-        ThreeD
-    }
     public sealed partial class UIManager : GlobalComponent<UIManager>
     {
-        //UI设置映射表
+        //UI设置
         private readonly UISettingsMapper settings = new UISettingsMapper();
         //所有UI渲染层
-        private Dictionary<UISortLayer, RenderSortProcessor> processor;
+        private Dictionary<UILayer, RenderSortProcessor> processor;
         //活跃窗口
-        internal UIWindow ActiveWindow { get; set; }
+        private UIWindow activeWindow;
 
         public void Init(int width, int height)
         {
@@ -50,16 +45,23 @@ namespace ZFramework
             scaler.referenceResolution = new Vector2(width, height);
 
             //创建层节点
-            processor = new Dictionary<UISortLayer, RenderSortProcessor>();
-            UISortLayer[] layers = Enum.GetValues(typeof(UISortLayer)).Cast<UISortLayer>().ToArray();
+            processor = new Dictionary<UILayer, RenderSortProcessor>();
+            UILayer[] layers = Enum.GetValues(typeof(UILayer)).Cast<UILayer>().ToArray();
             for (int i = 0, len = layers.Length; i < len; i++)
             {
-                UISortLayer layer = layers[i];
+                UILayer layer = layers[i];
                 short minOrder = (short)layer;
                 short maxOrder = i == (len - 1) ? short.MaxValue : (short)(layers[i + 1] - 1);
 
+                RectTransform rectTransform = new GameObject($"{layer} [{minOrder}-{maxOrder}]").AddComponent<RectTransform>();
+                rectTransform.SetParent(root.transform);
+                rectTransform.anchorMin = Vector2.zero;
+                rectTransform.anchorMax = Vector2.one;
+                rectTransform.offsetMin = Vector2.zero;
+                rectTransform.offsetMax = Vector2.zero;
+
                 RenderSortProcessor collections = Entity.AddComponentInChild<RenderSortProcessor>();
-                collections.Init(layer, minOrder, maxOrder, root.transform);
+                collections.Init(minOrder, maxOrder, rectTransform);
                 processor.Add(layer, collections);
             }
         }
@@ -69,71 +71,124 @@ namespace ZFramework
             root.transform.SetParent(parent.transform);
         }
 
-        internal UISettingAttribute GetSettings(Type type)
+        UISettingAttribute GetSettings(Type type)
         {
             return settings.GetSettings(type);
         }
-        internal RenderSortProcessor GetProcessor(UISortLayer layer)
+        RenderSortProcessor GetProcessor(UILayer layer)
         {
             return processor[layer];
         }
+        void SetActiveWindow(UIWindow window)
+        {
+            if (activeWindow == window)
+            {
+                return;
+            }
+            if (activeWindow != null)
+            {
+                activeWindow.OnAcviceChange(false);
+                activeWindow = null;
+            }
+            if (window == null)
+            {
+                return;
+            }
+            if (window.InModal)//如果是被模态中窗口   则找这个模态窗口的最深子   活跃他的最深子
+            {
+                activeWindow = GetProcessor(window.Layer).GetDeepestChildNode(window.InstanceID).Window;
+            }
+            else
+            {
+                activeWindow = window;
+            }
+            if (activeWindow != null)
+            {
+                activeWindow.OnAcviceChange(true);
+            }
+        }
 
-
+        internal void RegistryWindow(UIWindow window)
+        {
+            GetProcessor(window.Layer).Registry(window);
+        }
+        internal void UnregistryWindow(UIWindow window)
+        {
+            RenderDepthNode left = GetProcessor(window.Layer).Unregistry(window);
+            if (left != null)
+            {
+                SetActiveWindow(left.Window);
+            }
+        }
         internal async ATask<UIWindow> CreateWindowInner(Type type, UIWindow parent = null, bool isModal = false)
         {
             //读配置
             UISettingAttribute settings = GetSettings(type);
-            //加载资源
-            GameObject prefab = await VirtualFileSystem.LoadAsync<GameObject>(settings.AssetPath);
-            //实例化
-            RenderSortProcessor processor;
+            //构造初始化参数
             RectTransform parentRect;
             Entity entity;
+            UILayer layer;
+            RenderSortProcessor processor;
             if (parent == null)//创建根窗体
             {
-                processor = GetProcessor(settings.Layer);
+                layer = settings.Layer;
+                processor = GetProcessor(layer);
                 parentRect = processor.rectTransform;
                 entity = processor.Entity;
             }
             else//创建子窗体
             {
-                processor = GetProcessor(parent.Layer);
+                layer = parent.Layer;
+                processor = GetProcessor(layer);
                 parentRect = parent.rectTransform;
                 entity = parent.Entity;
             }
+            //加载资源
+            GameObject prefab = await VirtualFileSystem.LoadAsync<GameObject>(settings.AssetPath);
             //实例化
             GameObject gameObject = GameObject.Instantiate(prefab, parentRect);
             UIWindowInitParams paramas = new UIWindowInitParams()
             {
                 gameObject = gameObject,
-                processor = processor,
+                layer = layer,
                 parent = parent,
                 isModal = isModal,
             };
             UIWindow window = entity.AddComponentInChild(type, paramas) as UIWindow;
+            OpenWindowInner(window);
             return window;
         }
         internal void PopWindowInner(UIWindow window)
         {
             ThrowIfNull(window);
-            GetProcessor(window.Layer).PopWindow(window);
+            GetProcessor(window.Layer).PopNode(window.InstanceID);
+            SetActiveWindow(window);
         }
         internal void OpenWindowInner(UIWindow window)
         {
             ThrowIfNull(window);
-            throw new NotImplementedException();
+            window.CallOpen();
+            SetActiveWindow(window);
         }
         internal void CloseWindowInner(UIWindow window)
         {
             ThrowIfNull(window);
-            throw new NotImplementedException();
+            RenderSortProcessor processor = GetProcessor(window.Layer);
+            RenderDepthNode start = processor.GetNode(window.InstanceID);
+            RenderDepthNode end = processor.GetDeepestChildNode(window.InstanceID);
+            while (start != end)//倒序关闭
+            {
+                end.Window.CallClose();
+                end = end.Left;
+            }
+            start.Window.CallClose();
+            SetActiveWindow(start.Left.Window);
         }
         internal void DestoryWindowInner(UIWindow window)
         {
             ThrowIfNull(window);
-            throw new NotImplementedException();
+            Entity.Destory(window.Entity);
         }
-
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

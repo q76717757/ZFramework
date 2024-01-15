@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZFramework
 {
-    internal sealed class RenderDepthNode
+    internal sealed class RenderDepthNode//树和链表的混合结构
     {
         public UIWindow Window { get; }
         public int Depth { get; set; }
@@ -41,7 +41,7 @@ namespace ZFramework
         {
             if (Window != null)
             {
-                Window.Order = Depth;
+                Window.SetDepth(Depth);
             }
         }
     }

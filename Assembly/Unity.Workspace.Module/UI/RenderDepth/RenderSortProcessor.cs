@@ -17,24 +17,15 @@ namespace ZFramework
         private readonly Dictionary<int, RenderDepthNode> nodes = new Dictionary<int, RenderDepthNode>();//全部节点 除了隐藏根
         private readonly Stack<RenderDepthNode> forkStartNodes = new Stack<RenderDepthNode>();//分支节点缓存栈
 
-        internal UISortLayer layer;
         internal RectTransform rectTransform;
 
-        internal void Init(UISortLayer layer, short minOrder, short maxOrder, Transform parent)
+        internal void Init(short minOrder, short maxOrder, RectTransform rectTransform)
         {
-            rectTransform = new GameObject($"{layer} [{minOrder}-{maxOrder}]").AddComponent<RectTransform>();
-            rectTransform.SetParent(parent);
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.offsetMin = Vector2.zero;
-            rectTransform.offsetMax = Vector2.zero;
-
-            this.layer = layer;
+            this.rectTransform = rectTransform;
             this.minOrder = minOrder;
             this.maxOrder = maxOrder;
             root = new RenderDepthNode(null) { Depth = this.minOrder - 1 };
         }
-
 
         internal void Registry(UIWindow newWindow)
         {
@@ -43,7 +34,7 @@ namespace ZFramework
             nodes.Add(newWindow.InstanceID, newNode);
 
             //绑定节点父子关系
-            RenderDepthNode parentNode = newWindow.Parent == null ? root : nodes[newWindow.Parent.InstanceID];
+            RenderDepthNode parentNode = newWindow.Parent == null ? root : GetNode(newWindow.Parent.InstanceID);
             LinkPaternity(parentNode, newNode);
 
             //插入父节点的链尾
@@ -54,17 +45,53 @@ namespace ZFramework
             UpdateDepth(parentNode);
             //应用depth
             ApplyDepth(parentNode);
-            //更新活跃窗口
-            UpdateActive(newWindow);
         }
-        internal void Unregistry(UIWindow window)
+        internal RenderDepthNode Unregistry(UIWindow window)
         {
+            RenderDepthNode node = GetNode(window.InstanceID);
+            RenderDepthNode end = GetDeepestChildNode(node);
+            RenderDepthNode left = node.Left;
 
+            //剪掉分支
+            ClipRange(node, end);
+
+            //解绑节点父子关系
+            RenderDepthNode parentNode = window.Parent == null ? root : GetNode(window.Parent.InstanceID);
+            UnLinkPaternity(parentNode, node);
+
+            //移除节点
+            RenderDepthNode right = node;
+            while (right != null)
+            {
+                nodes.Remove(node.Window.InstanceID);
+                Log.Info("Remove->" + node.Window.InstanceID);
+                right = right.Right;
+            }
+
+            //更新depth
+            UpdateDepth(parentNode);
+            //应用depth
+            ApplyDepth(parentNode);
+
+            return left;
         }
-        internal void PopWindow(UIWindow window)
+
+
+        internal RenderDepthNode GetNode(int id)
+        {
+            return nodes[id];
+        }
+        internal RenderDepthNode GetDeepestChildNode(int id)
+        {
+            return GetDeepestChildNode(GetNode(id));
+        }
+
+
+        internal void PopNode(int id)
         {
             //从下往上找出所有分叉链的起点
-            GetForkNodes(nodes[window.InstanceID]);
+            RenderDepthNode node = GetNode(id);
+            GetForkNodes(node);
             if (forkStartNodes.Count > 0)
             {
                 //从上往下修剪分支
@@ -83,8 +110,9 @@ namespace ZFramework
                 }
                 ApplyDepth(forkRoot);//最后应用深度值
             }
-            UpdateActive(window);
         }
+
+
 
         //从指定节点开始 向下更新深度
         void UpdateDepth(RenderDepthNode start)
@@ -97,7 +125,7 @@ namespace ZFramework
                 {
                     if (start == root)
                     {
-                        throw new OverflowException($"链的长度超出了{layer}的容量");
+                        throw new OverflowException($"链的长度超出范围了");
                     }
                     else
                     {
@@ -124,25 +152,6 @@ namespace ZFramework
                     throw new StackOverflowException("这是环形链");
             }
         }
-        //更新活跃窗口
-        void UpdateActive(UIWindow window)
-        {
-            if (UIManager.Instance.ActiveWindow == window)
-            {
-                return;
-            }
-            RenderDepthNode node = nodes[window.InstanceID];
-            if (window.InModal)
-            {
-                RenderDepthNode last = GetDeepestChildNode(node);
-                UIManager.Instance.ActiveWindow = last.Window;
-            }
-            else
-            {
-                UIManager.Instance.ActiveWindow = window;
-            }
-        }
-
 
         //建立父子关系
         void LinkPaternity(RenderDepthNode parent, RenderDepthNode child)
@@ -156,7 +165,6 @@ namespace ZFramework
             parent.RemoveChild(child);
             child.Parent = null;
         }
-
 
         //获取指定一脉的所有分叉节点 (即有兄弟的祖先 有兄弟才要处理兄弟间的遮挡关系  父子必然子挡父,无须处理)
         //  如       1
@@ -227,12 +235,15 @@ namespace ZFramework
             ThrowIfNotLink(start, end);
             if (insert == start)
             {
+                //不能插入自身
                 return;
             }
             RenderDepthNode targetRight = insert.Right;
             ConnectNodes(insert, start);
             ConnectNodes(end, targetRight);
         }
+
+
         //把两个节点焊接
         void ConnectNodes(RenderDepthNode left, RenderDepthNode right)
         {
@@ -260,7 +271,6 @@ namespace ZFramework
         //断开节点的一边
         RenderDepthNode DisconnectLeft(RenderDepthNode node)
         {
-            ThrowIfNull(node);
             RenderDepthNode left = node.Left;
             node.Left = null;
             if (left != null)
@@ -269,7 +279,6 @@ namespace ZFramework
         }
         RenderDepthNode DisconnectRight(RenderDepthNode node)
         {
-            ThrowIfNull(node);
             RenderDepthNode right = node.Right;
             node.Right = null;
             if (right != null)

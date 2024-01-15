@@ -49,7 +49,7 @@ namespace ZFramework
         //活跃窗口只有一个
         public static UIWindow GetActiveWindow()
         {
-            return Instance.ActiveWindow;
+            return Instance.activeWindow;
         }
 
 
@@ -86,7 +86,7 @@ namespace ZFramework
         {
             throw new NotImplementedException();
         }
-        public static UIWindow[] GetWindowsByLayer(UISortLayer layer)
+        public static UIWindow[] GetWindowsByLayer(UILayer layer)
         {
             throw new NotImplementedException();
         }

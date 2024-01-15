@@ -3,8 +3,8 @@
     public class UISettingAttribute : BaseAttribute
     {
         public string AssetPath { get; }
-        public UISortLayer Layer { get; }
-        public UISettingAttribute(string assetPath, UISortLayer layer)
+        public UILayer Layer { get; }
+        public UISettingAttribute(string assetPath, UILayer layer)
         {
             AssetPath = assetPath;
             Layer = layer;
