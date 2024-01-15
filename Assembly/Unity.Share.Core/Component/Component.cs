@@ -106,5 +106,14 @@ namespace ZFramework
             Entity.GetComponentsInParent(type, results);
         }
 
+        protected internal sealed override void AddEntityDependenceies(Entity entity)
+        {
+            base.AddEntityDependenceies(entity);
+        }
+        protected internal sealed override void RemoveEntityDependenceies()
+        {
+            base.RemoveEntityDependenceies();
+        }
+
     }
 }

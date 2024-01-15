@@ -70,7 +70,7 @@ namespace ZFramework
             }
         }
         public sealed override int GetHashCode() => InstanceID;
-        public sealed override string ToString() => IsDisposed ? $"NULL({GetType().Name})" : $"{Name}({GetType().Name}:{InstanceID})";
+        public override string ToString() => IsDisposed ? $"NULL({GetType().Name})" : $"{Name}({GetType().Name}:{InstanceID})";
 
 
         //静态方法
